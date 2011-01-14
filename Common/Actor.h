@@ -16,6 +16,10 @@ public:
     Point pos;
     Real width;
     Real height;
+	Real depth;
+	Point normal;
+	Point heading;
+	Point binormal;
 
     virtual ~Actor(){};
 };

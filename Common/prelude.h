@@ -8,7 +8,10 @@
 #ifndef PRELUDE_H
 #define	PRELUDE_H
 
+#include <list>
+
 typedef float Real;
+typedef std::list ActorList;
 
 struct
 {
