@@ -4,6 +4,7 @@
 #include "../Common/prelude.h"
 #include "../Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
+#include <list>
 
 
 class Physics
@@ -20,12 +21,21 @@ private:
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	
-	btCollisionShape* ground;	//TODO this is just temporary plane
-	btDefaultMotionState* groundMotionState;
+	class MotionState : private btMotionState	/*updates position of actors*/
+	{
+	public:
+		MotionState(const btTransform &initalPos, Actor * actor);
+		virtual ~MotionState();
+		virtual void getWorldTransform(btTransform &worldTrans) const;
+		virtual void setWorldTransform(const btTransform &worldTrans);
+	private:
+		btTransform pos;
+		Actor * actor;
+	};
 	
-	btCollisionShape* sphere;
+	typedef std::list<MotionState*> MotionStates;
+	MotionStates motionStates;
 	
-	void setupPrimitives();
 
 };
 
