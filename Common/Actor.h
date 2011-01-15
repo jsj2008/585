@@ -20,7 +20,9 @@ public:
 	Point normal;
 	Point heading;
 	Point binormal;
-
+	
+	
+	Actor();
     virtual ~Actor(){};
 };
 

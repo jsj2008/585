@@ -9,11 +9,12 @@
 #define	PRELUDE_H
 
 #include <list>
+class Actor;
 
 typedef float Real;
-typedef std::list ActorList;
+typedef std::list<Actor *> ActorList;
 
-struct
+typedef struct
 {
     Real x;
     Real y;

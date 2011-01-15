@@ -3,22 +3,17 @@ PROJECT(585)
 
 add_definitions(-W -Wall -ansi -pedantic -g)
 
-#aux_source_directory(Renderer RENDERER_SOURCES)
-
-SET(SOURCES ${RENDERER_SOURCES})
-
-
-
 # QT
 find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 
-set(SOURCES Renderer/Renderer.cpp Renderer/Main.cpp Renderer/Point.cpp Renderer/Trackball.cpp Renderer/Vector3.cpp)
-#set(SOURCES Renderer/*.cpp)
-#execute_process(COMMAND find /Users/oricohen/Documents/585/Renderer -name '*.cpp' | xargs echo OUTPUT_VARIABLE RENDERER_SOURCES)
-#execute_process(COMMAND echo -n Renderer/Renderer.cpp Renderer/Main.cpp Renderer/Point.cpp Renderer/Trackball.cpp Renderer/Vector3.cpp
-#    OUTPUT_VARIABLE RENDERER_SOURCES)
-#set(SOURCES ${RENDERER_SOURCES})
-set(HEADERS Renderer/Renderer.h Renderer/Point.h Renderer/Trackball.h Renderer/Vector3.h)
+FILE(GLOB RENDERER_SOURCES Renderer/*.cpp)
+FILE(GLOB RENDERER_HEADERS Renderer/*.h)
+FILE(GLOB PHYSICS_SOURCES Physics/*.cpp)
+FILE(GLOB PHYSICS_HEADERS Physics/*.h)
+FILE(GLOB COMMON_SOURCES Common/*.cpp)
+FILE(GLOB COMMON_HEADERS Common/*.h)
+set(SOURCES ${RENDERER_SOURCES} ${PHYSICS_SOURCES} ${COMMON_SOURCES} main.cpp)
+set(HEADERS ${RENDERER_HEADERS} ${PHYSICS_HEADERS} ${COMMON_HEADERS})
 
 
 QT4_WRAP_CPP(HEADERS_MOC ${HEADERS})
@@ -31,5 +26,11 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 find_package(OpenGL)
 include_directories(${OPENGL_INCLUDE_DIR})
 
+
+#bullet
+set(BULLET_LIBRARIES libBulletDynamics.a libBulletCollision.a libLinearMath.a )
+include_directories(/usr/local/include/bullet/)
+link_directories(/usr/local/lib)
+
 ADD_EXECUTABLE(game ${SOURCES} ${HEADERS_MOC})
-TARGET_LINK_LIBRARIES(game ${QT_LIBRARIES} ${OPENGL_LIBRARIES})
+TARGET_LINK_LIBRARIES(game ${QT_LIBRARIES} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES})

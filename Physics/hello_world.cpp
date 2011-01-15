@@ -9,7 +9,7 @@
 #include <btBulletDynamicsCommon.h>
 
 
-int main (void)
+int main2 (void)
 {
 
         btBroadphaseInterface* broadphase = new btDbvtBroadphase();
