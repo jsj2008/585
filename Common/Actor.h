@@ -24,6 +24,7 @@ public:
 	PhysObject * physObject;	//physical information (mass, shape, etc...)
 	
 	Actor();
+	Actor(Real x, Real y, Real z);
     virtual ~Actor(){};
 };
 

@@ -5,6 +5,7 @@
 GLDebugDrawer::GLDebugDrawer(Renderer * renderer) :m_debugMode(0)
 {
 	this->renderer = renderer;
+	renderer->makeCurrent();
 	listIndex = glGenLists(1);
 }
 
@@ -35,8 +36,6 @@ void GLDebugDrawer::endDebug()
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
 {
-	std::cout << from.getX() << "," << from.getY() << "," << from.getZ() << ": " << to.getX() << "," << to.getY() << "," << to.getZ() << std::endl;
-	std::cout << color.getX() <<"," << color.getY() << "," << color.getZ() << std::endl;
 	drawLine(from,to,color,color);
 }
 

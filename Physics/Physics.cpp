@@ -18,8 +18,7 @@ Physics::Physics(ActorList * actors, GLDebugDrawer * debugger)
 
 	//construct the world
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
-	//dynamicsWorld->setGravity(btVector3(0,-10,0));   
-	dynamicsWorld->setGravity(btVector3(0,0,0));   //no gravity for debugging
+	dynamicsWorld->setGravity(btVector3(0,-10,0));   
 	
 	newActors(actors);
 	

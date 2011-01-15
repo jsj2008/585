@@ -7,7 +7,7 @@ Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 	width = 800;
 	height = 600;
 
-	camPos = Point(0,0,3);
+	camPos = Point(3,2,10);
 	camLook = Point(0,0,0);
 	camUp = Vector3(0,1,0);
 	
