@@ -2,6 +2,7 @@
 #include <QtGui>
 #include "Common/Actor.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/GLDebugDrawer.h"
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -13,12 +14,13 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
 
 	Renderer r;
+	GLDebugDrawer debug(&r);
 	
 	ActorList * actors = new ActorList();
 	
 	actors->push_back(new Actor() );
 	
-	Physics phys(actors, &r);
+	Physics phys(actors, &debug);
 
 
 	r.show();

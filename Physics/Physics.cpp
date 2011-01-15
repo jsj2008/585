@@ -1,7 +1,7 @@
 #include "Physics.h"
 #include <iostream>
 
-Physics::Physics(ActorList * actors, Renderer * debugger)
+Physics::Physics(ActorList * actors, GLDebugDrawer * debugger)
 {
 	this->actorList = actors;
 	this->debugger = debugger;
@@ -18,12 +18,14 @@ Physics::Physics(ActorList * actors, Renderer * debugger)
 
 	//construct the world
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0,-10,0));   
+	//dynamicsWorld->setGravity(btVector3(0,-10,0));   
+	dynamicsWorld->setGravity(btVector3(0,0,0));   //no gravity for debugging
 	
 	newActors(actors);
 	
 	/*turn on debugging*/
 	dynamicsWorld->setDebugDrawer(debugger);
+	debugger->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 
 }
 
@@ -55,7 +57,9 @@ void Physics::step(seconds timeStep)
 	dynamicsWorld->stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
 	
 	/*debugger*/
+	debugger->startDebug();
 	dynamicsWorld->debugDrawWorld();
+	debugger->endDebug();
 }
 
 Physics::~Physics()

@@ -7,13 +7,13 @@
 #include <LinearMath/btIDebugDraw.h>
 #include <list>
 
-#include "../Renderer/Renderer.h"
+#include "../Renderer/GLDebugDrawer.h"
 
 
 class Physics
 {
 public:
-	Physics(ActorList * actorList, Renderer * debugger);		//takes in list of actors (cars, falling objects etc...)
+	Physics(ActorList * actorList, GLDebugDrawer * debugger);		//takes in list of actors (cars, falling objects etc...)
 	~Physics();
 	void newActors(ActorList * newActors);	//physics needs to know if new objects have been added to actorList
 	void step(seconds timeStep);
@@ -24,7 +24,7 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
-	Renderer * debugger;
+	GLDebugDrawer * debugger;
 	
 	class MotionState : public btMotionState	/*updates position of actors*/
 	{

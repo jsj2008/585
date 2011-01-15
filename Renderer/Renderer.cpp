@@ -16,11 +16,6 @@ Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 
 Renderer::~Renderer() { }
 
-void Renderer::drawLine(const btVector3 & from, const btVector3 & to, const btVector3 & color)	//debugger for Bullet
-{
-	std::cout << "1" << std::endl;
-}
-
 QSize Renderer::minimumSizeHint() const {
 	return QSize(100, 100);
 }
@@ -37,6 +32,8 @@ void Renderer::paintGL() {
 	updateCamera();
 	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
 	renderObjects();
+	
+	glCallList(listIndex);
 	
 	glFlush();
 }
