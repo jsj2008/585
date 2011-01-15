@@ -3,6 +3,7 @@
 #include <QGLWidget>
 #include "Point.h"
 #include "Trackball.h"
+#include <QWidget>
 #include <stdlib.h>
 #include <math.h>
 using namespace std;
@@ -12,7 +13,8 @@ class Renderer;
 class Renderer : public QGLWidget {
 	Q_OBJECT
 public:
-	Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
+	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
+	Renderer(QWidget* parent = 0);
 	~Renderer();
 
 	QSize minimumSizeHint() const;
@@ -34,6 +36,7 @@ protected:
 	void wheelEvent(QWheelEvent *event);
 
 private:
+	void renderObjects();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
@@ -53,5 +56,6 @@ private:
 	int width;
 	int height;	
 
-	Trackball trackball;		// The trackball for rotating the surface
+	Trackball trackball;		// The trackball for rotating the surface*/
+
 };

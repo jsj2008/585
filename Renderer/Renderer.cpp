@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+
 Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 	ratio = 1.0;
 	width = 800;
@@ -13,6 +14,7 @@ Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 }
 
 Renderer::~Renderer() { }
+
 
 QSize Renderer::minimumSizeHint() const {
 	return QSize(100, 100);
