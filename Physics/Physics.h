@@ -21,7 +21,7 @@ private:
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	
-	class MotionState : private btMotionState	/*updates position of actors*/
+	class MotionState : public btMotionState	/*updates position of actors*/
 	{
 	public:
 		MotionState(const btTransform &initalPos, Actor * actor);
@@ -33,8 +33,11 @@ private:
 		Actor * actor;
 	};
 	
-	typedef std::list<MotionState*> MotionStates;
+	typedef std::list<btMotionState*> MotionStates;
+	typedef std::list<btRigidBody*> RigidBodies;
+
 	MotionStates motionStates;
+	RigidBodies rigidBodies;
 	
 
 };

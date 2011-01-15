@@ -6,11 +6,14 @@
 
 class PhysObject
 {
-public:
-	PhysObject(Point startPos);	
-	~PhysObject();
-private:
-	btDefaultMotionState* motionState;
+public:	
+	PhysObject();
+	virtual ~PhysObject();
+	
+	btCollisionShape * shape;
+	Real mass;
+	btVector3 * fallInertia;
+	
 };
 
 #endif

@@ -9,6 +9,7 @@
 #define	ACTOR_H
 
 #include "prelude.h"
+#include "../Physics/PhysObject.h"
 
 class Actor {
 public:
@@ -20,7 +21,7 @@ public:
 	Point normal;
 	Point heading;
 	Point binormal;
-	
+	PhysObject * physObject;	//physical information (mass, shape, etc...)
 	
 	Actor();
     virtual ~Actor(){};

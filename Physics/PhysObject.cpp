@@ -1,10 +1,8 @@
 #include "PhysObject.h"
-PhysObject::PhysObject(Point startPos)
-{
-	
-}
+PhysObject::PhysObject(){}
 
 PhysObject::~PhysObject()
 {
-	
+	delete shape;
+	delete fallInertia;	
 }
