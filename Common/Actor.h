@@ -18,9 +18,9 @@ public:
     Real width;
     Real height;
 	Real depth;
-	Point normal;
+	/*Point normal;
 	Point heading;
-	Point binormal;
+	Point binormal;*/
 	PhysObject * physObject;	//physical information (mass, shape, etc...)
 	
 	Actor();

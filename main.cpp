@@ -1,30 +1,40 @@
 #include "Physics/Physics.h"
 #include <QtGui>
 #include "Common/Actor.h"
+#include "Renderer/Renderer.h"
+#include <iostream>
 
 int main(int argc, char *argv[]) {
 	
-/*	QApplication a(argc, argv);
+	
+	
+	
+	
+	QApplication a(argc, argv);
+
 	Renderer r;
-	r.show();
-	
-	
-	return a.exec();*/
 	
 	ActorList * actors = new ActorList();
 	
 	actors->push_back(new Actor() );
 	
-	Physics phys(actors);
+	Physics phys(actors, &r);
+
+
+	r.show();
 	
+	for(int i=0; i<10; i++)
+	{
+		phys.step(1);
+	}	
 	
+	return a.exec();
+
 	/*remove actors*/
 	for(ActorList::iterator itr = actors->begin(); itr != actors->end(); ++itr)
 	{
 		delete *itr;
 	}
-	
-	delete actors;
-	
-	return 0;
+
+	delete actors;	
 }

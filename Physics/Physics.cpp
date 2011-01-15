@@ -1,9 +1,10 @@
 #include "Physics.h"
 #include <iostream>
 
-Physics::Physics(ActorList * actors)
+Physics::Physics(ActorList * actors, Renderer * debugger)
 {
 	this->actorList = actors;
+	this->debugger = debugger;
 	
 	//broadphase method (how to check bounding boxes in non O(n^2) way)
 	broadphase = new btDbvtBroadphase();	//using AABB method
@@ -20,6 +21,9 @@ Physics::Physics(ActorList * actors)
 	dynamicsWorld->setGravity(btVector3(0,-10,0));   
 	
 	newActors(actors);
+	
+	/*turn on debugging*/
+	dynamicsWorld->setDebugDrawer(debugger);
 
 }
 
@@ -49,6 +53,9 @@ void Physics::newActors(ActorList * newActors)
 void Physics::step(seconds timeStep)
 {
 	dynamicsWorld->stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
+	
+	/*debugger*/
+	dynamicsWorld->debugDrawWorld();
 }
 
 Physics::~Physics()

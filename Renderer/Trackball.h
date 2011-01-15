@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <QtOpenGL>
-#include "Point.h"
+#include "../Common/Point.h"
 using namespace std;
 
 class Trackball{

@@ -4,13 +4,16 @@
 #include "../Common/prelude.h"
 #include "../Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
+#include <LinearMath/btIDebugDraw.h>
 #include <list>
+
+#include "../Renderer/Renderer.h"
 
 
 class Physics
 {
 public:
-	Physics(ActorList * actorList);		//takes in list of actors (cars, falling objects etc...)
+	Physics(ActorList * actorList, Renderer * debugger);		//takes in list of actors (cars, falling objects etc...)
 	~Physics();
 	void newActors(ActorList * newActors);	//physics needs to know if new objects have been added to actorList
 	void step(seconds timeStep);
@@ -21,6 +24,7 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
+	Renderer * debugger;
 	
 	class MotionState : public btMotionState	/*updates position of actors*/
 	{

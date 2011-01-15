@@ -9,18 +9,12 @@
 #define	PRELUDE_H
 
 #include <list>
+#include "Point.h"
 class Actor;
 
 typedef float Real;
 typedef std::list<Actor *> ActorList;
 typedef float seconds;
-
-typedef struct
-{
-    Real x;
-    Real y;
-    Real z;
-} Point;
 
 
 #endif	/* PRELUDE_H */

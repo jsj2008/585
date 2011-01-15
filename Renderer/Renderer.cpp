@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <iostream>
 
 
 Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
@@ -15,6 +16,10 @@ Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 
 Renderer::~Renderer() { }
 
+void Renderer::drawLine(const btVector3 & from, const btVector3 & to, const btVector3 & color)	//debugger for Bullet
+{
+	std::cout << "1" << std::endl;
+}
 
 QSize Renderer::minimumSizeHint() const {
 	return QSize(100, 100);
@@ -37,10 +42,10 @@ void Renderer::paintGL() {
 }
 
 void Renderer::renderObjects() {
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	drawCube(Point( 1, 1, -1), Point( 1, -1, -1), Point( 1, 1, 1), Point( 1, -1, 1),
 			 Point(-1, 1, -1), Point(-1, -1, -1), Point(-1, 1, 1), Point(-1, -1, 1));
-	glEnd();
+	glEnd();*/
 }
 
 void Renderer::initializeGL() {
