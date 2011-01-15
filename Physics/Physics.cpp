@@ -46,6 +46,11 @@ void Physics::newActors(ActorList * newActors)
 	}
 }
 
+void Physics::step(seconds timeStep)
+{
+	dynamicsWorld->stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
+}
+
 Physics::~Physics()
 {
 	//get rid of all the bullet stuff

@@ -13,6 +13,7 @@ class Actor;
 
 typedef float Real;
 typedef std::list<Actor *> ActorList;
+typedef float seconds;
 
 typedef struct
 {
