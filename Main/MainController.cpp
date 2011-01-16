@@ -2,11 +2,32 @@
 #include <iostream>
 
 
-MainController::MainController(Renderer * renderer, Physics * physics, QWidget *parent) : QWidget(parent) {
+MainController::MainController(QWidget *parent) : QWidget(parent) {
 	
-	this->renderer = renderer;
-	this->physics = physics;
+	/*create all the static shapes for physics*/
+	cube = new libCube();
+	plane = new libPlane();
+	
+	/*setup various lists*/
+	actorList = new ActorList();
+	
+	for(int i=0; i<10; i++)
+	{
+		Actor * act = new Actor( 1.0 / (rand() % 10 + 1), 2*i + 1, 0 );
+		act->physObject = cube;
+		actorList->push_back(act);
+	}
+	
+	Actor * act = new Actor(0, -5, 0);
+	act->physObject = plane;
+	actorList->push_back(act);
+	
+	/*setup subcomponents*/
+	renderer = new Renderer(this);
+	debugger = new GLDebugDrawer(renderer);
+	physics = new Physics(actorList, debugger);
 
+	
 	/*setup timer*/
 	timer = new QTimer();
 	connect(timer, SIGNAL(timeout()), this, SLOT(tick() ) );
@@ -23,7 +44,17 @@ void MainController::tick()
 
 MainController::~MainController()
 {
+	for(ActorList::iterator itr = actorList->begin(); itr != actorList->end(); ++itr)
+	{
+		delete (*itr);
+	}
+	delete actorList;
 	
+	delete cube;
+	delete plane;
+	delete physics;
+	delete debugger;
+	delete renderer;
 	delete timer;
 	
 }

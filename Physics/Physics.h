@@ -1,6 +1,11 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
+/*all the libObjects*/
+#include "physObject.h"
+#include "libCube.h"
+#include "libPlane.h"
+
 #include "../Common/prelude.h"
 #include "../Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
