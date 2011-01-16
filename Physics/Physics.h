@@ -6,13 +6,13 @@
 #include "libCube.h"
 #include "libPlane.h"
 
-#include "../Common/prelude.h"
-#include "../Common/Actor.h"
+#include "Common/prelude.h"
+#include "Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btIDebugDraw.h>
 #include <list>
 
-#include "../Renderer/GLDebugDrawer.h"
+#include "Renderer/GLDebugDrawer.h"
 
 
 class Physics

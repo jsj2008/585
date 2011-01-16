@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QGLWidget>
-#include "../Common/Point.h"
+#include "Common/Point.h"
 #include "Trackball.h"
 #include <QWidget>
 #include <stdlib.h>

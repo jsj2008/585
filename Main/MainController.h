@@ -3,12 +3,12 @@
 #include <QWidget>
 #include <QTimer>
 #include <QKeyEvent>
-#include "../Renderer/Renderer.h"
-#include "../Renderer/GLDebugDrawer.h"
-#include "../Physics/Physics.h"
-#include "../Common/prelude.h"
-#include "../Common/Actor.h"
-#include "../Common/Point.h"
+#include <Renderer/Renderer.h>
+#include <Renderer/GLDebugDrawer.h>
+#include <Physics/Physics.h>
+#include <Common/prelude.h>
+#include <Common/Actor.h>
+#include <Common/Point.h>
 
 
 class MainController : public QWidget {
