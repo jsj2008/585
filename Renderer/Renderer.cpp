@@ -7,7 +7,7 @@ Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
 	width = 800;
 	height = 600;
 
-	camPos = Point(3,2,10);
+	camPos = Point(3,7,15);
 	camLook = Point(0,0,0);
 	camUp = Vector3(0,1,0);
 	
@@ -88,6 +88,8 @@ void Renderer::mousePressEvent(QMouseEvent *event) {
 		trackball.press(getScreenPosition(mouseX, mouseY)); // Press the trackball at this point
 		updateGL();
 	}
+	
+	
 }
 
 void Renderer::mouseReleaseEvent(QMouseEvent *event) {

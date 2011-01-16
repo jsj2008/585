@@ -18,13 +18,13 @@ public:
     Real width;
     Real height;
 	Real depth;
+	Point initialVel;
 	/*Point normal;
 	Point heading;
 	Point binormal;*/
 	PhysObject * physObject;	//physical information (mass, shape, etc...)
 	
-	Actor();
-	Actor(Real x, Real y, Real z);
+	Actor(Point pos = Point(0,0,0), Point vel = Point(0,0,0));
     virtual ~Actor(){};
 };
 

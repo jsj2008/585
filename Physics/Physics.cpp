@@ -34,6 +34,7 @@ void Physics::newActors(ActorList * newActors)
 	for(ActorList::iterator itr = newActors->begin(); itr != newActors->end(); ++itr)
 	{
 		Point pos = (*itr)->pos;
+		Point vel = (*itr)->initialVel;
 		btMotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), btVector3(pos.x, pos.y, pos.z) ), *itr);
 		motionStates.push_back( actorMotion );
 		
@@ -45,6 +46,8 @@ void Physics::newActors(ActorList * newActors)
 		btRigidBody::btRigidBodyConstructionInfo bodyCI(physObject->mass, actorMotion, physObject->shape, *(physObject->fallInertia) );	//TODO this can be shared so stop recreating
 		btRigidBody * body = new btRigidBody(bodyCI);
 		dynamicsWorld->addRigidBody(body);
+		
+		body->setLinearVelocity(btVector3(vel.x,vel.y, vel.z));
 		
 		rigidBodies.push_back(body);
 		
