@@ -4,7 +4,7 @@ PROJECT(585)
 add_definitions(-W -Wall -ansi -pedantic -g)
 
 #our own Find packages
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
 FILE(GLOB RENDERER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Renderer/*.cpp)
 FILE(GLOB RENDERER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Renderer/*.h)
