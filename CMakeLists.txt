@@ -3,6 +3,8 @@ PROJECT(585)
 
 add_definitions(-W -Wall -ansi -pedantic -g)
 
+#our own Find packages
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
 FILE(GLOB RENDERER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Renderer/*.cpp)
 FILE(GLOB RENDERER_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Renderer/*.h)
@@ -28,9 +30,15 @@ include_directories(${OPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 #bullet
-set(BULLET_LIBRARIES libBulletDynamics.a libBulletCollision.a libLinearMath.a )
-include_directories(/usr/local/include/bullet/)
-link_directories(/usr/local/lib)
+set(BULLET_ROOT /usr/local/)
+find_package(Bullet REQUIRED)
+
+#set(BULLET_LIBRARIES BULLET_BulletDynamics_LIBRARY BULLET_BulletCollision_LIBRARY BULLET_LinearMath_LIBRARY)
+
+include_directories(${BULLET_INCLUDE_DIR})
+#set(BULLET_LIBRARIES libBulletDynamics.a libBulletCollision.a libLinearMath.a )
+#include_directories(/usr/local/include/bullet/)
+#link_directories(/usr/local/lib)
 
 ADD_EXECUTABLE(game ${SOURCES} ${HEADERS_MOC})
 TARGET_LINK_LIBRARIES(game ${QT_LIBRARIES} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES})
