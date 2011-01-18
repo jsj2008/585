@@ -16,6 +16,7 @@ public:
 	virtual ~MainController();
 	void explode();
 	void yield();
+	void tick();
 
 protected:
 	Renderer * renderer;

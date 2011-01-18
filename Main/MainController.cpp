@@ -31,13 +31,6 @@ MainController::MainController(){
 	physics = new Physics(actorList, debugger);
 
 	
-	/*setup timer*/
-	/*timer = new QTimer();
-	connect(timer, SIGNAL(timeout()), this, SLOT(tick() ) );
-	timer->start(30);*/
-	explode();
-	
-	physics->step(30/1000.0);
 	window->run(this);	//launch window
 	
 
@@ -45,9 +38,23 @@ MainController::MainController(){
 
 void MainController::yield()
 {
-	explode();
-	physics->step(30/1000.0);
 	
+}
+
+void MainController::tick()
+{
+	static int counter = 0;
+	
+	counter ++;
+	
+	if(counter > (1000/10) / 3)
+	{
+		counter = 0;
+		explode();
+	}
+	
+
+	physics->step(10/1000.0);
 	
 }
 

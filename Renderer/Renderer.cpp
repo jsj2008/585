@@ -10,7 +10,7 @@ Renderer::Renderer(IsWindow * window) {
 	height = window->ScreenHeight();
 
 	camPos = Point(3,7,15);
-	camLook = Point(0,0,0);
+	camLook = Point(1.5,0,5);
 	camUp = Vector3(0,1,0);
 	
 	trackball = Trackball(75);
