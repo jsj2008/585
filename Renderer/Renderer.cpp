@@ -2,27 +2,24 @@
 #include <iostream>
 
 
-Renderer::Renderer(QWidget *parent) : QGLWidget(parent) {
+Renderer::Renderer(IsWindow * window) {
+	
+	this->window = window;
 	ratio = 1.0;
-	width = 800;
-	height = 600;
+	width = window->ScreenWidth();
+	height = window->ScreenHeight();
 
 	camPos = Point(3,7,15);
 	camLook = Point(0,0,0);
 	camUp = Vector3(0,1,0);
 	
 	trackball = Trackball(75);
+	initializeGL();
+	paintGL();
 }
 
 Renderer::~Renderer() { }
 
-QSize Renderer::minimumSizeHint() const {
-	return QSize(100, 100);
-}
-
-QSize Renderer::sizeHint() const {
-	return QSize(800, 600);
-}
 
 void Renderer::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // GL the functable
@@ -31,18 +28,17 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
-	renderObjects();
+	//renderObjects();
 	
-	glCallList(listIndex);
-	
-	glFlush();
+	//glCallList(listIndex);
+	window->updateGL();
 }
 
 void Renderer::renderObjects() {
-	/*glBegin(GL_QUADS);
+	glBegin(GL_QUADS);
 	drawCube(Point( 1, 1, -1), Point( 1, -1, -1), Point( 1, 1, 1), Point( 1, -1, 1),
 			 Point(-1, 1, -1), Point(-1, -1, -1), Point(-1, 1, 1), Point(-1, -1, 1));
-	glEnd();*/
+	glEnd();
 }
 
 void Renderer::initializeGL() {
@@ -82,7 +78,7 @@ void Renderer::initializeGL() {
 	trackball.reset();
 }
 
-void Renderer::mousePressEvent(QMouseEvent *event) {
+/*void Renderer::mousePressEvent(QMouseEvent *event) {
 	updateMousePosition(event->x(), event->y());
 	if (event->buttons() == Qt::LeftButton) {
 		trackball.press(getScreenPosition(mouseX, mouseY)); // Press the trackball at this point
@@ -128,7 +124,7 @@ void Renderer::wheelEvent(QWheelEvent *event) {
 
 		updateGL();
 	}
-}
+}*/
 
 void Renderer::updateMousePosition(int x, int y) {
 	mouseX = x;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <math.h>
-#include <QtOpenGL>
 #include "Common/Point.h"
+#include "depend.h"
+
 using namespace std;
 
 class Trackball{

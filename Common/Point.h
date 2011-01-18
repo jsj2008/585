@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Renderer/Vector3.h"
+#include "Renderer/depend.h"
+#include "Renderer/Vector3.h"
 #include <math.h>
-#include <QtOpenGL>
 
 class Point {
 	public:

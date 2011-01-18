@@ -1,46 +1,37 @@
 #pragma once
 
-#include <QGLWidget>
+#include "UI/IsWindow.h"
 #include "Common/Point.h"
 #include "Trackball.h"
-#include <QWidget>
 #include <stdlib.h>
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
+#include "depend.h"
 
 using namespace std;
 
 class Renderer;
 
-class Renderer : public QGLWidget {
-	Q_OBJECT
+class Renderer {
 public:
 	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
-	Renderer(QWidget* parent = 0);
+	Renderer(IsWindow * window);
 	~Renderer();
 
-	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
 	void reset();
 	void resetView();
-	GLuint listIndex;
+	//GLuint listIndex;
 	
 	
-	
-signals:
-
-public slots:
-
 protected:
 	void paintGL();
 	void initializeGL();
 	void resizeGL(int w, int h);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent *event);
-
+	
 private:
+	
+	IsWindow * window;
+	
 	void renderObjects();
 	void drawAxes();
 	void updateCamera();

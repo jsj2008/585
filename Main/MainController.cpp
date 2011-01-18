@@ -2,11 +2,8 @@
 #include <iostream>
 
 
-MainController::MainController(QWidget *parent) : QWidget(parent) {
-	
-	/*counters and such*/
-	counter = 0;
-	
+MainController::MainController(){
+		
 	/*create all the static shapes for physics*/
 	cube = new libCube();
 	plane = new libPlane();
@@ -25,23 +22,32 @@ MainController::MainController(QWidget *parent) : QWidget(parent) {
 	act->physObject = plane;
 	actorList->push_back(act);
 	
+	/*setup window*/
+	window = new Window();
+	
 	/*setup subcomponents*/
-	renderer = new Renderer(this);
-	debugger = new GLDebugDrawer(renderer);
+	renderer = new Renderer(window);
+	debugger = new GLDebugDrawer(window);
 	physics = new Physics(actorList, debugger);
 
 	
 	/*setup timer*/
-	timer = new QTimer();
+	/*timer = new QTimer();
 	connect(timer, SIGNAL(timeout()), this, SLOT(tick() ) );
-	timer->start(30);
+	timer->start(30);*/
+	explode();
+	
+	physics->step(30/1000.0);
+	window->run(this);	//launch window
+	
 
 }
 
-void MainController::keyPressEvent(QKeyEvent *event) {
-
-	if(event->key() != 32)	//if not SPACE stop
-		return;
+void MainController::yield()
+{
+	explode();
+	physics->step(30/1000.0);
+	
 	
 }
 
@@ -49,15 +55,6 @@ void MainController::explode()
 {
 	static int counter = 0;
 	ActorList temp;
-	
-	/*for(int i=0; i<1;i++)
-	{
-		Real rad = 3.1415926 / 6 * i;
-		Actor * act = new Actor(Point(cos(rad)*1,-3, sin(rad)*1), Point(cos(rad)*2, fabs( sin(rad) * 6 ), sin(rad)*2) );
-		act->physObject = cube;
-		actorList->push_back(act);
-		temp.push_back(act);
-	}*/
 	
 	Real rad = 3.1415926 / 12 * counter++;	//pick random angle
 	
@@ -69,7 +66,7 @@ void MainController::explode()
 	physics->newActors(&temp);
 }
 
-void MainController::tick()
+/*void MainController::tick()
 {	
 	counter += 1;
 	if(counter > (1000.0/30) / 3 )
@@ -80,11 +77,12 @@ void MainController::tick()
 	physics->step(30/1000.0);
 	renderer->updateGL();
 	
-}
+}*/
 
 MainController::~MainController()
 {
-	for(ActorList::iterator itr = actorList->begin(); itr != actorList->end(); ++itr)
+	delete window;
+	/*for(ActorList::iterator itr = actorList->begin(); itr != actorList->end(); ++itr)
 	{
 		delete (*itr);
 	}
@@ -95,14 +93,6 @@ MainController::~MainController()
 	delete physics;
 	delete debugger;
 	delete renderer;
-	delete timer;
+	delete timer;*/
 	
-}
-
-QSize MainController::minimumSizeHint() const {
-	return QSize(100, 100);
-}
-
-QSize MainController::sizeHint() const {
-	return QSize(800, 600);
 }

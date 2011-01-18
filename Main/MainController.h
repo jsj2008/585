@@ -1,47 +1,30 @@
 #pragma once
-
-#include <QWidget>
-#include <QTimer>
-#include <QKeyEvent>
+#include "IsController.h"
+#include "UI/IsWindow.h"
+#include "UI/Window.h"
 #include <Renderer/Renderer.h>
 #include <Renderer/GLDebugDrawer.h>
 #include <Physics/Physics.h>
 #include <Common/prelude.h>
 #include <Common/Actor.h>
 #include <Common/Point.h>
+#include "Renderer/depend.h"
 
-
-class MainController : public QWidget {
-	Q_OBJECT
+class MainController : public IsController{
 public:
-	
-	QSize minimumSizeHint() const;
-	QSize sizeHint() const;
-	
-	MainController(QWidget* parent = 0);
+	MainController();
 	virtual ~MainController();
-
+	void explode();
+	void yield();
 
 protected:
-	virtual void keyPressEvent(QKeyEvent * event);
-	void explode();
-		
-private:
-	QTimer * timer;
 	Renderer * renderer;
 	Physics * physics;
 	GLDebugDrawer * debugger;
 	ActorList * actorList;
-	int counter;
+	IsWindow * window;
 	
 	/*objShapes*/
 	PhysObject * cube;
 	PhysObject * plane;
-
-signals:
-
-public slots:
-
-	void tick();
-
 };

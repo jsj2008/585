@@ -2,11 +2,12 @@
 
 
 #include <iostream>
-GLDebugDrawer::GLDebugDrawer(Renderer * renderer) :m_debugMode(0)
+GLDebugDrawer::GLDebugDrawer(IsWindow * window) :m_debugMode(0)
 {
-	this->renderer = renderer;
-	renderer->makeCurrent();
-	listIndex = glGenLists(1);
+	this->window = window;
+	
+	//renderer->makeCurrent();
+	//listIndex = glGenLists(1);
 }
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor)
@@ -23,15 +24,18 @@ void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btV
 
 void GLDebugDrawer::startDebug()
 {
-	renderer->makeCurrent();
-	glNewList(listIndex, GL_COMPILE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // GL the functable
+	
+	//renderer->makeCurrent();
+	//glNewList(listIndex, GL_COMPILE);
 }
 
 void GLDebugDrawer::endDebug()
 {
-	glEndList();
-	renderer->listIndex = listIndex;
-	renderer->updateGL();
+	window->updateGL();
+	//glEndList();
+	//renderer->listIndex = listIndex;
+	//renderer->updateGL();
 }
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)

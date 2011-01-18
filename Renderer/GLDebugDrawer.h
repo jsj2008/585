@@ -1,26 +1,9 @@
 #ifndef GL_DEBUG_DRAWER_H
 #define GL_DEBUG_DRAWER_H
 
-#if defined(__APPLE__) && !defined (VMDMESA)
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
-#else
-
-
-#ifdef _WINDOWS
-#include <windows.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glut.h>
-#endif //_WINDOWS
-#endif //APPLE
-
+#include "UI/IsWindow.h"
 #include "LinearMath/btIDebugDraw.h"
-#include "Renderer.h"
+#include "depend.h"
 
 
 
@@ -30,7 +13,7 @@ class GLDebugDrawer : public btIDebugDraw
 
 public:
 
-	GLDebugDrawer(Renderer * renderer);
+	GLDebugDrawer(IsWindow * window);
 
 
 	virtual void	drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor);
@@ -53,10 +36,10 @@ public:
 	virtual int		getDebugMode() const { return m_debugMode;}
 	void startDebug();
 	void endDebug();
-	GLuint listIndex;
+	//GLuint listIndex;
 
 private:
-	Renderer * renderer;
+	IsWindow * window;
 
 };
 
