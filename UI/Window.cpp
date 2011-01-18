@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <iostream>
+#include <fstream>
 
 Window::Window()
 {
@@ -15,12 +16,11 @@ Window::Window()
 	
 	/*sets up OpenGL drawing context*/
 	SDL_Surface * drawContext;
-	Uint32 flags = SDL_OPENGL;//| SDL_FULLSCREEN;
+	Uint32 flags = SDL_OPENGL | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
 	
 	/*setup timer*/
 	SDL_TimerID timer;
-	timer = SDL_AddTimer(10, Timer, this);
 }
 
 Uint32 Window::Timer(Uint32 interval, void* param)
@@ -46,18 +46,17 @@ void Window::updateGL()
 
 void Window::run(IsController * controller)
 {     
-     
 	bool quit = false;
+	Uint32 before = SDL_GetTicks();
 	while(!quit) {
+		Uint32 after = SDL_GetTicks();
+		controller->tick(after - before);
+		before = after;
+
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
+
 			switch(event.type) {
-			case SDL_USEREVENT:
-				if(event.user.code == TIMER)
-				{
-					controller->tick();
-				}
-				break;
 			case SDL_QUIT:
 				quit = true;
 				break;
@@ -68,6 +67,6 @@ void Window::run(IsController * controller)
 		}
 		
 		controller->yield();	//gives control to main loop
-		SDL_Delay(30);
+		SDL_Delay(10);
 	}
 }

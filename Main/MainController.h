@@ -16,14 +16,14 @@ public:
 	virtual ~MainController();
 	void explode();
 	void yield();
-	void tick();
+	void tick(unsigned long);
 
 protected:
 	Renderer * renderer;
 	Physics * physics;
 	GLDebugDrawer * debugger;
 	ActorList * actorList;
-	IsWindow * window;
+	IWindow * window;
 	
 	/*objShapes*/
 	PhysObject * cube;

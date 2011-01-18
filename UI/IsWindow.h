@@ -1,9 +1,9 @@
-#ifndef ISWINDOW_H
-#define ISWINDOW_H
+#ifndef IWINDOW_H
+#define IWINDOW_H
 
 #include "Main/IsController.h"
 
-class IsWindow
+class IWindow
 {
 public:
 	virtual void updateGL() = 0;
@@ -11,7 +11,7 @@ public:
 	virtual int ScreenHeight() = 0;
 	virtual int ScreenDepth() = 0;
 	virtual void run(IsController *)=0;
-	virtual ~IsWindow(){};
+	virtual ~IWindow(){}
 };
 
 #endif

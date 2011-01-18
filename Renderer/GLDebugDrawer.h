@@ -13,7 +13,7 @@ class GLDebugDrawer : public btIDebugDraw
 
 public:
 
-	GLDebugDrawer(IsWindow * window);
+	GLDebugDrawer(IWindow * window);
 
 
 	virtual void	drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor);
@@ -39,7 +39,7 @@ public:
 	//GLuint listIndex;
 
 private:
-	IsWindow * window;
+	IWindow * window;
 
 };
 

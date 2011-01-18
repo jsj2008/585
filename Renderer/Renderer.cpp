@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-Renderer::Renderer(IsWindow * window) {
+Renderer::Renderer(IWindow * window) {
 	
 	this->window = window;
 	ratio = 1.0;

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 PROJECT(585)
 
-add_definitions(-W -Wall -ansi -pedantic -g)
+#add_definitions(-W -Wall -ansi -pedantic -g)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

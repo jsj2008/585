@@ -2,7 +2,7 @@
 
 
 #include <iostream>
-GLDebugDrawer::GLDebugDrawer(IsWindow * window) :m_debugMode(0)
+GLDebugDrawer::GLDebugDrawer(IWindow * window) :m_debugMode(0)
 {
 	this->window = window;
 	

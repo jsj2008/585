@@ -41,20 +41,20 @@ void MainController::yield()
 	
 }
 
-void MainController::tick()
+void MainController::tick(unsigned long interval)
 {
 	static int counter = 0;
 	
 	counter ++;
 	
-	if(counter > (1000/10) / 3)
+	if(counter > (1000/10) / 3.0)
 	{
 		counter = 0;
 		explode();
 	}
 	
-
-	physics->step(10/1000.0);
+	
+	physics->step( interval / 1000.0 );
 	
 }
 
@@ -63,7 +63,7 @@ void MainController::explode()
 	static int counter = 0;
 	ActorList temp;
 	
-	Real rad = 3.1415926 / 12 * counter++;	//pick random angle
+	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
 	Actor * act = new Actor(Point(0,-3, 0), Point(cos(rad)*3, 5, sin(rad)*3 ) );
 	act->physObject = cube;

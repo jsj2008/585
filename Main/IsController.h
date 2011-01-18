@@ -5,7 +5,7 @@ class IsController
 {
 public:
 	virtual void yield() =0;
-	virtual void tick()=0;
+	virtual void tick(unsigned long)=0;
 	virtual ~IsController(){};
 };
 #endif

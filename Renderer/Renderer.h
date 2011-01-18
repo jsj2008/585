@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include "UI/IsWindow.h"
 #include "Common/Point.h"
@@ -10,12 +11,10 @@
 
 using namespace std;
 
-class Renderer;
-
 class Renderer {
 public:
 	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
-	Renderer(IsWindow * window);
+	Renderer(IWindow * window);
 	~Renderer();
 
 	void reset();
@@ -30,7 +29,7 @@ protected:
 	
 private:
 	
-	IsWindow * window;
+	IWindow * window;
 	
 	void renderObjects();
 	void drawAxes();
@@ -55,3 +54,4 @@ private:
 	Trackball trackball;		// The trackball for rotating the surface*/
 
 };
+#endif
