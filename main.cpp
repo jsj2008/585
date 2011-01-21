@@ -1,7 +1,7 @@
 #include "Main/MainController.h"
 #include <iostream>
 
-int main(int argc, char *argv[]) {
+int main(int , char **) {
 
 	MainController m;
 	return 0;

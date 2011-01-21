@@ -2,13 +2,8 @@
 
 
 #include <iostream>
-GLDebugDrawer::GLDebugDrawer(IWindow * window) :m_debugMode(0)
-{
-	this->window = window;
-	
-	//renderer->makeCurrent();
-	//listIndex = glGenLists(1);
-}
+GLDebugDrawer::GLDebugDrawer() :m_debugMode(0)
+{}
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor)
 {
@@ -20,22 +15,6 @@ void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btV
 		glVertex3d(to.getX(), to.getY(), to.getZ());
 	glEnd();
 
-}
-
-void GLDebugDrawer::startDebug()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // GL the functable
-	
-	//renderer->makeCurrent();
-	//glNewList(listIndex, GL_COMPILE);
-}
-
-void GLDebugDrawer::endDebug()
-{
-	window->updateGL();
-	//glEndList();
-	//renderer->listIndex = listIndex;
-	//renderer->updateGL();
 }
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
@@ -115,10 +94,8 @@ void	GLDebugDrawer::setDebugMode(int debugMode)
 
 }
 
-void	GLDebugDrawer::draw3dText(const btVector3& location,const char* textString)
+void	GLDebugDrawer::draw3dText(const btVector3&,const char*)
 {
-//	glRasterPos3f(location.x(),  location.y(),  location.z());
-	//BMF_DrawString(BMF_GetFont(BMF_kHelvetica10),textString);
 }
 
 void	GLDebugDrawer::reportErrorWarning(const char* warningString)
@@ -126,7 +103,7 @@ void	GLDebugDrawer::reportErrorWarning(const char* warningString)
 	printf("%s\n",warningString);
 }
 
-void	GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color)
+void	GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& normalOnB,btScalar distance,int ,const btVector3& color)
 {
 	
 	{
@@ -142,9 +119,6 @@ void	GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& 
 
 		
 		glRasterPos3f(from.x(),  from.y(),  from.z());
-		char buf[12];
-		//BMF_DrawString(BMF_GetFont(BMF_kHelvetica10),buf);
-
 
 	}
 }

@@ -1,5 +1,6 @@
 #include "PhysObject.h"
-PhysObject::PhysObject(){}
+
+PhysObject::PhysObject(Real mass) : mass(mass) {}
 
 PhysObject::~PhysObject()
 {

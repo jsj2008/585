@@ -2,12 +2,11 @@
 #include <iostream>
 
 
-Renderer::Renderer(IWindow * window) {
+Renderer::Renderer(IWindow const & window) {
 	
-	this->window = window;
 	ratio = 1.0;
-	width = window->ScreenWidth();
-	height = window->ScreenHeight();
+	width = window.ScreenWidth();
+	height = window.ScreenHeight();
 
 	camPos = Point(3,7,15);
 	camLook = Point(1.5,0,5);
@@ -22,16 +21,17 @@ Renderer::~Renderer() { }
 
 
 void Renderer::paintGL() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // GL the functable
-
 	glLoadIdentity();
 
 	updateCamera();
 	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
 	//renderObjects();
 	
-	//glCallList(listIndex);
-	window->updateGL();
+}
+
+void Renderer::step()
+{
+	paintGL();
 }
 
 void Renderer::renderObjects() {

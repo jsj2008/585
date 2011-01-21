@@ -1,16 +1,17 @@
 #pragma once
-#include "IsController.h"
-#include "UI/IsWindow.h"
+#include "IController.h"
 #include "UI/Window.h"
 #include <Renderer/Renderer.h>
 #include <Renderer/GLDebugDrawer.h>
-#include <Physics/Physics.h>
+#include <Physics/IPhysics.h>
+#include <Physics/libCube.h>
+#include <Physics/libPlane.h>
 #include <Common/prelude.h>
 #include <Common/Actor.h>
 #include <Common/Point.h>
 #include "Renderer/depend.h"
 
-class MainController : public IsController{
+class MainController : public IController{
 public:
 	MainController();
 	virtual ~MainController();
@@ -19,13 +20,13 @@ public:
 	void tick(unsigned long);
 
 protected:
+	ActorList actorList;
+	GLDebugDrawer debugger;
 	Renderer * renderer;
-	Physics * physics;
-	GLDebugDrawer * debugger;
-	ActorList * actorList;
-	IWindow * window;
+	IPhysics * physics;
+	Window window;
 	
 	/*objShapes*/
-	PhysObject * cube;
-	PhysObject * plane;
+	const libCube mCube;
+	const libPlane mPlane;
 };

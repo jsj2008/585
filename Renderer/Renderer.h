@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "UI/IsWindow.h"
+#include "UI/IWindow.h"
 #include "Common/Point.h"
 #include "Trackball.h"
 #include <stdlib.h>
@@ -14,9 +14,9 @@ using namespace std;
 class Renderer {
 public:
 	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
-	Renderer(IWindow * window);
+	Renderer(IWindow const &);
 	~Renderer();
-
+	void step();
 	void reset();
 	void resetView();
 	//GLuint listIndex;

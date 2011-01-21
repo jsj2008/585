@@ -1,54 +1,39 @@
 #include "Physics.h"
 #include <iostream>
 
-Physics::Physics(ActorList * actors, GLDebugDrawer * debugger)
-{
-	this->actorList = actors;
-	this->debugger = debugger;
-	
-	//broadphase method (how to check bounding boxes in non O(n^2) way)
-	broadphase = new btDbvtBroadphase();	//using AABB method
-	
-	//once inside bounding box, how to do more sophisticated collision detection
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-	//solver makes sure objects interact with eachother and gravity, etc...
-	solver = new btSequentialImpulseConstraintSolver();
-
-	//construct the world
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0,-10,0));   
+Physics::Physics(ActorList const & actors, btIDebugDraw & debugger)
+	: actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
+{	
+	dynamicsWorld.setGravity(btVector3(0,-10,0));   
 	
 	newActors(actors);
 	
 	/*turn on debugging*/
-	dynamicsWorld->setDebugDrawer(debugger);
-	debugger->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	dynamicsWorld.setDebugDrawer(&debugger);
 
 }
 
-void Physics::newActors(ActorList * newActors)
+void Physics::newActors(ActorList const & newActors)
 {
 	
-	for(ActorList::iterator itr = newActors->begin(); itr != newActors->end(); ++itr)
+	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
 		Point pos = (*itr)->pos;
 		Point vel = (*itr)->initialVel;
-		btMotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), btVector3(pos.x, pos.y, pos.z) ), *itr);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), btVector3(pos.x, pos.y, pos.z) ), *itr);
 		motionStates.push_back( actorMotion );
 		
-		PhysObject * physObject = (*itr)->physObject;	//grabs physical info about the actor
+		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
 		
-		if(physObject->mass != 0)
-			physObject->shape->calculateLocalInertia(physObject->mass, *(physObject->fallInertia) );	//dynamic object so calculate local inertia
+		if(physObject.mass != 0)
+			physObject.shape->calculateLocalInertia(physObject.mass, *(physObject.fallInertia) );	//dynamic object so calculate local inertia
 
-		btRigidBody::btRigidBodyConstructionInfo bodyCI(physObject->mass, actorMotion, physObject->shape, *(physObject->fallInertia) );	//TODO this can be shared so stop recreating
+		btRigidBody::btRigidBodyConstructionInfo bodyCI(physObject.mass, actorMotion, physObject.shape, *(physObject.fallInertia) );	//TODO this can be shared so stop recreating
 		btRigidBody * body = new btRigidBody(bodyCI);
-		dynamicsWorld->addRigidBody(body);
+		dynamicsWorld.addRigidBody(body);
 		
 		body->setLinearVelocity(btVector3(vel.x,vel.y, vel.z));
-		
 		rigidBodies.push_back(body);
 		
 	}
@@ -56,12 +41,10 @@ void Physics::newActors(ActorList * newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld->stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
+	dynamicsWorld.stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
 	
 	/*debugger*/
-	debugger->startDebug();
-	dynamicsWorld->debugDrawWorld();
-	debugger->endDebug();
+	dynamicsWorld.debugDrawWorld();
 }
 
 Physics::~Physics()
@@ -75,16 +58,9 @@ Physics::~Physics()
 	
 	for(RigidBodies::iterator itr = rigidBodies.begin(); itr != rigidBodies.end(); ++itr)
 	{
-		dynamicsWorld->removeRigidBody( (*itr) );
+		dynamicsWorld.removeRigidBody( (*itr) );
 		delete (*itr);
 	}
-	
-
-	delete broadphase;
-	delete collisionConfiguration;
-	delete dispatcher;
-	delete solver;
-	delete dynamicsWorld;
 }
 
 Physics::MotionState::MotionState(const btTransform &initialPos, Actor * actor)

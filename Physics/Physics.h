@@ -13,28 +13,30 @@
 #include <list>
 
 #include "Renderer/GLDebugDrawer.h"
+#include "IPhysics.h"
 
-
-class Physics
+class Physics : public IPhysics
 {
 public:
-	Physics(ActorList * actorList, GLDebugDrawer * debugger);		//takes in list of actors (cars, falling objects etc...)
+	Physics(ActorList const & actorList, btIDebugDraw & debugger);		//takes in list of actors (cars, falling objects etc...)
 	~Physics();
-	void newActors(ActorList * newActors);	//physics needs to know if new objects have been added to actorList
+	void newActors(ActorList const & newActors);	//physics needs to know if new objects have been added to actorList
 	void step(seconds timeStep);
+	
 private:
-	ActorList * actorList;
-	btBroadphaseInterface * broadphase;
-	btDefaultCollisionConfiguration* collisionConfiguration;
-	btCollisionDispatcher* dispatcher;
-	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
-	GLDebugDrawer * debugger;
+	ActorList const & actorList;
+	btIDebugDraw & debugger;
+	btDbvtBroadphase broadphase;
+	btDefaultCollisionConfiguration collisionConfiguration;
+	btCollisionDispatcher dispatcher;
+	btSequentialImpulseConstraintSolver solver;
+	btDiscreteDynamicsWorld dynamicsWorld;
+
 	
 	class MotionState : public btMotionState	/*updates position of actors*/
 	{
 	public:
-		MotionState(const btTransform &initalPos, Actor * actor);
+		MotionState(btTransform const & initalPos, Actor * actor);
 		virtual ~MotionState();
 		virtual void getWorldTransform(btTransform &worldTrans) const;
 		virtual void setWorldTransform(const btTransform &worldTrans);

@@ -7,11 +7,11 @@
 class PhysObject
 {
 public:	
-	PhysObject();
+	PhysObject(Real mass);
 	virtual ~PhysObject();
 	
 	btCollisionShape * shape;
-	Real mass;
+	const Real mass;
 	btVector3 * fallInertia;
 	
 };

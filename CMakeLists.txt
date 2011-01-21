@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 PROJECT(585)
 
-#add_definitions(-W -Wall -ansi -pedantic -g)
+add_definitions(-W -Wall -ansi -pedantic -g)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -33,7 +33,11 @@ include_directories(${BULLET_INCLUDE_DIR})
 
 #SDL
 find_package(SDL REQUIRED)
-include_directories(${SDL_INCLUDE_DIR})
+find_package(SDL)
+
+#SDL_ttf
+find_package(SDL_ttf REQUIRED)
+include_directories(${SDLTTF_INCLUDE_DIR})
 
 ADD_EXECUTABLE(game ${SOURCES})
-TARGET_LINK_LIBRARIES(game ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES} )
+TARGET_LINK_LIBRARIES(game ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES} ${SDLTTF_LIBRARY})

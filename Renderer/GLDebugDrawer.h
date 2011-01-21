@@ -1,7 +1,6 @@
 #ifndef GL_DEBUG_DRAWER_H
 #define GL_DEBUG_DRAWER_H
 
-#include "UI/IsWindow.h"
 #include "LinearMath/btIDebugDraw.h"
 #include "depend.h"
 
@@ -13,7 +12,7 @@ class GLDebugDrawer : public btIDebugDraw
 
 public:
 
-	GLDebugDrawer(IWindow * window);
+	GLDebugDrawer();
 
 
 	virtual void	drawLine(const btVector3& from,const btVector3& to,const btVector3& fromColor, const btVector3& toColor);
@@ -34,12 +33,6 @@ public:
 	virtual void	setDebugMode(int debugMode);
 
 	virtual int		getDebugMode() const { return m_debugMode;}
-	void startDebug();
-	void endDebug();
-	//GLuint listIndex;
-
-private:
-	IWindow * window;
 
 };
 

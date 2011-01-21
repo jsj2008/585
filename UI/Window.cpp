@@ -16,14 +16,11 @@ Window::Window()
 	
 	/*sets up OpenGL drawing context*/
 	SDL_Surface * drawContext;
-	Uint32 flags = SDL_OPENGL | SDL_FULLSCREEN;
+	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
-	
-	/*setup timer*/
-	SDL_TimerID timer;
 }
 
-Uint32 Window::Timer(Uint32 interval, void* param)
+Uint32 Window::Timer(Uint32 interval, void* )
 {
 	SDL_Event event;
 	
@@ -41,14 +38,16 @@ Window::~Window(){}
 
 void Window::updateGL()
 {
+	glFlush();
 	SDL_GL_SwapBuffers();
 }
 
-void Window::run(IsController * controller)
+void Window::run(IController * controller)
 {     
 	bool quit = false;
 	Uint32 before = SDL_GetTicks();
 	while(!quit) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
 		controller->tick(after - before);
 		before = after;
@@ -65,7 +64,7 @@ void Window::run(IsController * controller)
 				break;
 			}
 		}
-		
+		updateGL();
 		controller->yield();	//gives control to main loop
 		SDL_Delay(10);
 	}

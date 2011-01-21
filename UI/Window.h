@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
-#include "Main/IsController.h"
-#include "IsWindow.h"
+#include "Main/IController.h"
+#include "IWindow.h"
 #include <SDL.h>
 #include <SDL_opengl.h>	//has to go first to avoid redef warning
 
@@ -11,10 +11,10 @@ public:
 	Window();
 	virtual ~Window();
 	void updateGL();
-	void run(IsController * controller);
-	int ScreenWidth(){return SDL_GetVideoSurface()->w;}
-	int ScreenHeight(){return SDL_GetVideoSurface()->h;}
-	int ScreenDepth(){return SCREEN_DEPTH;}
+	void run(IController * controller);
+	int ScreenWidth() const {return SDL_GetVideoSurface()->w;}
+	int ScreenHeight() const {return SDL_GetVideoSurface()->h;}
+	int ScreenDepth() const {return SCREEN_DEPTH;}
 
 private:
 	
