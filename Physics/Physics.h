@@ -2,7 +2,7 @@
 #define PHYSICS_H
 
 /*all the libObjects*/
-#include "physObject.h"
+#include "PhysObject.h"
 #include "libCube.h"
 #include "libPlane.h"
 
