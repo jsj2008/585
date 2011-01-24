@@ -54,6 +54,9 @@ void Window::run(IController * controller)
 
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
+			
+			/*pass event into input controller*/
+			input.update(event);
 
 			switch(event.type) {
 			case SDL_QUIT:

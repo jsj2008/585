@@ -4,6 +4,7 @@
 #include "IWindow.h"
 #include <SDL.h>
 #include <SDL_opengl.h>	//has to go first to avoid redef warning
+#include "IInput.h"
 
 class Window : public IWindow
 {
@@ -24,6 +25,7 @@ private:
 	static const int SCREEN_HEIGHT = 0;
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;
+	IInput input;
 
 };
 #endif
