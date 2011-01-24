@@ -25,7 +25,7 @@ private:
 	static const int SCREEN_HEIGHT = 600;
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;
-	IInput input;
+	IInput * input;
 
 };
 #endif

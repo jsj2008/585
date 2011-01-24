@@ -4,6 +4,9 @@
 
 Window::Window()
 {
+	/*initialize input controller*/
+	input = new IInput();
+	
 	SDL_Init(SDL_INIT_EVERYTHING);	//initialize timer, audio, video, cd_rom, and joystick
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	//sets up double buffering and 16-bit depth
@@ -56,7 +59,7 @@ void Window::run(IController * controller)
 		while(SDL_PollEvent(&event)) {
 			
 			/*pass event into input controller*/
-			input.update(event);
+			input->update(event);
 
 			switch(event.type) {
 			case SDL_QUIT:
