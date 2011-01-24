@@ -21,8 +21,8 @@ private:
 	
 	static Uint32 Timer(Uint32 interval, void* param);
 	
-	static const int SCREEN_WIDTH = 0;
-	static const int SCREEN_HEIGHT = 0;
+	static const int SCREEN_WIDTH = 800;
+	static const int SCREEN_HEIGHT = 600;
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;
 	IInput input;
