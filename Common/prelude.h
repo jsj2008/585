@@ -15,6 +15,7 @@ class Actor;
 typedef float Real;
 typedef std::list<Actor *> ActorList;
 typedef float seconds;
+typedef int[3] Newtons;
 
 
 #endif	/* PRELUDE_H */
