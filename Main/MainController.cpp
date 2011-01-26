@@ -34,14 +34,14 @@ void MainController::tick(unsigned long interval)
 	
 	counter ++;
 	
-	if(counter > (1000/10) / 3.0)
+	if(counter > (1000/10) )
 	{
 		counter = 0;
 		explode();
 	}
 
 	physics->step( interval / 1000.0 );
-	//renderer->step();
+	renderer->step();
 	
 }
 
