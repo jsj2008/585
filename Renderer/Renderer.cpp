@@ -25,7 +25,7 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
-	//renderObjects();
+	renderObjects();
 	
 }
 

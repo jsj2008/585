@@ -10,18 +10,17 @@
 
 #include "prelude.h"
 #include "../Physics/PhysObject.h"
+#include <btBulletDynamicsCommon.h>
 
 class Actor {
 public:
     
-    Point pos;
+    btVector3 pos;
+	btQuaternion orientation;
     Real width;
     Real height;
 	Real depth;
 	Point initialVel;
-	/*Point normal;
-	Point heading;
-	Point binormal;*/
 	PhysObject const & physObject;	//physical information (mass, shape, etc...)
 	
 	Actor(PhysObject const &, Point pos = Point(0,0,0), Point vel = Point(0,0,0));

@@ -19,9 +19,8 @@ void Physics::newActors(ActorList const & newActors)
 	
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
-		Point pos = (*itr)->pos;
 		Point vel = (*itr)->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), btVector3(pos.x, pos.y, pos.z) ), *itr);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
@@ -79,10 +78,7 @@ void Physics::MotionState::getWorldTransform(btTransform &worldTrans) const
 void Physics::MotionState::setWorldTransform(const btTransform &worldTrans)
 {
 	btQuaternion rot = worldTrans.getRotation();
-	//actor->setRotation(rot)
+	actor->orientation = rot;
 	btVector3 pos = worldTrans.getOrigin();
-	//actor->setPosition(pos)	//TODO use something like this which isn't terrible (threadsafe?)
-	actor->pos.x = pos.getX();
-	actor->pos.y = pos.getY();
-	actor->pos.z = pos.getZ();
+	actor->pos = pos;
 }

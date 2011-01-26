@@ -41,6 +41,7 @@ void MainController::tick(unsigned long interval)
 	}
 
 	physics->step( interval / 1000.0 );
+	//renderer->step();
 	
 }
 
