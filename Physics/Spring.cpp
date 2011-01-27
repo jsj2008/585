@@ -12,7 +12,7 @@ void Spring::tick(seconds timeStep)
 	static btScalar mass = 10.0;
 	static btScalar c = 1.5*sqrt(k/mass);		
 	
-	debugger->drawLine(from,to ,btVector3(255,255,255));
+	debugger->drawLine(from,to ,btVector3(255,0,0));
 	
 	btCollisionWorld::ClosestRayResultCallback result(from, to);	
 	physics->dynamicsWorld.rayTest( from, to, result);
