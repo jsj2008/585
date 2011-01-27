@@ -40,46 +40,9 @@ void Physics::newActors(ActorList const & newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld.stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
+	dynamicsWorld.stepSimulation(timeStep,1);	//keep an eye on the number of substeps (10 is pretty random)
 	dynamicsWorld.debugDrawWorld();
-	
-	btVector3 from[4];
-	btVector3 to[4];
-/*	vehicle->getRays(from, to);
-	static float old_x[4] = {0,0,0,0};
-	static float k=50.0;
-	static float mass = 10.0;
-	static float c = 1.5*sqrt(k/mass);
-	
-	
-	
-	
-	/*for(int i=0; i<4; i++)
-	{
-		btCollisionWorld::ClosestRayResultCallback result(from[i], to[i]);
-		
-		dynamicsWorld.rayTest( from[i], to[i], result);
-		btVector3 rest = to[i];
-		debugger.drawLine(from[i],rest, btVector3(255,0,255));
-		debugger.drawLine(from[i],to[i] ,btVector3(255,255,255));
-		if(result.hasHit() )
-		{		
-			btScalar x = (rest - result.m_hitPointWorld).length();
-			for(RigidBodies::iterator itr = rigidBodies.begin(); itr != rigidBodies.end(); ++itr)
-			{
-				//std::cout << x << std::endl;
-				btVector3 unit = to[i] - from[i];
-				unit.normalize();
-				(*itr)->applyForce( -unit * (k* x - c*(abs(x - old_x[i]))/timeStep), from[i]);
-			}
-			old_x[i] = x;
-			
-			//offset[i] = (x - offset[i]) / (timeStep * 100);
-		}else
-		{
-			old_x[i] = 0;
-		}
-	}*/
+
 }
 
 Physics::~Physics()
