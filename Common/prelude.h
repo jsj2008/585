@@ -10,13 +10,14 @@
 
 #include <list>
 #include "Point.h"
+#include <btBulletDynamicsCommon.h>
 class Actor;
 
 typedef float Real;
 typedef std::list<Actor *> ActorList;
 typedef float seconds;
-typedef int[3] Newtons;
+typedef btVector3 Newtons;
 
 
-#endif	/* PRELUDE_H */
+#endif
 

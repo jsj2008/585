@@ -6,10 +6,13 @@
 #include <Physics/IPhysics.h>
 #include <Physics/libCube.h>
 #include <Physics/libPlane.h>
+#include "Physics/libChasis.h"
 #include <Common/prelude.h>
 #include <Common/Actor.h>
 #include <Common/Point.h>
 #include "Renderer/depend.h"
+#include "Common/SettingsFactory.h"
+#include "Driving/JeepActor.h"
 
 class MainController : public IController{
 public:
@@ -23,10 +26,14 @@ protected:
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
-	IPhysics * physics;
+	Physics * const physics;
 	Window window;
+	
+	/*more game-oriented stuff*/
+	JeepActor * jeep;
 	
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;
+	const libChasis mChasis;
 };
