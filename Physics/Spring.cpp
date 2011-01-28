@@ -6,14 +6,19 @@ chasis(chasis), from(from), to(to), physics(physics){
 	debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;
 	delta_t = 0;
-	old_x = 0;
+	old_x = 999;
+}
+
+btScalar Spring::getX()
+{
+	return old_x;
 }
 
 void Spring::tick(seconds timeStep)
 {
-	static btScalar k=100.0;
+	static btScalar k=50.0;
 	static btScalar mass = 10.0;
-	static btScalar c = 25*sqrt(k/mass);		
+	static btScalar c = 55*sqrt(k/mass);		
 
 	btVector3 rest = 2*(to - from)/4.0;
 	btVector3 spring_unit = (to - from).normalize();
@@ -78,7 +83,7 @@ void Spring::tick(seconds timeStep)
 	{
 		was_hit = false;
 		std::cout << "no hit" << std::endl;
-		old_x = 0;
+		old_x = 999;
 		delta_t = 0;
 	}
 	std::cout << std::endl;

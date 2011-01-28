@@ -12,6 +12,7 @@ class Spring
 public:
 	Spring(btRigidBody * const, btVector3 const & from, btVector3 const& to, Physics * const);
 	void tick(seconds timestep);
+	btScalar getX();
 private:
 	btRigidBody * const chasis;
 	btVector3 const & from;

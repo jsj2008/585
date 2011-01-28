@@ -24,6 +24,7 @@ private:
 	btVector3 origin_to[4];
 	typedef std::vector<Spring *> Springs;
 	Springs springs;
+	btRigidBody * chasis;
 	
 };
 

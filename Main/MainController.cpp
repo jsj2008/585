@@ -17,7 +17,7 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 		temp.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, Point(0,-4.5,0));
+	Actor * act = new Actor(mPlane, Point(0,-7.5,0));
 	actorList.push_back(act);
 	temp.push_back(act);
 		
