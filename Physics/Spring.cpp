@@ -15,7 +15,7 @@ void Spring::tick(seconds timeStep)
 	static btScalar mass = 10.0;
 	static btScalar c = 25*sqrt(k/mass);		
 
-	btVector3 rest = 1*(to - from)/4.0;
+	btVector3 rest = 2*(to - from)/4.0;
 	btVector3 spring_unit = (to - from).normalize();
 	//debugger->drawLine(from,from + rest ,btVector3(255,0,255));
 	//debugger->drawLine(from,to ,btVector3(255,0,0));
