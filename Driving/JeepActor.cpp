@@ -20,6 +20,7 @@ physics(physics)
 	*/
 	
 	origin_from[0] = 	btVector3(-1.5, -0.05, 1.5);
+	//origin_from[0] = 	btVector3(0, -0.05, 0);
 	from[0] = origin_from[0];
 	origin_from[1] = 	btVector3(-1.5, -0.05, -1.5);
 	from[1] = origin_from[1];
@@ -29,6 +30,7 @@ physics(physics)
 	from[3] = origin_from[3];
 
 	origin_to[0] = btVector3(-1.5, -2.0, 1.5);
+	//origin_to[0] = btVector3(0, -2.0, 0);
 	to[0] = origin_to[0];
 	origin_to[1] =	btVector3(-1.5, -2.0, -1.5);
 	to[1] = origin_to[1];
@@ -50,6 +52,7 @@ void JeepActor::tick(seconds timeStep)
 {
 	for(int i=0; i<4; i++)
 	{
+		std::cout << i << std::endl;
 		springs[i]->tick(timeStep);
 	}
 }

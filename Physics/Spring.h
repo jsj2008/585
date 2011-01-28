@@ -18,6 +18,9 @@ private:
 	btVector3 const & to;
 	Physics * const physics;
 	btIDebugDraw * debugger;
+	btScalar old_x;
+	bool was_hit;
+	btScalar delta_t;
 };
 
 #endif
