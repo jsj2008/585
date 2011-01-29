@@ -8,8 +8,12 @@ Renderer::Renderer(IWindow const & window) {
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-	camPos = Point(3,7,15);
-	camLook = Point(1.5,0,5);
+	//camPos = Point(0,17,1);
+	//camLook = Point(0,0,0);
+	//camUp = Vector3(1,0,0);
+	
+	camPos = Point(3.5,3,20);
+	camLook = Point(0,-4,0);
 	camUp = Vector3(0,1,0);
 	
 	trackball = Trackball(75);
@@ -24,13 +28,14 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
-	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
+	//glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
 	//renderObjects();
 	
 }
 
 void Renderer::step()
 {
+	
 	paintGL();
 }
 
