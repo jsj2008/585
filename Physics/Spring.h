@@ -12,7 +12,7 @@ class Spring
 public:
 	Spring(btRigidBody * const, btVector3 const & from, btVector3 const& to, Physics * const);
 	void tick(seconds timestep, btVector3 const & pos);
-	btScalar getX();
+	btScalar getWeight();
 private:
 	btRigidBody * const chasis;
 	btVector3 const & from;
@@ -21,6 +21,7 @@ private:
 	btIDebugDraw * debugger;
 	btScalar old_x;
 	bool was_hit;
+	btScalar current_weight;
 };
 
 #endif

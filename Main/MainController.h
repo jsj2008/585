@@ -21,8 +21,9 @@ public:
 	void explode();
 	void yield();
 	void tick(unsigned long);
-	void moveForward();
-
+	void moveForward(bool);
+	void moveBackward(bool);
+	
 protected:
 	ActorList actorList;
 	GLDebugDrawer debugger;

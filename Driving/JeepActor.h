@@ -15,7 +15,9 @@ public:
 	void setOrientation(btQuaternion);
 	void setPosition(btVector3);
 	void tick(seconds);
-	
+	void moveForward(bool down);
+	void moveBackward(bool down);
+		
 private:
 	Physics * const physics;
 	btVector3 from[4];
@@ -25,6 +27,9 @@ private:
 	typedef std::vector<Spring *> Springs;
 	Springs springs;
 	btRigidBody * chasis;
+	
+	bool isForward;
+	bool isBackward;
 	
 };
 

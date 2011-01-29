@@ -12,7 +12,7 @@ Renderer::Renderer(IWindow const & window) {
 	//camLook = Point(0,0,0);
 	//camUp = Vector3(1,0,0);
 	
-	camPos = Point(3.5,3,20);
+	camPos = Point(3.5,3,200);
 	camLook = Point(0,-4,0);
 	camUp = Vector3(0,1,0);
 	

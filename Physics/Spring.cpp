@@ -5,11 +5,12 @@ Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 con
 chasis(chasis), from(from), to(to), physics(physics){
 	debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;
+	current_weight = 0;
 }
 
-btScalar Spring::getX()
+btScalar Spring::getWeight()
 {
-	return old_x;
+	return current_weight;
 }
 
 void Spring::tick(seconds timeStep, btVector3 const & pos)
@@ -56,6 +57,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		{
 			chasis->applyForce( projection * force , from - pos);
 			// debugger->drawLine(from,from + projection*(force - 25)/4.0 ,btVector3(125,125,125));
+			current_weight = force;
 		}
 		chasis->activate();
 		old_x = x;		
@@ -66,5 +68,6 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		debugger->drawSphere(to - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
 		debugger->drawLine(from, to, btVector3(0,255,0));
 		was_hit = false;
+		current_weight = 0;
 	}
 }

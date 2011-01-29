@@ -62,8 +62,15 @@ void Window::run(IController * controller)
 			case SDL_KEYDOWN:
 				if(event.key.keysym.sym == 'q') quit = true;
 				if(event.key.keysym.sym == 'w')
-					controller->moveForward();
+					controller->moveForward(true);
+				if(event.key.keysym.sym == 's')
+					controller->moveBackward(true);
 				break;
+			case SDL_KEYUP:
+				if(event.key.keysym.sym == 'w')
+					controller->moveForward(false);
+				if(event.key.keysym.sym == 's')
+					controller->moveBackward(false);
 			}
 		}
 		updateGL();
