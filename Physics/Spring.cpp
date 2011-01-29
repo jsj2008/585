@@ -5,8 +5,6 @@ Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 con
 chasis(chasis), from(from), to(to), physics(physics){
 	debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;
-	delta_t = 0;
-	old_x = 999;
 }
 
 btScalar Spring::getX()
@@ -16,9 +14,9 @@ btScalar Spring::getX()
 
 void Spring::tick(seconds timeStep, btVector3 const & pos)
 {
-	static btScalar k=150.0;
+	static btScalar k=500.0;
 	static btScalar mass = 10.0;
-	static btScalar c = 50*sqrt(k/mass);		
+	static btScalar c = 5000*sqrt(k/mass);		
 
 	btVector3 rest = 2*(to - from)/4.0;
 	btVector3 spring_unit = (to - from).normalize();
@@ -40,7 +38,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		//debugger->drawLine(from, from - spring_unit * x, btVector3(0,255,125));			
 		debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));
 
-		btScalar spring_v = (x - old_x) * delta_t;
+		btScalar spring_v = (x - old_x) * timeStep;
 		
 		if(!was_hit)
 			spring_v = 0;

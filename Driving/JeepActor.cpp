@@ -44,7 +44,7 @@ physics(physics)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
-	// chasis->applyCentralImpulse(btVector3(0, -5.5, 0));
+	chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );

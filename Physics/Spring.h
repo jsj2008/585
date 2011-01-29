@@ -21,7 +21,6 @@ private:
 	btIDebugDraw * debugger;
 	btScalar old_x;
 	bool was_hit;
-	btScalar delta_t;
 };
 
 #endif

@@ -22,7 +22,7 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, physics, Point(-5, 0, 0) );
+	jeep = new JeepActor(mChasis, physics, Point(-5, 1, 0) );
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
@@ -30,6 +30,11 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	physics->newActors(temp);
 	window.run(this);	//launch window
 
+}
+
+void MainController::moveForward()
+{
+	std::cout << "A" << std::endl;
 }
 
 void MainController::yield()

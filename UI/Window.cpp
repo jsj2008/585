@@ -61,6 +61,8 @@ void Window::run(IController * controller)
 				break;
 			case SDL_KEYDOWN:
 				if(event.key.keysym.sym == 'q') quit = true;
+				if(event.key.keysym.sym == 'w')
+					controller->moveForward();
 				break;
 			}
 		}
