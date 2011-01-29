@@ -1,9 +1,9 @@
 #include "Actor.h"
 #include "../Physics/libCube.h"
 
-Actor::Actor(PhysObject const & phys, Point pos, Point vel) : physObject(phys)
+Actor::Actor(PhysObject const & phys, btVector3* pos, btVector3* vel) : physObject(phys)
 {
-	this->pos = btVector3(pos.x, pos.y, pos.z);
+	this->pos = pos;
 	this->initialVel = vel;
 	
 }

@@ -1,9 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "Common/Actor.h"
 #include "UI/IWindow.h"
-#include "Common/Point.h"
-#include "Trackball.h"
 #include <stdlib.h>
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
@@ -13,8 +12,7 @@ using namespace std;
 
 class Renderer {
 public:
-	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
-	Renderer(IWindow const &);
+	Renderer(IWindow const &, const ActorList* actorList = 0);
 	~Renderer();
 	void step();
 	void reset();
@@ -35,23 +33,23 @@ private:
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	void drawQuad(Point tl, Point tr, Point bl, Point br);
-	void drawCube(Point tlb, Point trb, Point tlf, Point trf, Point blb, Point brb, Point blf, Point brf);
+	void drawQuad(btVector3* tl, btVector3* tr, btVector3* bl, btVector3* br);
+	void drawCube(btVector3* tlb, btVector3* trb, btVector3* tlf, btVector3* trf, btVector3* blb, btVector3* brb, btVector3* blf, btVector3* brf);
 	void updateMousePosition(int x, int y);
-	Point getScreenPosition(int x, int y);
+	btVector3* getScreenPosition(int x, int y);
 	
 	int mouseX;
 	int mouseY;
 
-	Point camPos;				// Position of the camera
-	Point camLook;				// Point that the camera is looking at
-	Vector3 camUp;				// Up vector for the camera
+	btVector3 camPos;				// Position of the camera
+	btVector3 camLook;				// Point that the camera is looking at
+	btVector3 camUp;				// Up vector for the camera
 
 	double ratio;
 	int width;
 	int height;	
 
-	Trackball trackball;		// The trackball for rotating the surface*/
+	ActorList* actorList;
 
 };
 #endif
