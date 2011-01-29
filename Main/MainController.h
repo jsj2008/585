@@ -11,7 +11,7 @@
 #include <Common/Actor.h>
 #include <Common/Point.h>
 #include "Renderer/depend.h"
-#include "Common/SettingsFactory.h"
+//#include "Common/SettingsFactory.h"
 #include "Driving/JeepActor.h"
 
 class MainController : public IController{

@@ -6,7 +6,7 @@
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) )
 {
-	SettingsFactory::loadSettings("config/example1.xml");
+//	SettingsFactory::loadSettings("config/example1.xml");
 			
 	/*setup various lists*/	
 	ActorList temp;
