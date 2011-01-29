@@ -19,32 +19,33 @@ physics(physics)
 	0 is front left, 1 is back left, 2 is front right, 3 is back right
 	*/
 	
-	origin_from[0] = 	btVector3(-1.5, 0.1, 1.1);
-	//origin_from[0] = 	btVector3(0, -0.05, 0);
+	float offset_z = 0.9;
+	float offset_x = 1.5;
+	float spring_top = 0;
+	float spring_bottom = -1;
+	
+	origin_from[0] = 	btVector3(-offset_x, spring_top, offset_z);
 	from[0] = origin_from[0];
-	origin_from[1] = 	btVector3(-1.5, 0.1, -1.1);
+	origin_from[1] = 	btVector3(-offset_x, spring_top, -offset_z);
 	from[1] = origin_from[1];
-	origin_from[2] =	btVector3(1.5, 0.1, 1.1);
+	origin_from[2] =	btVector3(offset_x, spring_top, offset_z);
 	from[2] = origin_from[2];
-	origin_from[3] =	btVector3(1.5, 0.1, -1.1);
+	origin_from[3] =	btVector3(offset_x, spring_top, -offset_z);
 	from[3] = origin_from[3];
 
-	origin_to[0] = btVector3(-1.5, -1.0, 1.1);
+	origin_to[0] = btVector3(-offset_x, spring_bottom, offset_z);
 	//origin_to[0] = btVector3(0, -2.0, 0);
 	to[0] = origin_to[0];
-	origin_to[1] =	btVector3(-1.5, -1.0, -1.1);
+	origin_to[1] =	btVector3(-offset_x, spring_bottom, -offset_z);
 	to[1] = origin_to[1];
-	origin_to[2] =	btVector3(1.5, -1.0, 1.1);
+	origin_to[2] =	btVector3(offset_x, spring_bottom, offset_z);
 	to[2] = origin_to[2];
-	origin_to[3] =	btVector3(1.5, -1.0, -1.1);
+	origin_to[3] =	btVector3(offset_x, spring_bottom, -offset_z);
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
-	chasis->applyImpulse(btVector3(0, -2.5, 0), chasis->getCenterOfMassPosition() + btVector3(-1, 0, 0) );
-	btTransform com = btTransform::getIdentity();
-	com.setOrigin(btVector3(0, -0.20, 0));	//make it a bit lower than chasis
-	
-	chasis->setCenterOfMassTransform(com);
+	// chasis->applyCentralImpulse(btVector3(0, -5.5, 0));
+
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
 }
@@ -52,18 +53,19 @@ physics(physics)
 void JeepActor::tick(seconds timeStep)
 {
 	static btScalar a = 0;
+	//btVector3 position(pos.x, pos.y, pos.z);
+	
 	for(int i=0; i<4; i++)
 	{
 		std::cout << i << std::endl;
-		springs[i]->tick(timeStep);
+		springs[i]->tick(timeStep, pos);
 	}
-	return;
+
 	
 	btVector3 linear_velocity = chasis->getLinearVelocity();
-	btVector3 planar_velocity = linear_velocity.dot(btVector3(0,0,1)) * btVector3(1,0,0);
-	btVector3 static_friction = -planar_velocity * 10;
+	btVector3 static_friction = -linear_velocity * 10;
 	
-	btScalar wheel_weight = (springs[0]->getX() + springs[1]->getX()) / 2.0;
+	/*btScalar wheel_weight = (springs[0]->getX() + springs[1]->getX()) / 2.0;
 	if(wheel_weight < 5)
 	{
 		a = 20 - 5.5* wheel_weight;
@@ -72,12 +74,12 @@ void JeepActor::tick(seconds timeStep)
 	{
 		a = 0;
 		static_friction *= 0;
-	}
+	}*/
 	
-	a = 0;
+	// a = 0;
 	
-	btVector3 traction = btVector3(a, 0, 0);
-	chasis->applyForce(traction + static_friction, chasis->getCenterOfMassPosition() );
+	btVector3 traction = btVector3(0, 0, 0);
+	chasis->applyCentralForce(traction + static_friction);
 	
 }
 
