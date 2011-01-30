@@ -68,7 +68,7 @@ void Renderer::renderObjects() {
 		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, n.getX(), n.getY(), n.getZ(), 0, b.getX(), b.getY(), b.getZ(), 0, 0, 0, 0, 1};
 		glMultMatrixf(frameMatrix);
 
-		//shader->on();
+		shader->on();
 			glColor3f(1,1,1);
 			drawCube(btVector3( currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
 					 btVector3( currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
@@ -78,7 +78,7 @@ void Renderer::renderObjects() {
 					 btVector3(-currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
 					 btVector3(-currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
 					 btVector3(-currentActor->height/2,  currentActor->width/2,  currentActor->depth/2));
-		//shader->off();
+		shader->off();
 
 		glPopMatrix();
 	}
@@ -117,6 +117,7 @@ void Renderer::initializeGL() {
 	GLenum err = glewInit();
 	if (GLEW_OK == err) 
 		shader = new Shader("toonf2.frag", "toonf2.vert");
+	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
 	updateCamera();
