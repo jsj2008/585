@@ -23,7 +23,13 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
-	//glMultMatrixf(trackball.getMatrix());
+	shader->on();
+		glColor3f(1,1,1);
+		drawQuad(btVector3( 10, -5, -10), // Floor for testing
+				 btVector3( 10, -5,  10),
+				 btVector3(-10, -5, -10),
+				 btVector3(-10, -5,  10));
+	shader->off();
 	renderObjects();
 	
 }
