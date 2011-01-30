@@ -18,6 +18,7 @@ Window::Window()
 	SDL_Surface * drawContext;
 	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
+	aInput=new Input();
 }
 
 Uint32 Window::Timer(Uint32 interval, void* )
@@ -59,8 +60,11 @@ void Window::run(IController * controller)
 			case SDL_QUIT:
 				quit = true;
 				break;
-			case SDL_KEYDOWN:
-				if(event.key.keysym.sym == 'q') quit = true;
+			default:
+			//case SDL_KEYDOWN:
+				//if(event.key.keysym.sym == 'q') quit = true;
+				//else aInput->UpdateInput(event);
+				quit=aInput->UpdateInput(event);
 				break;
 			}
 		}
