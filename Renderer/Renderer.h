@@ -1,24 +1,24 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "depend.h"
+#include "Shader.h"
 #include "Common/Actor.h"
 #include "UI/IWindow.h"
 #include <stdlib.h>
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
-#include "depend.h"
 
 using namespace std;
 
 class Renderer {
 public:
-	Renderer(IWindow const &, const ActorList* actorList = 0);
+	Renderer(IWindow const &, ActorList const & actorList);
 	~Renderer();
 	void step();
 	void reset();
 	void resetView();
 	//GLuint listIndex;
-	
 	
 protected:
 	void paintGL();
@@ -33,8 +33,8 @@ private:
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	void drawQuad(btVector3* tl, btVector3* tr, btVector3* bl, btVector3* br);
-	void drawCube(btVector3* tlb, btVector3* trb, btVector3* tlf, btVector3* trf, btVector3* blb, btVector3* brb, btVector3* blf, btVector3* brf);
+	void drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br);
+	void drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf);
 	void updateMousePosition(int x, int y);
 	btVector3* getScreenPosition(int x, int y);
 	
@@ -49,7 +49,8 @@ private:
 	int width;
 	int height;	
 
-	ActorList* actorList;
+	ActorList const & actorList;
+	Shader* shader;
 
 };
 #endif

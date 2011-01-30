@@ -15,15 +15,15 @@
 class Actor {
 public:
     
-    btVector3* pos;
+    btVector3 pos;
 	btQuaternion orientation;
     Real width;
     Real height;
 	Real depth;
-	btVector3* initialVel;
+	btVector3 initialVel;
 	PhysObject const & physObject;	//physical information (mass, shape, etc...)
 	
-	Actor(PhysObject const &, btVector3* pos = new btVector3(0,0,0), btVector3* vel = new btVector3(0,0,0));
+	Actor(PhysObject const &, btVector3 const & pos = btVector3(0,0,0), btVector3 const & vel = btVector3(0,0,0));
     virtual ~Actor(){};
 };
 

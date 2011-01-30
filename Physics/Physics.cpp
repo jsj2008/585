@@ -19,8 +19,8 @@ void Physics::newActors(ActorList const & newActors)
 	
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
-		btVector3* vel = (*itr)->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), *((*itr)->pos) ), *itr);
+		btVector3 vel = (*itr)->initialVel;
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
@@ -32,7 +32,7 @@ void Physics::newActors(ActorList const & newActors)
 		btRigidBody * body = new btRigidBody(bodyCI);
 		dynamicsWorld.addRigidBody(body);
 		
-		body->setLinearVelocity(btVector3(vel->getX(),vel->getY(), vel->getZ()));
+		body->setLinearVelocity(btVector3(vel.getX(),vel.getY(), vel.getZ()));
 		rigidBodies.push_back(body);
 		
 	}
@@ -80,5 +80,5 @@ void Physics::MotionState::setWorldTransform(const btTransform &worldTrans)
 	btQuaternion rot = worldTrans.getRotation();
 	actor->orientation = rot;
 	btVector3 pos = worldTrans.getOrigin();
-	actor->pos = &pos;
+	actor->pos = pos;
 }

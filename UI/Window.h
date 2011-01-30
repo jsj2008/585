@@ -1,9 +1,13 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+
 #include "Main/IController.h"
 #include "IWindow.h"
 #include <SDL.h>
-#include <SDL_opengl.h>	//has to go first to avoid redef warning
+#define NO_SDL_GLEXT
+#include <GL/glew.h>
+#include "SDL_opengl.h"
+//#include <SDL_opengl.h>	//has to go first to avoid redef warning
 
 class Window : public IWindow
 {

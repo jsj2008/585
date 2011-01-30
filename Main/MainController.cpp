@@ -9,15 +9,15 @@ MainController::MainController()
 	/*setup various lists*/	
 	for(int i=0; i<0; i++)
 	{
-		Actor * act = new Actor(mCube, new btVector3(0,-3, 0) );
+		Actor * act = new Actor(mCube, btVector3(0,-3, 0) );
 		actorList.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, new btVector3(0,-5,0));
+	Actor * act = new Actor(mPlane, btVector3(0,-5,0));
 	actorList.push_back(act);
 		
 	/*setup subcomponents*/
-	renderer = new Renderer(window);
+	renderer = new Renderer(window, actorList);
 	physics = PhysicsFactory::newPhysics(actorList, debugger);
 	window.run(this);	//launch window
 
@@ -52,7 +52,7 @@ void MainController::explode()
 	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, new btVector3(0,-3, 0), new btVector3(cos(rad)*3, 5, sin(rad)*3 ) );
+	Actor * act = new Actor(mCube, btVector3(0,-3, 0), btVector3(cos(rad)*3, 5, sin(rad)*3 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		

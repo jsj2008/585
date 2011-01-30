@@ -9,7 +9,6 @@
 #include <Common/prelude.h>
 #include <Common/Actor.h>
 #include <Common/Point.h>
-#include "Renderer/depend.h"
 
 class MainController : public IController{
 public:
