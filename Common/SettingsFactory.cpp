@@ -2,37 +2,50 @@
 #include <stdlib.h>
 #include <iostream>
 
-TiXmlDocument * SettingsFactory::loadSettings(char const * filename)
+SettingsFactory * SettingsFactory::ptr = NULL;
+
+SettingsFactory::SettingsFactory()
 {
+	if(ptr == NULL)
+		ptr = this;	//singleton
+}
+
+Settings SettingsFactory::loadSettings(char const * filename)
+{
+	if(ptr->all_settings.find(filename) != ptr->all_settings.end() )	//already loaded
+	{
+		return ptr->all_settings[filename];
+	}
+	
 	TiXmlDocument doc(filename);
 	bool loadOk = doc.LoadFile();
 	
 	if(loadOk)
 	{
-		std::map<std::string, std::string> * settings = new std::map<std::string, std::string>();
 		
-		HashVisitor visitor(settings);
+		ptr->all_settings.insert(AllSettingsPair(filename, Settings() ));
+		HashVisitor visitor(& (ptr->all_settings[filename]) );
+		doc.Accept(&visitor);
 		
-		doc.Accept(&visitor);	
-		std::cout << settings->at("test") << std::endl;
+		return (ptr->all_settings[filename]);	
 		
 	}
 	else
 	{
 		std::cout << "failed to load settings:" << filename << std::endl;
+		std::cout << "Check runtime path! Check XML is parsed correctly!" << std::endl;
 	}
-			std::cout <<"A" << std::endl;
 	
-	return NULL;
+	/*find a way to return NULL*/
 }
 
-SettingsFactory::HashVisitor::HashVisitor(std::map<std::string, std::string> * const settings) : settings(settings) {}
+SettingsFactory::HashVisitor::HashVisitor(Settings * const settings) : settings(settings) {}
 
 bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & , TiXmlAttribute const * att)
 {
 	while(att != NULL)
 	{
-		settings->insert( std::pair<std::string, std::string>(att->Name(), att->Value() ) );		
+		settings->insert( SettingsPair(att->Name(), att->Value() ) );		
 		att = att->Next();
 	}
 	return true;
