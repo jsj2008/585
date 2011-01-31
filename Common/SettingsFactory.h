@@ -4,22 +4,21 @@
 #include "Tinyxml/tinyxml.h"
 #include <map>
 
-typedef std::map<std::string const, std::string const> Settings;
-typedef std::pair<std::string const, std::string const> SettingsPair;
-typedef std::pair<std::string const, Settings const> AllSettingsPair;
+typedef std::map<std::string const, void *> Settings;
+typedef std::pair<std::string const, void*> SettingsPair;
+typedef std::map<std::string const, Settings const *> AllSettings;
+typedef std::pair<std::string const, Settings const *> AllSettingsPair;
+typedef std::map<std::string const, std::string const *> XmlSettings;
 
 class SettingsFactory
 {
 public:
-	static Settings loadSettings(char const * filename);
 	SettingsFactory();
+	~SettingsFactory();
 	
 private:
-	
-
-	
 	static SettingsFactory * ptr;
-	std::map<std::string, Settings const> all_settings;
+	AllSettings all_settings;
 
 	
 	class HashVisitor : public TiXmlVisitor
@@ -28,7 +27,7 @@ private:
 		HashVisitor(Settings * const);
 	private:
 		bool VisitEnter(TiXmlElement const &, TiXmlAttribute const *);
-		std::map<std::string const, std::string const> * settings;
+		Settings * settings;
 	};
 };
 
