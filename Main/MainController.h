@@ -11,7 +11,7 @@
 #include <Common/Actor.h>
 #include <Common/Point.h>
 #include "Renderer/depend.h"
-//#include "Common/SettingsFactory.h"
+#include "Common/SettingsFactory.h"
 #include "Driving/JeepActor.h"
 
 class MainController : public IController{
@@ -25,6 +25,7 @@ public:
 	void moveBackward(bool);
 	
 protected:
+	SettingsFactory settings_singleton;
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;

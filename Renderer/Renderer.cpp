@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 
 Renderer::Renderer(IWindow const & window) {
@@ -12,9 +13,19 @@ Renderer::Renderer(IWindow const & window) {
 	//camLook = Point(0,0,0);
 	//camUp = Vector3(1,0,0);
 	
-	camPos = Point(3.5,3,200);
-	camLook = Point(0,-4,0);
-	camUp = Vector3(0,1,0);
+	float const * camPosX = SettingsFactory::get<float>("config/camera.xml", "camPosX");
+	float const * camPosY = SettingsFactory::get<float>("config/camera.xml", "camPosY");
+	float const * camPosZ = SettingsFactory::get<float>("config/camera.xml", "camPosZ");
+	float const * camLookX = SettingsFactory::get<float>("config/camera.xml", "camLookX");
+	float const * camLookY = SettingsFactory::get<float>("config/camera.xml", "camLookY");
+	float const * camLookZ = SettingsFactory::get<float>("config/camera.xml", "camLookZ");
+	float const * camUpX = SettingsFactory::get<float>("config/camera.xml", "camUpX");
+	float const * camUpY = SettingsFactory::get<float>("config/camera.xml", "camUpY");
+	float const * camUpZ = SettingsFactory::get<float>("config/camera.xml", "camUpZ");
+
+	camPos = Point(*camPosX,*camPosY,*camPosZ);
+	camLook = Point(*camLookX,*camLookY,*camLookZ);
+	camUp = Vector3(*camUpX,*camUpY,*camUpZ);
 	
 	trackball = Trackball(75);
 	initializeGL();

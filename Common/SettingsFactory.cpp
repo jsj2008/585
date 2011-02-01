@@ -4,20 +4,18 @@
 
 SettingsFactory * SettingsFactory::ptr = NULL;
 
-void SettingsFactory::reload()
+void SettingsFactory::loadSettings(std::string const & filename)
 {
-	/*find all files to load*/
-	char const * filename = "config/example1.xml";
-	TiXmlDocument doc(filename);	//this is hardcoded for now
+	TiXmlDocument doc( filename.c_str() );	//this is hardcoded for now
 	bool loadOk = doc.LoadFile();
-	
+
 	if(loadOk)
 	{
 		Settings * settings = new Settings();
 		ptr->all_settings.insert(AllSettingsPair(filename, settings ));
 		HashVisitor visitor(settings);
 		doc.Accept(&visitor);
-		
+	
 	}
 	else
 	{
@@ -32,10 +30,13 @@ SettingsFactory::SettingsFactory()
 		return;	//singleton
 	
 	ptr = this;
-	SettingsFactory::reload();
-	
-		
-		
+	/*find all files to load*/
+	loadSettings("config/files.xml");
+	Settings * settings = all_settings["config/files.xml"];
+	for(Settings::iterator itr = settings->begin(); itr != settings->end(); ++itr)
+	{
+		loadSettings( *(static_cast<std::string *>(itr->second)) );	//loads each file
+	}
 }
 
 SettingsFactory::HashVisitor::HashVisitor(Settings * const settings) : settings(settings) {}
@@ -68,6 +69,12 @@ bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlA
 			val = static_cast<void *>(d);
 			break;	
 		}
+		case TYPE_STRING: 
+		{
+			std::string * s = new std::string(elem.Attribute("value") );
+			val = static_cast<void *>(s);
+			break;	
+		}
 	}
 
 	settings->insert( SettingsPair(elem.Attribute("name"), val ) );		
@@ -79,6 +86,11 @@ SettingsFactory::~SettingsFactory()
 {
 	for(AllSettings::iterator itr=ptr->all_settings.begin(); itr != ptr->all_settings.end(); ++ itr)
 		{
+			Settings * settings = itr->second;
+			for(Settings::iterator itr2 = settings->begin(); itr2 != settings->end(); ++ itr2)
+			{
+				delete itr2->second;
+			}
 			delete itr->second;
 		}
 }

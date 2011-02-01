@@ -1,12 +1,18 @@
 #include "MainController.h"
 #include "Physics/PhysicsFactory.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) )
 {
-//	SettingsFactory::loadSettings("config/example1.xml");
+
+	float const * planeY = SettingsFactory::get<float>("config/start.xml", "planeY");
+	float const * jeepX = SettingsFactory::get<float>("config/start.xml", "jeepX");
+	float const * jeepY = SettingsFactory::get<float>("config/start.xml", "jeepY");
+	float const * jeepZ = SettingsFactory::get<float>("config/start.xml", "jeepZ");
+
 			
 	/*setup various lists*/	
 	ActorList temp;
@@ -17,12 +23,12 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 		temp.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, Point(0,-7.5,0));
+	Actor * act = new Actor(mPlane, Point(0,*planeY,0));
 	actorList.push_back(act);
 	temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, physics, Point(-100, 1, 0) );
+	jeep = new JeepActor(mChasis, physics, Point(*jeepX, *jeepY, *jeepZ) );
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
