@@ -18,7 +18,7 @@ public:
 	static const int TYPE_STRING = 3;
 	SettingsFactory();
 	~SettingsFactory();
-	
+	static void reload();
 	template<class T> static T const * getSettingPointer(std::string const & filename, std::string const & key)
 	{
 		Settings const * settings = ptr->all_settings[filename];

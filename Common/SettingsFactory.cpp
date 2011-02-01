@@ -4,13 +4,8 @@
 
 SettingsFactory * SettingsFactory::ptr = NULL;
 
-SettingsFactory::SettingsFactory()
+void SettingsFactory::reload()
 {
-	if(ptr != NULL)
-		return;	//singleton
-	
-	ptr = this;
-	
 	/*find all files to load*/
 	char const * filename = "config/example1.xml";
 	TiXmlDocument doc(filename);	//this is hardcoded for now
@@ -29,6 +24,16 @@ SettingsFactory::SettingsFactory()
 		std::cout << "failed to load settings:" << filename << std::endl;
 		std::cout << "Check runtime path! Check XML is parsed correctly!" << std::endl;
 	}
+}
+
+SettingsFactory::SettingsFactory()
+{
+	if(ptr != NULL)
+		return;	//singleton
+	
+	ptr = this;
+	SettingsFactory::reload();
+	
 		
 		
 }
