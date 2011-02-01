@@ -1,5 +1,6 @@
 #include "JeepActor.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics, Point pos, Point vel) : Actor::Actor(physObj, pos, vel),
 physics(physics)
@@ -22,10 +23,10 @@ physics(physics)
 	0 is front left, 1 is back left, 2 is front right, 3 is back right
 	*/
 	
-	float offset_z = 0.9;
-	float offset_x = 1.5;
-	float spring_top = 0;
-	float spring_bottom = -1;
+	float const & offset_x = LoadFloat("config/jeep_springs.xml", "offset_x");
+	float const & offset_z = LoadFloat("config/jeep_springs.xml", "offset_z");
+	float const & spring_top = LoadFloat("config/jeep_springs.xml", "spring_top");
+	float const & spring_bottom = LoadFloat("config/jeep_springs.xml", "spring_bottom");	
 	
 	origin_from[0] = 	btVector3(-offset_x, spring_top, offset_z);
 	from[0] = origin_from[0];
@@ -65,7 +66,6 @@ void JeepActor::moveBackward( bool isDown)
 
 void JeepActor::tick(seconds timeStep)
 {
-	
 	for(int i=0; i<4; i++)
 	{
 		springs[i]->tick(timeStep, pos);	/*apply springs*/

@@ -25,7 +25,6 @@ public:
 	void moveBackward(bool);
 	
 protected:
-	SettingsFactory settings_singleton;
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;

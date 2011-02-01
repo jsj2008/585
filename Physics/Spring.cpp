@@ -1,5 +1,6 @@
 #include "Spring.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
 chasis(chasis), from(from), to(to), physics(physics){
@@ -15,11 +16,13 @@ btScalar Spring::getWeight()
 
 void Spring::tick(seconds timeStep, btVector3 const & pos)
 {
-	static btScalar k=500.0;
-	static btScalar mass = 10.0;
-	static btScalar c = 5000*sqrt(k/mass);		
+	static btScalar const & k= LoadFloat("config/spring.xml", "k");
+	static btScalar const & k2 = LoadFloat("config/spring.xml", "c");
+	static btScalar	mass = 10.0;
+	btScalar c = k2*sqrt(k/mass);
 
-	btVector3 rest = 2*(to - from)/4.0;
+	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
+	btVector3 rest = rest_fraction*(to - from);
 	btVector3 spring_unit = (to - from).normalize();
 
 	//debugger->drawLine(from,from + rest ,btVector3(255,0,255));

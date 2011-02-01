@@ -1,8 +1,14 @@
 #ifndef SETTINGSFACTORY_H
 #define SETTINGSFACTORY_H
 
+#define LoadFloat(a,b) SettingsFactory::get<float>(a,b)
+#define LoadInt(a,b) SettingsFactory::get<int>(a,b)
+#define LoadString(a,b) SettingsFactory::get<std::string>(a,b)
+#define LoadDouble(a,b) SettingsFactory::get<double>(a,b)
+
 #include "Tinyxml/tinyxml.h"
 #include <map>
+#include <iostream>
 
 typedef std::map<std::string const, void *> Settings;
 typedef std::pair<std::string const, void*> SettingsPair;
@@ -18,11 +24,21 @@ public:
 	static const int TYPE_STRING = 3;
 	SettingsFactory();
 	~SettingsFactory();
-	template<class T> static T const * get(std::string const & filename, std::string const & key)
+	template<class T> static T const & get(std::string const & filename, std::string const & key)
 	{
+		if(ptr->all_settings.find(filename) == ptr->all_settings.end())
+		{
+			std::cout << "could not load " << filename << std::endl;
+		}
 		Settings const * settings = ptr->all_settings[filename];
-		return static_cast<T *> ( settings->at(key) );
+		if(settings->find(key) == settings->end())
+		{
+			std::cout << "could not find property " << key << std::endl;
+		}
+		return *(static_cast<T *> ( settings->at(key) ) );
 	}
+	
+	static void reload();
 	
 private:
 	static SettingsFactory * ptr;

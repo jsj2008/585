@@ -1,6 +1,6 @@
 #include "Window.h"
 #include <iostream>
-#include <fstream>
+#include "Common/SettingsFactory.h"
 
 Window::Window()
 {
@@ -44,6 +44,7 @@ void Window::updateGL()
 
 void Window::run(IController * controller)
 {     
+	static int const & delay = LoadInt("config/window.xml", "delay");
 	bool quit = false;
 	Uint32 before = SDL_GetTicks();
 	while(!quit) {
@@ -60,6 +61,8 @@ void Window::run(IController * controller)
 				quit = true;
 				break;
 			case SDL_KEYDOWN:
+			if(event.key.keysym.sym == 'r')
+				SettingsFactory::reload();
 				if(event.key.keysym.sym == 'q') quit = true;
 				if(event.key.keysym.sym == 'w')
 					controller->moveForward(true);
@@ -75,6 +78,6 @@ void Window::run(IController * controller)
 		}
 		updateGL();
 		controller->yield();	//gives control to main loop
-		SDL_Delay(10);
+		SDL_Delay( delay );
 	}
 }
