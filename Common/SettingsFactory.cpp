@@ -20,8 +20,8 @@ SettingsFactory::SettingsFactory()
 	{
 		Settings * settings = new Settings();
 		ptr->all_settings.insert(AllSettingsPair(filename, settings ));
-		// HashVisitor visitor(settings);
-		 // doc.Accept(&visitor);
+		HashVisitor visitor(settings);
+		doc.Accept(&visitor);
 		
 	}
 	else
@@ -33,45 +33,39 @@ SettingsFactory::SettingsFactory()
 		
 }
 
-/*Settings const * SettingsFactory::loadSettings(char const * filename)
-{
-	if(ptr->all_settings.find(filename) != ptr->all_settings.end() )	//already loaded
-	{
-		return ptr->all_settings[filename];
-	}
-	
-	TiXmlDocument doc(filename);
-	bool loadOk = doc.LoadFile();
-	
-	if(loadOk)
-	{
-		Settings * settings = new Settings();
-				ptr->all_settings.insert(AllSettingsPair(filename, settings ));
-				HashVisitor visitor(settings );
-				 doc.Accept(&visitor);
-				
-				return settings;
-		
-	}
-	else
-	{
-		std::cout << "failed to load settings:" << filename << std::endl;
-		std::cout << "Check runtime path! Check XML is parsed correctly!" << std::endl;
-	}
-	
-	/*find a way to return NULL*/
-//}
-
 SettingsFactory::HashVisitor::HashVisitor(Settings * const settings) : settings(settings) {}
 
-bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlAttribute const * att)
+bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlAttribute const * )
 {
 	void * val;
-	if("float".compare(att->Value() ) == 0)
+	int type;
+	elem.QueryIntAttribute("type", &type);
+	switch(type)	//figure out which type
 	{
-		val = new float(atof(elem.GetText() ));
+		case TYPE_FLOAT:
+		{ 
+			float * f = new float();
+			elem.QueryFloatAttribute("value", f );
+			val = static_cast<void *>(f);
+			break;
+		}
+		case TYPE_INT:
+		{
+			int * i = new int();
+			elem.QueryIntAttribute("value", i );
+			val = static_cast<void *>(i);
+			break;
+		}
+		case TYPE_DOUBLE: 
+		{
+			double * d = new double();
+			elem.QueryDoubleAttribute("value", d );
+			val = static_cast<void *>(d);
+			break;	
+		}
 	}
-	settings->insert( SettingsPair(att->Name(), val ) );		
+
+	settings->insert( SettingsPair(elem.Attribute("name"), val ) );		
 	
 	return true;
 }
