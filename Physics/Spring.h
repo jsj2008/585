@@ -13,7 +13,11 @@ public:
 	Spring(btRigidBody * const, btVector3 const & from, btVector3 const& to, Physics * const);
 	void tick(seconds timestep, btVector3 const & pos);
 	btScalar getWeight();
+	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
 private:
+	
+	btScalar slip_ratio_lookup(btScalar);
+	
 	btRigidBody * const chasis;
 	btVector3 const & from;
 	btVector3 const & to;
@@ -22,6 +26,9 @@ private:
 	btScalar old_x;
 	bool was_hit;
 	btScalar current_weight;
+	btVector3 plane_normal;
+	btScalar wheel_speed;
+	btScalar const & wheel_radius;
 };
 
 #endif

@@ -73,7 +73,7 @@ void JeepActor::tick(seconds timeStep)
 	
 	/*calculate constants*/
 	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0));
-	btVector3 v = quatRotate(chasis->getOrientation(), btVector3(-0.7, -1.0, 0));
+	// btVector3 v = quatRotate(chasis->getOrientation(), btVector3(-0.7, -1.0, 0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
 	btScalar speed = velocity.length();
 
@@ -82,53 +82,45 @@ void JeepActor::tick(seconds timeStep)
 	btScalar engine_force = 0;
 	if(isForward)
 	{
-		engine_force = 26;
-		if(speed == 0)
-		{
-			speed = 0.1;	//fake clutch
-		}
+		engine_force = 2;
 	}
-	
-	btVector3 f_breaking(0,0,0);
-	btScalar c_breaking = 50;
 	
 	if(isBackward)
 	{
-		engine_force *= -0.5;	//for now just make it one or the other
+		engine_force = -2;	//for now just make it one or the other
 		//f_breaking = -u * c_breaking;
 		
 	}
 	
+	//rear wheel driving
+	btVector3 f = springs[0]->getForce(engine_force, chasis->getLinearVelocity(), u );
+	chasis->applyCentralForce( f );
+	
 	//btVector3 f_traction = u * engine_force;	//simple engine for now
 	
 	/*air resistance*/
-	btScalar c_drag = 0.1;
-	btVector3 f_drag = -c_drag * velocity * speed;
+	 btScalar c_drag = 2.0;
+	 btVector3 f_drag = -c_drag * velocity * speed;
 	
 	/*rolling resistance*/
 	btScalar c_rolling = 30 * c_drag;
 	btVector3 f_rolling = -c_rolling * velocity;
-		
-	/*slip ratio*/
-	btScalar slip_ratio = 0;
-	btScalar omega = engine_force;	//this comes out of the engine code!!!
-	btScalar wheel_radius = 0.25;
 	
-	if(speed > 0)
-		slip_ratio = (omega * wheel_radius - (speed) ) / (speed);	//assume tiny bit of movement	(faking clutch)
+	// chasis->applyCentralForce( f_drag + f_rolling );
+		
 	
 	/*apply load*/
-	btScalar rear_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;	//assuming rear wheel drive
+	// btScalar rear_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;	//assuming rear wheel drive
 	
-	btVector3 f_long = u*rear_weight / 10 * slip_ratio ;//* rear_weight;
+	// btVector3 f_long = u*rear_weight / 10 * slip_ratio ;//* rear_weight;
 	
 	/*output longitudinal force*/
-	f_long += f_drag + f_rolling + f_breaking;
+	// f_long += f_drag + f_rolling + f_breaking;
 	
 	
 	/*apply forces*/
-	std::cout << slip_ratio << " " << f_long.x() << std::endl;
-	chasis->applyForce(f_long, btVector3(0,0,0));
+	// std::cout << slip_ratio << " " << f_long.x() << std::endl;
+	// chasis->applyForce(f_long, btVector3(0,0,0));
 	
 	
 	/*lateral forces*/
