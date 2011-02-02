@@ -30,6 +30,11 @@ private:
 	
 	bool isForward;
 	bool isBackward;
+	float const & offset_x;
+	float const & offset_z;
+	float const & spring_top;
+	float const & spring_bottom;
+	float const & mass;
 	
 };
 

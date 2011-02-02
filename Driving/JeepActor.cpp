@@ -3,7 +3,9 @@
 #include "Common/SettingsFactory.h"
 
 JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics, Point pos, Point vel) : Actor::Actor(physObj, pos, vel),
-physics(physics)
+physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")), offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
+spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), spring_bottom(LoadFloat("config/jeep_springs.xml", "spring_bottom")),
+mass(LoadFloat("config/jeep_springs.xml", "mass") )
 {
 	isForward = false;
 	isBackward = false;
@@ -22,12 +24,7 @@ physics(physics)
 	
 	0 is front left, 1 is back left, 2 is front right, 3 is back right
 	*/
-	
-	float const & offset_x = LoadFloat("config/jeep_springs.xml", "offset_x");
-	float const & offset_z = LoadFloat("config/jeep_springs.xml", "offset_z");
-	float const & spring_top = LoadFloat("config/jeep_springs.xml", "spring_top");
-	float const & spring_bottom = LoadFloat("config/jeep_springs.xml", "spring_bottom");	
-	
+		
 	origin_from[0] = 	btVector3(-offset_x, spring_top, offset_z);
 	from[0] = origin_from[0];
 	origin_from[1] = 	btVector3(-offset_x, spring_top, -offset_z);
@@ -66,14 +63,23 @@ void JeepActor::moveBackward( bool isDown)
 
 void JeepActor::tick(seconds timeStep)
 {
+	static float torque = 0;
+	static float gravity = 10.0;
+	static float const & torque_k = LoadFloat("config/jeep_springs.xml", "torque_k");
+	static float const & comx= LoadFloat("config/jeep_springs.xml", "comx");
+	static float const & comz = LoadFloat("config/jeep_springs.xml", "comz");
+	static float const & c_drag = LoadFloat("config/jeep_springs.xml", "c_drag");
+	static float const & c_roll = LoadFloat("config/jeep_springs.xml", "c_roll");
+	static float const & breaking = LoadFloat("config/jeep_springs.xml", "breaking");
 	for(int i=0; i<4; i++)
 	{
 		springs[i]->tick(timeStep, pos);	/*apply springs*/
 	}
 	
 	/*calculate constants*/
-	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0));
-	// btVector3 v = quatRotate(chasis->getOrientation(), btVector3(-0.7, -1.0, 0));
+	btVector3 u(1,0,0);
+	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
+	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
 	btScalar speed = velocity.length();
 
@@ -83,31 +89,72 @@ void JeepActor::tick(seconds timeStep)
 	if(isForward)
 	{
 		engine_force = 2;
+		torque += 2;
 	}
 	
 	if(isBackward)
 	{
-		engine_force = -2;	//for now just make it one or the other
+		engine_force = 2;	//for now just make it one or the other
+		// torque += engine_force;
+		torque = 0;
+		u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
 	
+	u = quatRotate(chasis->getOrientation(), u);
+	
+	if(torque > 75) torque = 75;
+	if(torque < -75) torque = -75;
+	
 	//rear wheel driving
-	btVector3 f = springs[0]->getForce(engine_force, chasis->getLinearVelocity(), u );
-	chasis->applyCentralForce( f );
-	
-	//btVector3 f_traction = u * engine_force;	//simple engine for now
-	
+	btVector3 long_force(0,0,0);
+	btVector3 forward(0,0,0);
+	if(engine_force != 0)	//only call if wheels are doing something fancy
+	{
+		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
+		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );
+		chasis->applyCentralForce(f0);
+		chasis->applyCentralForce(f1);
+		
+		forward = f0 / 2.0 + f1 / 2.0;
+		
+		long_force += (f0 + f1);
+	}
+		
 	/*air resistance*/
-	 btScalar c_drag = 0.1;
 	 btVector3 f_drag = -c_drag * velocity * speed;
 	
 	/*rolling resistance*/
-	btScalar c_rolling = 30 * c_drag;
+	btScalar c_rolling = c_roll * c_drag;
 	btVector3 f_rolling = -c_rolling * velocity;
 	
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
+	/*find car acceleration*/
+	// long_force += (f_drag + f_rolling);
+	btScalar long_scalar_force = long_force.dot(u);
+	btScalar long_acceleration = long_scalar_force / mass;
+	std::cout << "acceleration:" << long_acceleration << std::endl;
+	
+	/*weight shift*/
+	btScalar L = 2*offset_z;
+	btScalar c = fabs(offset_x - comx);
+	btScalar b = fabs(offset_x - comx);
+	btScalar W = mass * gravity;
+	btScalar h = fabs(spring_bottom - comz);
+	btScalar weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k);
+	btScalar weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k);
+	
+	std::cout << "weight_front:" << weight_front << std::endl;
+	std::cout << "weight_rear :" << weight_rear << std::endl;
+	
+	btVector3 gravity_v(0,-1.0, 0);
+	std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
+	chasis->applyForce(gravity_v * weight_front, front_tire);
+	chasis->applyForce(gravity_v * weight_rear, rear_tire);
+	
+	
 	
 	/*apply load*/
 	// btScalar rear_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;	//assuming rear wheel drive

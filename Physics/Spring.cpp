@@ -4,20 +4,28 @@
 
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
-	if(slip > -5 && slip < 5)
+	if(slip > -1 && slip < 3)
 	{
-		return slip * 20;
+		return slip * 4;
 	}
 	
-	if(slip > 5)
-		return 70;
-	if(slip < -5)
-		return -70;
+	if(slip > 3)
+	{
+		if( 12 - slip/2.0 > 1)
+			return (12-slip/2.0);
+		else
+			return 1;
+	}
+	if(slip < -3)
+		if( -12 - slip/2.0 < -1)
+			return (-12-slip/2.0);
+		else
+			return -1;
 }
 
 btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction)
 {
-	wheel_speed += torque;		//set engine on
+	wheel_speed = torque;		//set engine on
 	
 	if(current_weight == 0)	//off the ground
 	{
@@ -34,10 +42,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	std::cout << "tire_speed:" << tire_speed << std::endl;
 		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
-	std::cout << "slip_ratio:" << slip_ratio << std::endl;
-	
-	//integrate tire_speed into wheel_speed
-	wheel_speed -= (wheel_speed * wheel_radius - tire_speed) / 10.0;	//make wheel_speed (non accelerating rolling speed)
+	std::cout << "slip_ratio:" << slip_ratio << std::endl;	
 	
 	return direction * slip_ratio_lookup(slip_ratio) * current_weight;
 	
@@ -59,12 +64,14 @@ btScalar Spring::getWeight()
 
 void Spring::tick(seconds timeStep, btVector3 const & pos)
 {
+	static btScalar const & gravity = LoadFloat("config/world.xml", "gravity");
+	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
 	static btScalar const & k= LoadFloat("config/spring.xml", "k");
 	static btScalar const & k2 = LoadFloat("config/spring.xml", "c");
-	static btScalar	mass = 10.0;
+	static btScalar	const & mass = LoadFloat("config/jeep_springs.xml", "mass");
+	static btScalar	const & weight = LoadFloat("config/spring.xml", "weight");
 	btScalar c = k2*sqrt(k/mass);
 
-	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
 	btVector3 rest = rest_fraction*(to - from);
 	btVector3 spring_unit = (to - from).normalize();
 
@@ -93,7 +100,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		
 		btVector3 projection = -spring_unit;//unit * unit.dot(spring_normal);
 		
-		btScalar force = k*x + c*spring_v + 25;
+		btScalar force = k*x + c*spring_v + weight;
 		btScalar angle_scale = projection.dot(result.m_hitNormalWorld);
 		force *= angle_scale;
 		if(force > 0)
