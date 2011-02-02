@@ -99,14 +99,14 @@ void JeepActor::tick(seconds timeStep)
 	//btVector3 f_traction = u * engine_force;	//simple engine for now
 	
 	/*air resistance*/
-	 btScalar c_drag = 2.0;
+	 btScalar c_drag = 0.1;
 	 btVector3 f_drag = -c_drag * velocity * speed;
 	
 	/*rolling resistance*/
 	btScalar c_rolling = 30 * c_drag;
 	btVector3 f_rolling = -c_rolling * velocity;
 	
-	// chasis->applyCentralForce( f_drag + f_rolling );
+	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	
 	/*apply load*/
