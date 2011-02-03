@@ -4,9 +4,14 @@
 
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
-	if(slip > -1 && slip < 3)
+	if(slip < 3)
 	{
 		return slip * 4;
+	}
+	
+	if(slip < 0)
+	{
+		return slip*4;
 	}
 	
 	if(slip > 3)
@@ -16,11 +21,6 @@ btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 		else
 			return 1;
 	}
-	if(slip < -3)
-		if( -12 - slip/2.0 < -1)
-			return (-12-slip/2.0);
-		else
-			return -1;
 }
 
 btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction)
@@ -48,6 +48,37 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	
 	
 }
+
+btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction)
+{
+	
+	if(current_weight == 0)	//off the ground
+	{
+		return btVector3(0,0,0);
+	}
+	
+	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
+	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
+	btVector3 lateral = direction.cross(plane_normal);
+
+	if(lateral.dot(linear_velocity)) > 0	//on the same half-plane so flip it
+		lateral *= -1;
+	
+	btVector3 plane_velocity = 	
+	/*btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
+	std::cout << "direction: " << direction.x() << "," << direction.y() << "," << direction.z() << std::endl;
+	std::cout << "linear_velocity: " << linear_velocity.x() << "," << linear_velocity.y() << "," << linear_velocity.z() << std::endl;
+	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane
+	std::cout << "tire_speed:" << tire_speed << std::endl;
+		
+	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
+	std::cout << "slip_ratio:" << slip_ratio << std::endl;	
+	
+	return direction * slip_ratio_lookup(slip_ratio) * current_weight;*/
+	
+	
+}
+
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
 chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")){

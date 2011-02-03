@@ -14,6 +14,7 @@ public:
 	void tick(seconds timestep, btVector3 const & pos);
 	btScalar getWeight();
 	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
+	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);
 private:
 	
 	btScalar slip_ratio_lookup(btScalar);

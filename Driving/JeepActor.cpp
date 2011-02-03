@@ -64,13 +64,17 @@ void JeepActor::moveBackward( bool isDown)
 void JeepActor::tick(seconds timeStep)
 {
 	static float torque = 0;
-	static float gravity = 10.0;
+	static float gravity = 1.0;
 	static float const & torque_k = LoadFloat("config/jeep_springs.xml", "torque_k");
 	static float const & comx= LoadFloat("config/jeep_springs.xml", "comx");
 	static float const & comz = LoadFloat("config/jeep_springs.xml", "comz");
 	static float const & c_drag = LoadFloat("config/jeep_springs.xml", "c_drag");
 	static float const & c_roll = LoadFloat("config/jeep_springs.xml", "c_roll");
 	static float const & breaking = LoadFloat("config/jeep_springs.xml", "breaking");
+	static float const & engine_torque = LoadFloat("config/jeep_springs.xml", "engine_torque");
+	static float const & weight_shift = LoadFloat("config/jeep_springs.xml", "weight_shift");
+	static btScalar weight_front = 0;
+	static btScalar weight_rear = 0;
 	for(int i=0; i<4; i++)
 	{
 		springs[i]->tick(timeStep, pos);	/*apply springs*/
@@ -89,7 +93,7 @@ void JeepActor::tick(seconds timeStep)
 	if(isForward)
 	{
 		engine_force = 2;
-		torque += 2;
+		torque += engine_torque;
 	}
 	
 	if(isBackward)
@@ -97,15 +101,12 @@ void JeepActor::tick(seconds timeStep)
 		engine_force = 2;	//for now just make it one or the other
 		// torque += engine_force;
 		torque = 0;
-		u *= -1;
+		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
 	
 	u = quatRotate(chasis->getOrientation(), u);
-	
-	if(torque > 75) torque = 75;
-	if(torque < -75) torque = -75;
 	
 	//rear wheel driving
 	btVector3 long_force(0,0,0);
@@ -132,19 +133,19 @@ void JeepActor::tick(seconds timeStep)
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	/*find car acceleration*/
-	// long_force += (f_drag + f_rolling);
+	long_force += (f_drag + f_rolling);
 	btScalar long_scalar_force = long_force.dot(u);
 	btScalar long_acceleration = long_scalar_force / mass;
 	std::cout << "acceleration:" << long_acceleration << std::endl;
 	
 	/*weight shift*/
-	btScalar L = 2*offset_z;
+	btScalar L = 2*offset_x;
 	btScalar c = fabs(offset_x - comx);
 	btScalar b = fabs(offset_x - comx);
 	btScalar W = mass * gravity;
 	btScalar h = fabs(spring_bottom - comz);
-	btScalar weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k);
-	btScalar weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k);
+	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
+	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
 	
 	std::cout << "weight_front:" << weight_front << std::endl;
 	std::cout << "weight_rear :" << weight_rear << std::endl;
@@ -154,7 +155,7 @@ void JeepActor::tick(seconds timeStep)
 	chasis->applyForce(gravity_v * weight_front, front_tire);
 	chasis->applyForce(gravity_v * weight_rear, rear_tire);
 	
-	
+	torque /= 1.1;
 	
 	/*apply load*/
 	// btScalar rear_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;	//assuming rear wheel drive

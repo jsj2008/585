@@ -10,7 +10,9 @@
 <param type="0" name="comy" value="0" />
 <param type="0" name="comz" value="0" />
 <param type="0" name="mass" value="10.0" />
-<param type="0" name="torque_k" value="0.6" />
-<param type="0" name="c_drag" value="0.4" />
-<param type="0" name="c_roll" value="30" />
+<param type="0" name="torque_k" value="0.38" />
+<param type="0" name="weight_shift" value="0.15" />
+<param type="0" name="engine_torque" value="10" />
+<param type="0" name="c_drag" value="0.03" />
+<param type="0" name="c_roll" value="200" />
 <param type="0" name="breaking" value="-100" />
