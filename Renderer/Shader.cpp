@@ -34,10 +34,10 @@ Shader::Shader(GLchar *fs, GLchar *vs) {
 			free(infoLog);
 		}
 	}
-	if (vsf != NULL) {
+	if (vsf == NULL) {
 		cout << "Cannot find shader file " << vs << endl;
 	}
-	if (fsf != NULL) {
+	if (fsf == NULL) {
 		cout << "Cannot find shader file " << fs << endl;
 	}
 }
