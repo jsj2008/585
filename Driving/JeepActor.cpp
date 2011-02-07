@@ -81,7 +81,7 @@ void JeepActor::tick(seconds timeStep)
 	}
 	
 	/*calculate constants*/
-	btVector3 u(1,0,0);
+	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0) );
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
@@ -106,8 +106,6 @@ void JeepActor::tick(seconds timeStep)
 		
 	}
 	
-	u = quatRotate(chasis->getOrientation(), u);
-	
 	//rear wheel driving
 	btVector3 long_force(0,0,0);
 	btVector3 forward(0,0,0);
@@ -121,6 +119,14 @@ void JeepActor::tick(seconds timeStep)
 		forward = f0 / 2.0 + f1 / 2.0;
 		
 		long_force += (f0 + f1);
+	}
+	
+	btVector3 lat0 = springs[0]->getLateralForce(chasis->getLinearVelocity(), u );
+	btVector3 lat1 = springs[1]->getLateralForce(chasis->getLinearVelocity(), u );
+	
+	if(lat0.length() > 0)
+	{
+		chasis->applyCentralForce(lat0 + lat1);
 	}
 		
 	/*air resistance*/
