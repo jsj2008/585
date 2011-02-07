@@ -6,17 +6,16 @@
 #include "Common/prelude.h"
 #include <vector>
 #include "Physics/Spring.h"
+#include "UI/Input.h"
 
 class JeepActor : public Actor
 {
 public:
-	JeepActor(PhysObject const &, Physics * const, Point pos = Point(0,0,0), Point vel = Point(0,0,0));
+	JeepActor(PhysObject const &, Physics * const, Input const * const = NULL, Point pos = Point(0,0,0), Point vel = Point(0,0,0));
 	~JeepActor();
 	void setOrientation(btQuaternion);
 	void setPosition(btVector3);
 	void tick(seconds);
-	void moveForward(bool down);
-	void moveBackward(bool down);
 		
 private:
 	Physics * const physics;
@@ -27,6 +26,7 @@ private:
 	typedef std::vector<Spring *> Springs;
 	Springs springs;
 	btRigidBody * chasis;
+	Input const * input;
 	
 	bool isForward;
 	bool isBackward;

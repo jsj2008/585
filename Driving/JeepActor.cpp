@@ -2,10 +2,10 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
-JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics, Point pos, Point vel) : Actor::Actor(physObj, pos, vel),
+JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics,  Input const * input, Point pos, Point vel) : Actor::Actor(physObj, pos, vel),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")), offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
 spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), spring_bottom(LoadFloat("config/jeep_springs.xml", "spring_bottom")),
-mass(LoadFloat("config/jeep_springs.xml", "mass") )
+mass(LoadFloat("config/jeep_springs.xml", "mass") ), input(input)
 {
 	isForward = false;
 	isBackward = false;
@@ -51,16 +51,6 @@ mass(LoadFloat("config/jeep_springs.xml", "mass") )
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
 }
 
-void JeepActor::moveForward( bool isDown)
-{
-	isForward = isDown;
-}
-
-void JeepActor::moveBackward( bool isDown)
-{
-	isBackward = isDown;
-}
-
 void JeepActor::tick(seconds timeStep)
 {
 	static float torque = 0;
@@ -73,6 +63,8 @@ void JeepActor::tick(seconds timeStep)
 	static float const & breaking = LoadFloat("config/jeep_springs.xml", "breaking");
 	static float const & engine_torque = LoadFloat("config/jeep_springs.xml", "engine_torque");
 	static float const & weight_shift = LoadFloat("config/jeep_springs.xml", "weight_shift");
+	static float const & max_rotate = LoadFloat("config/jeep_springs.xml", "max_rotate");
+	static float const & c_roll2 = LoadFloat("config/jeep_springs.xml", "c_roll2");
 	static btScalar weight_front = 0;
 	static btScalar weight_rear = 0;
 	for(int i=0; i<4; i++)
@@ -87,16 +79,14 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
 	btScalar speed = velocity.length();
 
-	
-	/*hacking user input*/
 	btScalar engine_force = 0;
-	if(isForward)
+	if(input->AcceleratePressed)
 	{
 		engine_force = 2;
 		torque += engine_torque;
 	}
 	
-	if(isBackward)
+	if(input->BrakePressed)
 	{
 		engine_force = 2;	//for now just make it one or the other
 		// torque += engine_force;
@@ -126,7 +116,7 @@ void JeepActor::tick(seconds timeStep)
 	
 	if(lat0.length() > 0)
 	{
-		chasis->applyCentralForce(lat0 + lat1);
+		chasis->applyCentralForce((lat0 + lat1) * c_roll2);
 	}
 		
 	/*air resistance*/
@@ -163,68 +153,18 @@ void JeepActor::tick(seconds timeStep)
 	
 	torque /= 1.1;
 	
-	/*apply load*/
-	// btScalar rear_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;	//assuming rear wheel drive
-	
-	// btVector3 f_long = u*rear_weight / 10 * slip_ratio ;//* rear_weight;
-	
-	/*output longitudinal force*/
-	// f_long += f_drag + f_rolling + f_breaking;
-	
-	
-	/*apply forces*/
-	// std::cout << slip_ratio << " " << f_long.x() << std::endl;
-	// chasis->applyForce(f_long, btVector3(0,0,0));
-	
-	
-	/*lateral forces*/
-	//btScalar c_a = 1;
-	
-	//btVector3 f_lateral = c_a * alpha
-	
-	/*calculate needed constants*/
-	/*
-	
-	btScalar back_weight = (springs[0]->getWeight() + springs[1]->getWeight()) / 2.0;
-	std::cout << back_weight << std::endl;
-	
-
-	btScalar static_coeff = 1.5;
-	btScalar kinetic_coeff = 1.0;
-	btScalar static_friction =  static_coeff*back_weight;
-	btVector3 friction;
-	btScalar rolling_coeff = 10;
-	btVector3 rolling_friction = -linear_velocity * rolling_coeff;
-	
-	/*btScalar wheel_weight = (springs[0]->getX() + springs[1]->getX()) / 2.0;
-	if(wheel_weight < 5)
+	/*moving sideways*/
+	btScalar XAxis = input->XAxis;
+	btScalar delta = XAxis * max_rotate;
+	btScalar omega = 0;
+	if(delta != 0)	//if actually turning
 	{
-		a = 20 - 5.5* wheel_weight;
-		static_friction -= btVector3(1,0,0)*wheel_weight;
-	}else
-	{
-		a = 0;
-		static_friction *= 0;
-	}*/
-	
-	// a = 0;
-	/*	std::cout << "pos_x:" << pos.x() << std::endl;
-	btVector3 traction = btVector3(0,0,0);
-	if(isForward)
-	{
-		//chasis->applyForce(btVector3(150,0,0), btVector3(-1,-1,0));
-		//traction = btVector3(150, 0, 0);
+		btScalar R = L/sin(delta);
+		omega = speed / R;
 	}
-	
-	btScalar wheel_radius = 0.25;
-	btScalar wheel_angular_velocity = speed / (2.0 * 3.14159265);	// \omega = |v| / 2pi
-	btScalar slip_ratio = 0;
-	
-	if(speed > 0)	//car is moving so calculate slip ratio
-		slip_ratio = (wheel_angular_velocity * wheel_radius - speed ) / fabs(speed);
-	
-	btVector3 traction_force = btVector3(1, 0, 0) * slip_ratio;
-	chasis->applyCentralForce(traction + rolling_friction);*/
+		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
+		// chasis->applyTorque( btVector3(0,omega*3,0));
+	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
 	
 }
 

@@ -28,7 +28,7 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, physics, Point(jeepX, jeepY, jeepZ) );
+	jeep = new JeepActor(mChasis, physics, window.aInput , Point(jeepX, jeepY, jeepZ));
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
@@ -36,16 +36,6 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	physics->newActors(temp);
 	window.run(this);	//launch window
 
-}
-
-void MainController::moveForward(bool isDown)
-{
-	jeep->moveForward(isDown);
-}
-
-void MainController::moveBackward(bool isDown)
-{
-	jeep->moveBackward(isDown);
 }
 
 void MainController::yield()

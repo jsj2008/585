@@ -21,8 +21,6 @@ public:
 	void explode();
 	void yield();
 	void tick(unsigned long);
-	void moveForward(bool);
-	void moveBackward(bool);
 	
 protected:
 	ActorList actorList;
