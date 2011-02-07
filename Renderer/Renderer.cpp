@@ -33,11 +33,19 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	shader->on();
+		applyShader();
 		glColor3f(1,1,1);
-		drawQuad(btVector3( 10, -5, -10), // Floor for testing
-				 btVector3( 10, -5,  10),
-				 btVector3(-10, -5, -10),
-				 btVector3(-10, -5,  10));
+		drawQuad(btVector3( 10, -5, -10), btVector3( 10, -5,  10), btVector3(-10, -5, -10), btVector3(-10, -5,  10)); //Floor
+		drawQuad(btVector3( 10, -5, -30), btVector3( 10, -5,  -10), btVector3(-10, -5, -30), btVector3(-10, -5,  -10));
+		drawQuad(btVector3( -10, -5, -10), btVector3( -10, -5,  10), btVector3(-30, -5, -10), btVector3(-30, -5,  10));
+		drawQuad(btVector3( -10, -5, -30), btVector3( -10, -5,  -10), btVector3(-30, -5, -30), btVector3(-30, -5,  -10));
+		drawQuad(btVector3( 10, -5, 10), btVector3( 10, -5,  30), btVector3(-10, -5, 10), btVector3(-10, -5,  30));
+		drawQuad(btVector3( -10, -5, 10), btVector3( -10, -5,  30), btVector3(-30, -5, 10), btVector3(-30, -5,  30));
+		drawQuad(btVector3( 30, -5, -10), btVector3( 30, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10));
+		drawQuad(btVector3( 30, -5, 10), btVector3( 30, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
+		drawQuad(btVector3( 30, -5, -30), btVector3( 30, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
+		//actorList.front()->renderObject.draw();  //testing
+
 	shader->off();
 	renderObjects();
 	
@@ -59,10 +67,10 @@ void Renderer::renderObjects() {
 		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ()); // Something meaningful will go here later
 
 		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
-		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,1,0));
-		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,0,1));
+		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
+		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
 
-		/*****AXES FOR TESTING*****/
+		/*****AXES FOR TESTING*****//*
 		glColor3f(1,0,0);
 		glBegin(GL_LINES);
 		glVertex3f(0,0,0);
@@ -80,7 +88,7 @@ void Renderer::renderObjects() {
 		glVertex3f(0,0,0);
 		glVertex3f(n.getX(), n.getY(), n.getZ());
 		glEnd();
-		/**************************/
+		*//**************************/
 
 		// This matrix is defined columnwise
 		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
@@ -89,19 +97,22 @@ void Renderer::renderObjects() {
 									0, 0, 0, 1};
 		glMultMatrixf(frameMatrix);
 
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
 		shader->on();
 			applyShader();
 
 			glColor3f(1,1,1);
-			drawCube(btVector3( currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
+			/*drawCube(btVector3( currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
 					 btVector3( currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
 					 btVector3( currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
 					 btVector3( currentActor->height/2,  currentActor->width/2,  currentActor->depth/2),
 					 btVector3(-currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
 					 btVector3(-currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
 					 btVector3(-currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
-					 btVector3(-currentActor->height/2,  currentActor->width/2,  currentActor->depth/2));
+					 btVector3(-currentActor->height/2,  currentActor->width/2,  currentActor->depth/2));*/
+
+			currentActor->renderObject.draw();
 
 			// Clear all textures
 			for (int i = MAX_TEXTURES-1; i >= 0; i--) {
@@ -180,35 +191,36 @@ void Renderer::applyShader() {
 
 void Renderer::initializeGL() {
 	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // GL the functable
+	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
+	GLfloat position[] = { 9, 21, 45, 1 };
+
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	//glEnable(GL_LIGHT1);
-	GLfloat ambientLight[] = { 0.1, 0.1, 0.1, 1 };
-	GLfloat diffuseLight[] = { 0.9, 0.9, 0.9, 1 };
-	GLfloat specularLight[] = { 0.3, 0.3, 0.3, 1 };
-	GLfloat position[] = { 5, 5, 5, 1 };
-	 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDir);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteDir);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, blackDir);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	
-	/*GLfloat position1[] = { -5, 5, 0, 1 };
-	 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
-	glLightfv(GL_LIGHT1, GL_POSITION, position1);*/
 
 	glEnable(GL_DEPTH_TEST);
+
+	glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
 	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_RESCALE_NORMAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteDir);
+	glMaterialf(GL_FRONT, GL_SHININESS, 1.0f);
+
+	glShadeModel(GL_SMOOTH);
 	glEnable(GL_TEXTURE_2D);
 	//glEnable(GL_CULL_FACE);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	GLenum err = glewInit();
 	if (GLEW_OK == err) {
@@ -237,12 +249,13 @@ void Renderer::initializeGL() {
 		tex0Loc = shader->getUniLoc("tex0");
 		tex1Loc = shader->getUniLoc("tex1");
 		tex2Loc = shader->getUniLoc("tex2");
-//		tex3Loc = shader->getUniLoc("tex3");
+		tex3Loc = shader->getUniLoc("tex3");
 
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
-		load3DTexture("goldmist2.tx3");
+		//load3DTexture("sunrisecopper.tx3");
+		load3DTexture("manaflask.tx3");
 		loadTextures();
 	}
 	shader->off();

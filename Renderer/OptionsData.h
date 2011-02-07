@@ -5,8 +5,7 @@
 #include <btBulletDynamicsCommon.h>
 using namespace std;
 
-class OptionsData
-{
+class OptionsData {
 public:
 
 	bool autoDiffuse;

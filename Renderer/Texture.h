@@ -4,8 +4,7 @@
 #include <math.h>
 using namespace std;
 
-class Texture
-{
+class Texture {
 public:
 	Texture();
 	~Texture();

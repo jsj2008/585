@@ -6,7 +6,7 @@
 MainController::MainController()
 {
 	
-	renderTest = RenderObject("test.bmp");
+	renderTest = RenderObject("testBox.bmp", "jeep_tris.obj");
 
 	/*setup various lists*/	
 	for(int i=0; i<0; i++)

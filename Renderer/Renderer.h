@@ -1,5 +1,4 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
 #include "depend.h"
 #include "Shader.h"
@@ -97,4 +96,3 @@ private:
 	int autoDiffuseLoc;
 	int autoSpecularLoc;
 };
-#endif
