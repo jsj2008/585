@@ -28,4 +28,7 @@ protected:
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;
+
+	/*renderObjectTest*/
+	RenderObject renderTest;
 };

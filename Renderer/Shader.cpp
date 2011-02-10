@@ -9,29 +9,36 @@ Shader::Shader(GLchar *fs, GLchar *vs) {
 	const char *ff = fsf;
 	const char *vv = vsf;
 
-	v = glCreateShader(GL_VERTEX_SHADER);
-	f = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(v, 1, &vv, NULL);
-	glShaderSource(f, 1, &ff, NULL);
-	glCompileShader(v);
-	glCompileShader(f);
-	p = glCreateProgram();
-	glAttachShader(p, v);
-	glAttachShader(p, f);
-	glLinkProgram(p);
-	glUseProgram(p);
+	if (vsf != NULL && fsf != NULL) {
+		v = glCreateShader(GL_VERTEX_SHADER);
+		f = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(v, 1, &vv, NULL);
+		glShaderSource(f, 1, &ff, NULL);
+		glCompileShader(v);
+		glCompileShader(f);
+		p = glCreateProgram();
+		glAttachShader(p, v);
+		glAttachShader(p, f);
+		glLinkProgram(p);
+		glUseProgram(p);
 
-	int infologLength = 0;
-	int charsWritten  = 0;
-	char *infoLog;
+		int infologLength = 0;
+		int charsWritten  = 0;
+		char *infoLog;
 
-	glGetProgramiv(p, GL_INFO_LOG_LENGTH,&infologLength);
-	if (infologLength > 0)
-	{
-		infoLog = (char *)malloc(infologLength);
-		glGetProgramInfoLog(p, infologLength, &charsWritten, infoLog);
-		printf("%s\n",infoLog);
-		free(infoLog);
+		glGetProgramiv(p, GL_INFO_LOG_LENGTH,&infologLength);
+		if (infologLength > 0) {
+			infoLog = (char *)malloc(infologLength);
+			glGetProgramInfoLog(p, infologLength, &charsWritten, infoLog);
+			printf("%s\n",infoLog);
+			free(infoLog);
+		}
+	}
+	if (vsf == NULL) {
+		cout << "Cannot find shader file " << vs << endl;
+	}
+	if (fsf == NULL) {
+		cout << "Cannot find shader file " << fs << endl;
 	}
 }
 
@@ -43,7 +50,7 @@ void Shader::off() {
 	glUseProgram(NULL);
 }
 
-// Code below provided by Wojtek Palubicki in tutorials
+// Code below modified from code originally written by Wojtek Palubicki
 char *Shader::textFileRead(const char *fn) {
 	FILE *fp;
 	char *content = NULL;
@@ -51,8 +58,9 @@ char *Shader::textFileRead(const char *fn) {
 	int count = 0;
 
 	if (fn != NULL) {
-		fp = fopen(fn,"r");
 
+		fp = fopen(fn,"r");
+		
 		if (fp != NULL) {
 
 			fseek(fp, 0, SEEK_END);

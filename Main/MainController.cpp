@@ -5,15 +5,17 @@
 
 MainController::MainController()
 {
-			
+	
+	renderTest = RenderObject("testBox.bmp", "jeep_tris.obj");
+
 	/*setup various lists*/	
 	for(int i=0; i<0; i++)
 	{
-		Actor * act = new Actor(mCube, btVector3(0,-3, 0) );
+		Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0) );
 		actorList.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, btVector3(0,-5,0));
+	Actor * act = new Actor(mPlane, renderTest, btVector3(0,-5,0));
 	actorList.push_back(act);
 		
 	/*setup subcomponents*/
@@ -52,7 +54,7 @@ void MainController::explode()
 	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, btVector3(0,-3, 0), btVector3(cos(rad)*3, 5, sin(rad)*3 ) );
+	Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		

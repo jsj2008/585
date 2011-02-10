@@ -10,6 +10,7 @@
 
 #include "prelude.h"
 #include "../Physics/PhysObject.h"
+#include "../Renderer/RenderObject.h"
 #include <btBulletDynamicsCommon.h>
 
 class Actor {
@@ -21,9 +22,10 @@ public:
     Real height;
 	Real depth;
 	btVector3 initialVel;
-	PhysObject const & physObject;	//physical information (mass, shape, etc...)
+	PhysObject const & physObject;		//physical information (mass, shape, etc...)
+	RenderObject const & renderObject;	//renderer information (texture, model, etc...)
 	
-	Actor(PhysObject const &, btVector3 const & pos = btVector3(0,0,0), btVector3 const & vel = btVector3(0,0,0));
+	Actor(PhysObject const &, RenderObject const &, btVector3 const & pos = btVector3(0,0,0), btVector3 const & vel = btVector3(0,0,0));
     virtual ~Actor(){};
 };
 
