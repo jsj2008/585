@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <param type="0" name="camPosX" value="3.5" />
 <param type="0" name="camPosY" value="3" />
-<param type="0" name="camPosZ" value="200" />
+<param type="0" name="camPosZ" value="40" />
 <param type="0" name="camLookX" value="0" />
 <param type="0" name="camLookY" value="-3.5" />
 <param type="0" name="camLookZ" value="0" />
