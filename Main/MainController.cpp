@@ -27,14 +27,14 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 		temp.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, Point(0,planeY,0));
+//	Actor * act = new Actor(mPlane, btVector3(0,planeY,0));
 	Actor * act = new Actor(mPlane, renderTest, btVector3(0,-5,0));
 
 	actorList.push_back(act);
 	temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, physics, window.aInput , Point(jeepX, jeepY, jeepZ));
+	jeep = new JeepActor(mChasis, renderTest, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/

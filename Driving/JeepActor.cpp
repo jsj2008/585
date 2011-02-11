@@ -2,8 +2,8 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
-JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics,  Input const * input, Point pos, Point vel) : 
-Actor(physObj, pos, vel),
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics,  Input const * input, btVector3 const & pos, btVector3 const & vel) : 
+Actor(physObj, renderObj, pos, vel),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
 spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), 

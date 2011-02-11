@@ -65,7 +65,7 @@ Physics::~Physics()
 btRigidBody * const Physics::newActor(Actor * const actor)
 {
 
-		Point vel = actor->initialVel;
+		btVector3 vel = actor->initialVel;
 		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), actor->pos ), actor);
 		motionStates.push_back( actorMotion );
 		
@@ -78,7 +78,7 @@ btRigidBody * const Physics::newActor(Actor * const actor)
 		btRigidBody * body = new btRigidBody(bodyCI);
 		dynamicsWorld.addRigidBody(body);
 		
-		body->setLinearVelocity(btVector3(vel.x,vel.y, vel.z));
+		body->setLinearVelocity(btVector3(vel.x(),vel.y(), vel.z() ));
 		rigidBodies.push_back(body);
 		
 		return body;
