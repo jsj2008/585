@@ -7,12 +7,12 @@ Actor::Actor(PhysObject const & phys, Point pos, Point vel) : physObject(phys)
 	
 }
 
-void Actor::setOrientation(btQuaternion orient)
+void Actor::setOrientation(btQuaternion const & orient)
 {
 	orientation = orient;
 }
 
-void Actor::setPosition(btVector3 pos)
+void Actor::setPosition(btVector3 const & pos)
 {
 	this->pos = pos;
 }

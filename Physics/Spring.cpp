@@ -37,7 +37,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
-	std::cout << "slip_ratio:" << slip_ratio << std::endl;	
+	//std::cout << "slip_ratio:" << slip_ratio << std::endl;	
 	
 	return direction * slip_ratio_lookup(slip_ratio) * current_weight;
 	
@@ -54,19 +54,19 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 	
 	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
 	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
-	std::cout << "direction:" << direction.x() << "," << direction.y() << "," << direction.z() << std::endl;
+	//std::cout << "direction:" << direction.x() << "," << direction.y() << "," << direction.z() << std::endl;
 	btVector3 lateral = direction.cross(plane_normal);
 	if(lateral.dot(linear_velocity) > 0)	//on the same half-plane so flip it
 		lateral *= -1;
 
-	std::cout << "lateral:" << lateral.x() << "," << lateral.y() << "," << lateral.z() << std::endl;		
+	//std::cout << "lateral:" << lateral.x() << "," << lateral.y() << "," << lateral.z() << std::endl;		
 	
 	btScalar k2 = linear_velocity.dot(plane_normal);	//projection onto normal
 
 	btVector3 planar_direction = (linear_velocity - k2*plane_normal).normalize();	//linear velocity on plane
-	std::cout << "linear:" << planar_direction.x() << "," << planar_direction.y() << "," << planar_direction.z() << std::endl;			
+	//std::cout << "linear:" << planar_direction.x() << "," << planar_direction.y() << "," << planar_direction.z() << std::endl;			
 	btScalar alpha = 180 * acos(planar_direction.dot(direction) ) / 3.14159;
-	std::cout <<  "alpha:" << alpha << std::endl;
+	//std::cout <<  "alpha:" << alpha << std::endl;
 	
 	return alpha * lateral;
 	

@@ -13,8 +13,8 @@ class JeepActor : public Actor
 public:
 	JeepActor(PhysObject const &, Physics * const, Input const * const = NULL, Point pos = Point(0,0,0), Point vel = Point(0,0,0));
 	~JeepActor();
-	void setOrientation(btQuaternion);
-	void setPosition(btVector3);
+	void setOrientation(btQuaternion const &);
+	void setPosition(btVector3 const &);
 	void tick(seconds);
 		
 private:

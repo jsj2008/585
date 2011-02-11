@@ -3,12 +3,13 @@
 
 #define LoadFloat(a,b) SettingsFactory::get<float>(a,b)
 #define LoadInt(a,b) SettingsFactory::get<int>(a,b)
-#define LoadString(a,b) SettingsFactory::get<std::string>(a,b)
+#define LoadString2(a,b) SettingsFactory::get<std::string>(a,b)
 #define LoadDouble(a,b) SettingsFactory::get<double>(a,b)
 
 #include "Tinyxml/tinyxml.h"
 #include <map>
 #include <iostream>
+#include <string>
 
 typedef std::map<std::string const, void *> Settings;
 typedef std::pair<std::string const, void*> SettingsPair;
@@ -30,12 +31,12 @@ public:
 		{
 			std::cout << "could not load " << filename << std::endl;
 		}
-		Settings const * settings = ptr->all_settings[filename];
+		Settings * settings = ptr->all_settings[filename];
 		if(settings->find(key) == settings->end())
 		{
 			std::cout << "could not find property " << key << std::endl;
 		}
-		return *(static_cast<T *> ( settings->at(key) ) );
+		return *(static_cast<T *> ( (*settings)[key] ) );
 	}
 	
 	static void reload();

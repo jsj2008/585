@@ -27,8 +27,8 @@ public:
 	Actor(PhysObject const &, Point pos = Point(0,0,0), Point vel = Point(0,0,0));
     virtual ~Actor(){};
 
-	virtual void setOrientation(btQuaternion);
-	virtual void setPosition(btVector3);
+	virtual void setOrientation(btQuaternion const &);
+	virtual void setPosition(btVector3 const &);
 };
 
 #endif	/* ACTOR_H */

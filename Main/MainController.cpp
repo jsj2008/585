@@ -45,11 +45,9 @@ void MainController::yield()
 
 void MainController::tick(unsigned long interval)
 {
-	
-	//physics->step( interval / 1000.0 );
-	//jeep->tick(interval / 1000.0);
-	physics->step(0.016);
-	jeep->tick(0.016);
+	//std::cout << interval << std::endl;
+	physics->step( interval / 1000.0);
+	jeep->tick(interval / 1000.0);
 	
 }
 

@@ -2,10 +2,14 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
-JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics,  Input const * input, Point pos, Point vel) : Actor::Actor(physObj, pos, vel),
-physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")), offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
-spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), spring_bottom(LoadFloat("config/jeep_springs.xml", "spring_bottom")),
-mass(LoadFloat("config/jeep_springs.xml", "mass") ), input(input)
+JeepActor::JeepActor(PhysObject const & physObj, Physics * const physics,  Input const * input, Point pos, Point vel) : 
+Actor(physObj, pos, vel),
+physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
+offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
+spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), 
+spring_bottom(LoadFloat("config/jeep_springs.xml", "spring_bottom")),
+mass(LoadFloat("config/jeep_springs.xml", "mass") ),
+input(input)
 {
 	isForward = false;
 	isBackward = false;
@@ -132,7 +136,7 @@ void JeepActor::tick(seconds timeStep)
 	long_force += (f_drag + f_rolling);
 	btScalar long_scalar_force = long_force.dot(u);
 	btScalar long_acceleration = long_scalar_force / mass;
-	std::cout << "acceleration:" << long_acceleration << std::endl;
+	//std::cout << "acceleration:" << long_acceleration << std::endl;
 	
 	/*weight shift*/
 	btScalar L = 2*offset_x;
@@ -143,11 +147,11 @@ void JeepActor::tick(seconds timeStep)
 	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
 	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
 	
-	std::cout << "weight_front:" << weight_front << std::endl;
-	std::cout << "weight_rear :" << weight_rear << std::endl;
+	//std::cout << "weight_front:" << weight_front << std::endl;
+	//std::cout << "weight_rear :" << weight_rear << std::endl;
 	
 	btVector3 gravity_v(0,-1.0, 0);
-	std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
+	//std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
 	chasis->applyForce(gravity_v * weight_front, front_tire);
 	chasis->applyForce(gravity_v * weight_rear, rear_tire);
 	
@@ -176,7 +180,7 @@ JeepActor::~JeepActor()
 	}
 }
 
-void JeepActor::setOrientation(btQuaternion rot)
+void JeepActor::setOrientation(btQuaternion const & rot)
 {
 	Actor::setOrientation(rot);
 	/*update spring orientation*/
@@ -189,7 +193,7 @@ void JeepActor::setOrientation(btQuaternion rot)
 	}
 }
 
-void JeepActor::setPosition(btVector3 pos)
+void JeepActor::setPosition(btVector3 const & pos)
 {
 	Actor::setPosition(pos);
 	

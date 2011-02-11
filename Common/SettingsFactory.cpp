@@ -71,7 +71,7 @@ bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlA
 			}else
 			{
 				
-				elem.QueryFloatAttribute( "value", static_cast<float *>(settings->at(elem.Attribute("name"))) );
+				elem.QueryFloatAttribute( "value", static_cast<float *>((*settings)[elem.Attribute("name")]) );
 				return true;
 				
 			}
@@ -87,7 +87,7 @@ bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlA
 			}else
 			{
 				std::cout << elem.Attribute("name") << std::endl;
-				elem.QueryIntAttribute( "value", static_cast<int *>(settings->at(elem.Attribute("name"))) );
+				elem.QueryIntAttribute( "value", static_cast<int *>((*settings)[elem.Attribute("name")]) );
 				return true;
 			}
 		}
@@ -101,7 +101,7 @@ bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlA
 				break;	
 			}else
 			{
-				elem.QueryDoubleAttribute( "value", static_cast<double *>(settings->at(elem.Attribute("name"))) );
+				elem.QueryDoubleAttribute( "value", static_cast<double *>((*settings)[elem.Attribute("name")]) );
 				return true;
 			}
 		}
