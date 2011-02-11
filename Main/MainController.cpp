@@ -1,24 +1,39 @@
 #include "MainController.h"
 #include "Physics/PhysicsFactory.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 
-MainController::MainController()
+MainController::MainController() : 
+physics(PhysicsFactory::newPhysics(actorList, debugger) )
 {
+
+	float const & planeY = LoadFloat("config/start.xml", "planeY");
+	float const & jeepX = LoadFloat("config/start.xml", "jeepX");
+	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
+	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
+
 			
 	/*setup various lists*/	
+	ActorList temp;
 	for(int i=0; i<0; i++)
 	{
 		Actor * act = new Actor(mCube, Point(0,-3, 0) );
 		actorList.push_back(act);
+		temp.push_back(act);
 	}
 	
-	Actor * act = new Actor(mPlane, Point(0,-5,0));
+	Actor * act = new Actor(mPlane, Point(0,planeY,0));
 	actorList.push_back(act);
+	temp.push_back(act);
+		
+	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
+	jeep = new JeepActor(mChasis, physics, window.aInput , Point(jeepX, jeepY, jeepZ));
+	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
 	renderer = new Renderer(window);
-	physics = PhysicsFactory::newPhysics(actorList, debugger);
+	physics->newActors(temp);
 	window.run(this);	//launch window
 
 }
@@ -30,17 +45,9 @@ void MainController::yield()
 
 void MainController::tick(unsigned long interval)
 {
-	static int counter = 0;
-	
-	counter ++;
-	
-	if(counter > (1000/10) / 3.0)
-	{
-		counter = 0;
-		explode();
-	}
-
-	physics->step( interval / 1000.0 );
+	//std::cout << interval << std::endl;
+	physics->step( interval / 1000.0);
+	jeep->tick(interval / 1000.0);
 	
 }
 
@@ -67,5 +74,4 @@ MainController::~MainController()
 	
 	delete physics;
 	delete renderer;
-	
 }

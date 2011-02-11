@@ -41,7 +41,7 @@ void GLDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVec
 		btScalar z1 = radius*sin(lat1);
 		btScalar zr1 = radius*cos(lat1);
 
-		glBegin(GL_QUAD_STRIP);
+		glBegin(GL_LINE_STRIP);
 		for(j = 0; j <= longs; j++) {
 			btScalar lng = 2 * SIMD_PI * (btScalar) (j - 1) / longs;
 			btScalar x = cos(lng);

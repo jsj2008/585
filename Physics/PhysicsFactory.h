@@ -10,7 +10,7 @@ class PhysicsFactory
 {
 
 public:
-	static IPhysics * newPhysics(ActorList const & , btIDebugDraw &);
+	static Physics * newPhysics(ActorList const & , btIDebugDraw &);
 	
 };
 

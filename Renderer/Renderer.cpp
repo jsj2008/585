@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 
 Renderer::Renderer(IWindow const & window) {
@@ -8,9 +9,23 @@ Renderer::Renderer(IWindow const & window) {
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-	camPos = Point(3,7,15);
-	camLook = Point(1.5,0,5);
-	camUp = Vector3(0,1,0);
+	//camPos = Point(0,17,1);
+	//camLook = Point(0,0,0);
+	//camUp = Vector3(1,0,0);
+	
+	float const & camPosX = LoadFloat("config/camera.xml", "camPosX");
+	float const & camPosY = LoadFloat("config/camera.xml", "camPosY");
+	float const & camPosZ = LoadFloat("config/camera.xml", "camPosZ");
+	float const & camLookX = LoadFloat("config/camera.xml", "camLookX");
+	float const & camLookY = LoadFloat("config/camera.xml", "camLookY");
+	float const & camLookZ = LoadFloat("config/camera.xml", "camLookZ");
+	float const & camUpX = LoadFloat("config/camera.xml", "camUpX");
+	float const & camUpY = LoadFloat("config/camera.xml", "camUpY");
+	float const & camUpZ = LoadFloat("config/camera.xml", "camUpZ");
+
+	camPos = Point(camPosX,camPosY,camPosZ);
+	camLook = Point(camLookX,camLookY,camLookZ);
+	camUp = Vector3(camUpX,camUpY,camUpZ);
 	
 	trackball = Trackball(75);
 	initializeGL();
@@ -24,13 +39,14 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
-	glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
+	//glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
 	//renderObjects();
 	
 }
 
 void Renderer::step()
 {
+	
 	paintGL();
 }
 

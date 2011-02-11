@@ -1,9 +1,10 @@
 #include "Physics.h"
 #include <iostream>
 
-Physics::Physics(ActorList const & actors, btIDebugDraw & debugger)
-	: actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
+Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
+	actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
 {	
+		
 	dynamicsWorld.setGravity(btVector3(0,-10,0));   
 	
 	newActors(actors);
@@ -16,12 +17,10 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger)
 
 void Physics::newActors(ActorList const & newActors)
 {
-	
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
-		Point pos = (*itr)->pos;
 		Point vel = (*itr)->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), btVector3(pos.x, pos.y, pos.z) ), *itr);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
@@ -41,10 +40,9 @@ void Physics::newActors(ActorList const & newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld.stepSimulation(timeStep,10);	//keep an eye on the number of substeps (10 is pretty random)
-	
-	/*debugger*/
+	dynamicsWorld.stepSimulation(timeStep,1);	//keep an eye on the number of substeps (10 is pretty random)
 	dynamicsWorld.debugDrawWorld();
+
 }
 
 Physics::~Physics()
@@ -63,6 +61,28 @@ Physics::~Physics()
 	}
 }
 
+btRigidBody * const Physics::newActor(Actor * const actor)
+{
+
+		Point vel = actor->initialVel;
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), actor->pos ), actor);
+		motionStates.push_back( actorMotion );
+		
+		PhysObject const & physObject = actor->physObject;	//grabs physical info about the actor
+		
+		if(physObject.mass != 0)
+			physObject.shape->calculateLocalInertia(physObject.mass, *(physObject.fallInertia) );	//dynamic object so calculate local inertia
+
+		btRigidBody::btRigidBodyConstructionInfo bodyCI(physObject.mass, actorMotion, physObject.shape, *(physObject.fallInertia) );	//TODO this can be shared so stop recreating
+		btRigidBody * body = new btRigidBody(bodyCI);
+		dynamicsWorld.addRigidBody(body);
+		
+		body->setLinearVelocity(btVector3(vel.x,vel.y, vel.z));
+		rigidBodies.push_back(body);
+		
+		return body;
+}
+
 Physics::MotionState::MotionState(const btTransform &initialPos, Actor * actor)
 {
 	this->actor = actor;
@@ -78,11 +98,6 @@ void Physics::MotionState::getWorldTransform(btTransform &worldTrans) const
 
 void Physics::MotionState::setWorldTransform(const btTransform &worldTrans)
 {
-	btQuaternion rot = worldTrans.getRotation();
-	//actor->setRotation(rot)
-	btVector3 pos = worldTrans.getOrigin();
-	//actor->setPosition(pos)	//TODO use something like this which isn't terrible (threadsafe?)
-	actor->pos.x = pos.getX();
-	actor->pos.y = pos.getY();
-	actor->pos.z = pos.getZ();
+	actor->setOrientation(worldTrans.getRotation());
+	actor->setPosition(worldTrans.getOrigin());
 }

@@ -24,7 +24,7 @@ Input::Input(){
 	EBrakePressed=false;
 	
 	//user can change these key/button mappings via change button/key functions
-	ACCELKEY='a';
+	ACCELKEY='w';
 	BRAKEKEY='s';
 	EBRAKEKEY='d';
 	MASTERQUITKEY='q';
