@@ -15,12 +15,12 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 
 	
 	renderTest = RenderObject("testBox.bmp", "jeep_final.obj");
-	//renderTest = RenderObject("testBox.bmp", "pitcher.obj");
+	// renderTest = RenderObject("testBox.bmp", "quad.obj");
 	//renderTest = RenderObject("testBox.bmp", "ducky.obj");
 
 	/*setup various lists*/	
 	ActorList temp;
-	for(int i=0; i<0; i++)
+	for(int i=0; i<1; i++)
 	{
 		Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0) );
 		actorList.push_back(act);
@@ -52,9 +52,9 @@ void MainController::yield()
 void MainController::tick(unsigned long interval)
 {
 	//std::cout << interval << std::endl;
+	renderer->step();
 	physics->step( interval / 1000.0);
 	jeep->tick(interval / 1000.0);
-	renderer->step();
 	
 }
 

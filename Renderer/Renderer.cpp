@@ -9,27 +9,6 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-/*<<<<<<< HEAD
-	//camPos = Point(0,17,1);
-	//camLook = Point(0,0,0);
-	//camUp = Vector3(1,0,0);
-	
-	float const & camPosX = LoadFloat("config/camera.xml", "camPosX");
-	float const & camPosY = LoadFloat("config/camera.xml", "camPosY");
-	float const & camPosZ = LoadFloat("config/camera.xml", "camPosZ");
-	float const & camLookX = LoadFloat("config/camera.xml", "camLookX");
-	float const & camLookY = LoadFloat("config/camera.xml", "camLookY");
-	float const & camLookZ = LoadFloat("config/camera.xml", "camLookZ");
-	float const & camUpX = LoadFloat("config/camera.xml", "camUpX");
-	float const & camUpY = LoadFloat("config/camera.xml", "camUpY");
-	float const & camUpZ = LoadFloat("config/camera.xml", "camUpZ");
-
-	camPos = Point(camPosX,camPosY,camPosZ);
-	camLook = Point(camLookX,camLookY,camLookZ);
-	camUp = Vector3(camUpX,camUpY,camUpZ);
-	
-	trackball = Trackball(75);
-=======*/
 	camPos = btVector3(9,21,45);
 	camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
@@ -46,7 +25,6 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	texData = new TextureData(3);
 	optData = new OptionsData();
 
-//>>>>>>> renderer
 	initializeGL();
 	paintGL();
 }
@@ -60,7 +38,42 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
+	shader->on();
+		applyShader();
+		glColor3f(1,1,1);
+		drawQuad(btVector3( 10, -5, -10), btVector3( 10, -5,  10), btVector3(-10, -5, -10), btVector3(-10, -5,  10)); //Floor
+		drawQuad(btVector3( 10, -5, -30), btVector3( 10, -5,  -10), btVector3(-10, -5, -30), btVector3(-10, -5,  -10));
+		drawQuad(btVector3( -10, -5, -10), btVector3( -10, -5,  10), btVector3(-30, -5, -10), btVector3(-30, -5,  10));
+		drawQuad(btVector3( -10, -5, -30), btVector3( -10, -5,  -10), btVector3(-30, -5, -30), btVector3(-30, -5,  -10));
+		drawQuad(btVector3( 10, -5, 10), btVector3( 10, -5,  30), btVector3(-10, -5, 10), btVector3(-10, -5,  30));
+		drawQuad(btVector3( -10, -5, 10), btVector3( -10, -5,  30), btVector3(-30, -5, 10), btVector3(-30, -5,  30));
+		drawQuad(btVector3( 30, -5, -10), btVector3( 30, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10));
+		drawQuad(btVector3( 30, -5, 10), btVector3( 30, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
+		drawQuad(btVector3( 30, -5, -30), btVector3( 30, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
+	shader->off();
 
+		//light
+	glColor3f(1,1,1);
+	glDisable(GL_TEXTURE);
+	glDisable(GL_LIGHTING);
+	drawCube(btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE);
+
+	renderObjects();
+	
+}
+
+void Renderer::step() {
+	// camPos = camPos.rotate(btVector3(0,1,0),0.005);
+	// camPos = camPos.rotate(btVector3(1,0,0),0.001);
 	paintGL();
 }
 
@@ -107,8 +120,8 @@ void Renderer::renderObjects() {
 									0, 0, 0, 1};
 		glMultMatrixf(frameMatrix);
 
-		//glActiveTexture(GL_TEXTURE3);
-		//glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
 		shader->on();
 			applyShader();
 
@@ -125,8 +138,9 @@ void Renderer::renderObjects() {
 			glPushMatrix();
 			//glScaled(0.2, 0.2, 0.2);
 			//glScaled(0.02, 0.02, 0.02);
+			// glScaled(-1,1,1);
 			currentActor->renderObject.draw();
-			//currentActor->renderObject.drawNormals();
+			currentActor->renderObject.drawNormals();
 			glPopMatrix();
 
 			// Clear all textures

@@ -11,8 +11,8 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	newActors(actors);
 	
 	/*turn on debugging*/
-//	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-//	dynamicsWorld.setDebugDrawer(&debugger);
+	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	dynamicsWorld.setDebugDrawer(&debugger);
 
 }
 

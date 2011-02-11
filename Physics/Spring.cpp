@@ -101,7 +101,6 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 
 	btCollisionWorld::ClosestRayResultCallback result(from, to);	
 	physics->dynamicsWorld.rayTest( from, to, result);
-	
 	if(result.hasHit() )
 	{		
 		plane_normal = result.m_hitNormalWorld;
@@ -111,14 +110,14 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 
 		btScalar x = rest.length() - physical_length;
 
-		debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));
+
 
 		btScalar spring_v = (x - old_x) * timeStep;
 		
 		if(!was_hit)
 			spring_v = 0;
 				
-
+		debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));		
 		debugger->drawLine(result.m_hitPointWorld,result.m_hitPointWorld + btVector3(10,0,0) ,btVector3(255,255,0));
 		debugger->drawSphere(result.m_hitPointWorld - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
 		
@@ -134,8 +133,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		}
 		chasis->activate();
 		old_x = x;		
-		was_hit = true;
-			
+		was_hit = true;	
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
