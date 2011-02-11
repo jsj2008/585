@@ -54,6 +54,8 @@ private:
 	btVector3 camLook;				// Point that the camera is looking at
 	btVector3 camUp;				// Up vector for the camera
 
+	btVector3 lightPos;
+
 	double ratio;
 	int width;
 	int height;	

@@ -12,13 +12,16 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
+	//lightPos = btVector3(5,15,24);
+	lightPos = btVector3(5,15,24);
+
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
 		shaderTextures[i] = new GLuint;
 	}
 
 	attrData = new AttributeData();
-	texData = new TextureData(1);
+	texData = new TextureData(3);
 	optData = new OptionsData();
 
 	initializeGL();
@@ -29,6 +32,8 @@ Renderer::~Renderer() { }
 
 
 void Renderer::paintGL() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glLoadIdentity();
 
 	updateCamera();
@@ -44,9 +49,23 @@ void Renderer::paintGL() {
 		drawQuad(btVector3( 30, -5, -10), btVector3( 30, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10));
 		drawQuad(btVector3( 30, -5, 10), btVector3( 30, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
 		drawQuad(btVector3( 30, -5, -30), btVector3( 30, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
-		//actorList.front()->renderObject.draw();  //testing
-
 	shader->off();
+
+		//light
+	glColor3f(1,1,1);
+	glDisable(GL_TEXTURE);
+	glDisable(GL_LIGHTING);
+	drawCube(btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
+			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
+	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE);
+
 	renderObjects();
 	
 }
@@ -69,6 +88,9 @@ void Renderer::renderObjects() {
 		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
 		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
 		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+		/*btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
+		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,1,0));
+		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,0,1));*/
 
 		/*****AXES FOR TESTING*****//*
 		glColor3f(1,0,0);
@@ -97,8 +119,8 @@ void Renderer::renderObjects() {
 									0, 0, 0, 1};
 		glMultMatrixf(frameMatrix);
 
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
+		//glActiveTexture(GL_TEXTURE3);
+		//glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
 		shader->on();
 			applyShader();
 
@@ -112,7 +134,12 @@ void Renderer::renderObjects() {
 					 btVector3(-currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
 					 btVector3(-currentActor->height/2,  currentActor->width/2,  currentActor->depth/2));*/
 
+			glPushMatrix();
+			//glScaled(0.2, 0.2, 0.2);
+			//glScaled(0.02, 0.02, 0.02);
 			currentActor->renderObject.draw();
+			//currentActor->renderObject.drawNormals();
+			glPopMatrix();
 
 			// Clear all textures
 			for (int i = MAX_TEXTURES-1; i >= 0; i--) {
@@ -191,11 +218,10 @@ void Renderer::applyShader() {
 
 void Renderer::initializeGL() {
 	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
-	GLfloat position[] = { 9, 21, 45, 1 };
+	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -207,8 +233,7 @@ void Renderer::initializeGL() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
-	glEnable(GL_COLOR_MATERIAL);
+	//glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
 	glEnable(GL_RESCALE_NORMAL);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -216,11 +241,11 @@ void Renderer::initializeGL() {
 	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteDir);
 	glMaterialf(GL_FRONT, GL_SHININESS, 1.0f);
 
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_TEXTURE_2D);
+	//glShadeModel(GL_SMOOTH);
+	//glEnable(GL_TEXTURE_2D);
 	//glEnable(GL_CULL_FACE);
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	//glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
 	GLenum err = glewInit();
 	if (GLEW_OK == err) {
@@ -254,14 +279,15 @@ void Renderer::initializeGL() {
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
-		//load3DTexture("sunrisecopper.tx3");
-		load3DTexture("manaflask.tx3");
+		load3DTexture("sunrisecopper.tx3");
+		//load3DTexture("spacemirror.tx3");
+		//load3DTexture("goldmist2.tx3");
 		loadTextures();
 	}
 	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
-	updateCamera();
+	//updateCamera();
 }
 
 void Renderer::updateMousePosition(int x, int y) {
@@ -296,6 +322,9 @@ void Renderer::updateCamera() {
 	gluLookAt(camPos.getX(), camPos.getY(), camPos.getZ(),
 				  camLook.getX(), camLook.getY(), camLook.getZ(),
 				  camUp.getX(), camUp.getY(), camUp.getZ());
+
+	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
 
 void Renderer::drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br) {

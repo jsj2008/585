@@ -5,7 +5,6 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
-#include <LinearMath/btIDebugDraw.h>
 #include <vector>
 
 using namespace std;
@@ -23,5 +22,6 @@ class Model {
 		vector<Face> faces;
 
 	private:
-		vector<string> splitString(string str, char delim = ' ');
+		vector<string> splitString(string str, char delim = ' ', bool leaveBlanks = false);
+		btVector3 getFaceNormal(int index);
 };
