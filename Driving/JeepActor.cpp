@@ -164,7 +164,7 @@ void JeepActor::tick(seconds timeStep)
 	if(delta != 0)	//if actually turning
 	{
 		btScalar R = L/sin(delta);
-		omega = speed / R;
+		omega = speed / R * fabs(torque)/torque;
 	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));

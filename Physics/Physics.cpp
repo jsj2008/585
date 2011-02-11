@@ -1,11 +1,12 @@
 #include "Physics.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
 {	
 		
-	dynamicsWorld.setGravity(btVector3(0,-10,0));   
+	dynamicsWorld.setGravity(btVector3(0,LoadFloat("config/world.xml", "gravity"),0));   
 	
 	newActors(actors);
 	
