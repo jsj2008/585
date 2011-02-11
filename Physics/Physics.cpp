@@ -11,8 +11,8 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	newActors(actors);
 	
 	/*turn on debugging*/
-	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-	dynamicsWorld.setDebugDrawer(&debugger);
+//	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+//	dynamicsWorld.setDebugDrawer(&debugger);
 
 }
 
@@ -20,7 +20,7 @@ void Physics::newActors(ActorList const & newActors)
 {
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
-		Point vel = (*itr)->initialVel;
+		btVector3 vel = (*itr)->initialVel;
 		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
@@ -33,7 +33,7 @@ void Physics::newActors(ActorList const & newActors)
 		btRigidBody * body = new btRigidBody(bodyCI);
 		dynamicsWorld.addRigidBody(body);
 		
-		body->setLinearVelocity(btVector3(vel.x,vel.y, vel.z));
+		body->setLinearVelocity(btVector3(vel.getX(),vel.getY(), vel.getZ()));
 		rigidBodies.push_back(body);
 		
 	}
@@ -101,4 +101,5 @@ void Physics::MotionState::setWorldTransform(const btTransform &worldTrans)
 {
 	actor->setOrientation(worldTrans.getRotation());
 	actor->setPosition(worldTrans.getOrigin());
+
 }

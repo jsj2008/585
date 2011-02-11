@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 PROJECT(585)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
 #add_definitions(-W -Wall -ansi -pedantic -g)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -46,6 +48,9 @@ SOURCE_GROUP("Tinyxml\\Src" FILES ${XML_SOURCES})
 find_package(OpenGL)
 include_directories(${OPENGL_INCLUDE_DIR})
 
+#GLEW
+find_package(Glew)
+include_directories(${GLEW_INCLUDE_DIR})
 
 #bullet
 find_package(Bullet REQUIRED)
@@ -58,4 +63,4 @@ include_directories(${SDL_INCLUDE_DIR})
 
 
 ADD_EXECUTABLE(game ${SOURCES} ${HEADERS})
-TARGET_LINK_LIBRARIES(game ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES})
+TARGET_LINK_LIBRARIES(game ${GLEW_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES} ${BULLET_LIBRARIES})

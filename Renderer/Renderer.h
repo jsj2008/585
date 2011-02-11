@@ -1,26 +1,28 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 
+#include "depend.h"
+#include "Shader.h"
+#include "Common/Actor.h"
 #include "UI/IWindow.h"
-#include "Common/Point.h"
-#include "Trackball.h"
+#include "AttributeData.h"
+#include "OptionsData.h"
+#include "TextureData.h"
 #include <stdlib.h>
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
-#include "depend.h"
+
+#define MAX_TEXTURES 3
 
 using namespace std;
 
 class Renderer {
 public:
-	//Renderer(const ActorList* actorList = 0, QWidget* parent = 0);
-	Renderer(IWindow const &);
+	Renderer(IWindow const &, ActorList const & actorList);
 	~Renderer();
 	void step();
 	void reset();
 	void resetView();
 	//GLuint listIndex;
-	
 	
 protected:
 	void paintGL();
@@ -32,26 +34,67 @@ private:
 	IWindow * window;
 	
 	void renderObjects();
+	void applyShader();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	void drawQuad(Point tl, Point tr, Point bl, Point br);
-	void drawCube(Point tlb, Point trb, Point tlf, Point trf, Point blb, Point brb, Point blf, Point brf);
+	void drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br);
+	void drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf);
 	void updateMousePosition(int x, int y);
-	Point getScreenPosition(int x, int y);
+	btVector3* getScreenPosition(int x, int y);
+
+	void load3DTexture(string filename);
+	void loadTextures();
+	bool loadTexture(string name, GLuint *texID);
 	
 	int mouseX;
 	int mouseY;
 
-	Point camPos;				// Position of the camera
-	Point camLook;				// Point that the camera is looking at
-	Vector3 camUp;				// Up vector for the camera
+	btVector3 camPos;				// Position of the camera
+	btVector3 camLook;				// Point that the camera is looking at
+	btVector3 camUp;				// Up vector for the camera
+
+	btVector3 lightPos;
 
 	double ratio;
 	int width;
 	int height;	
 
-	Trackball trackball;		// The trackball for rotating the surface*/
+	ActorList const & actorList;
+	Shader* shader;
+	vector<GLuint*> shaderTextures;
 
+	AttributeData* attrData;
+	OptionsData* optData;
+	TextureData* texData;
+
+	/*Uniform Locations*/
+	int xAttrLoc;
+	int xModLoc;
+	int xZminLoc;
+	int xFlipLoc;
+
+	int yAttrLoc;
+	int yModLoc;
+	int yZminLoc;
+	int yFlipLoc;
+
+	int zAttrLoc;
+	int zModLoc;
+	int zZminLoc;
+	int zFlipLoc;
+
+	int numTexLoc;
+	int texPosLoc;
+	int texHskewLoc;
+	int texVskewLoc;
+	int texInterpLoc;
+
+	int tex0Loc;
+	int tex1Loc;
+	int tex2Loc;
+	int tex3Loc;
+
+	int autoDiffuseLoc;
+	int autoSpecularLoc;
 };
-#endif

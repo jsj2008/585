@@ -36,4 +36,7 @@ protected:
 	const libCube mCube;
 	const libPlane mPlane;
 	const libChasis mChasis;
+
+	/*renderObjectTest*/
+	RenderObject renderTest;
 };

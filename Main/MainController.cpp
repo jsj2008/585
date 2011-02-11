@@ -13,17 +13,23 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
 	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
 
-			
+	
+	renderTest = RenderObject("testBox.bmp", "jeep_final.obj");
+	//renderTest = RenderObject("testBox.bmp", "pitcher.obj");
+	//renderTest = RenderObject("testBox.bmp", "ducky.obj");
+
 	/*setup various lists*/	
 	ActorList temp;
 	for(int i=0; i<0; i++)
 	{
-		Actor * act = new Actor(mCube, Point(0,-3, 0) );
+		Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0) );
 		actorList.push_back(act);
 		temp.push_back(act);
 	}
 	
 	Actor * act = new Actor(mPlane, Point(0,planeY,0));
+	Actor * act = new Actor(mPlane, renderTest, btVector3(0,-5,0));
+
 	actorList.push_back(act);
 	temp.push_back(act);
 		
@@ -32,8 +38,8 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
-	renderer = new Renderer(window);
 	physics->newActors(temp);
+	renderer = new Renderer(window, actorList);
 	window.run(this);	//launch window
 
 }
@@ -48,6 +54,7 @@ void MainController::tick(unsigned long interval)
 	//std::cout << interval << std::endl;
 	physics->step( interval / 1000.0);
 	jeep->tick(interval / 1000.0);
+	renderer->step();
 	
 }
 
@@ -58,7 +65,7 @@ void MainController::explode()
 	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, Point(0,-3, 0), Point(cos(rad)*3, 5, sin(rad)*3 ) );
+	Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		

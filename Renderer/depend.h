@@ -1,5 +1,6 @@
 #ifndef DEPEND_H
 #define DEPEND_H
+#include <GL/glew.h>
 #if defined(__APPLE__) && !defined (VMDMESA)
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
