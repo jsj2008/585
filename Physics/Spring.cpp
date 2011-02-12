@@ -97,7 +97,7 @@ btScalar Spring::getWeight()
 	return current_weight;
 }
 
-void Spring::tick(seconds timeStep, btVector3 const & pos)
+void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 {
 	static btScalar const & gravity = fabs(LoadFloat("config/world.xml", "gravity"));
 	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
@@ -107,7 +107,8 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 	static btScalar	const & weight = mass * gravity / 4.0;
 	btScalar c = k2*sqrt(k/mass);
 
-	wheel_actor->orientation = chasis->getOrientation();
+	btQuaternion steer = btQuaternion( quatRotate(chasis->getOrientation(), btVector3(0,1,0) ), steer_angle);
+	wheel_actor->orientation = chasis->getOrientation() * steer;
 
 
 	btVector3 rest = rest_fraction*(to - from);

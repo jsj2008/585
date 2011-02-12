@@ -13,7 +13,7 @@ class Spring
 {
 public:
 	Spring(btRigidBody * const, btVector3 const & from, btVector3 const& to, Physics * const);
-	void tick(seconds timestep, btVector3 const & pos);
+	void tick(seconds timestep, btVector3 const & pos, btScalar steer_angle);
 	btScalar getWeight();
 	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);

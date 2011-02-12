@@ -49,6 +49,7 @@ input(input)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
+	chasis->setGravity(btVector3(0,0,0));	//we do it manually
 	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
@@ -71,10 +72,19 @@ void JeepActor::tick(seconds timeStep)
 	static btScalar	const & gravity = LoadFloat("config/world.xml", "gravity");
 	static btScalar weight_front = 0;
 	static btScalar weight_rear = 0;
+	static btScalar turn_time = LoadFloat("config/jeep_springs.xml", "turn_time");
+	/*get steering info*/
+	btScalar XAxis = -1*input->XAxis;
+	static btScalar delta = 0;
+	delta += (XAxis * max_rotate - delta) / turn_time;
+	
 	for(int i=0; i<4; i++)
 	{
-		std::cout << i << std::endl;
-		springs[i]->tick(timeStep, pos);	/*apply springs*/
+		// std::cout << i << std::endl;
+		if(i == 2 || i == 3)
+			springs[i]->tick(timeStep, pos, delta);	/*apply springs*/
+		else
+			springs[i]->tick(timeStep, pos, 0);	/*apply springs*/
 	}
 	
 	/*calculate constants*/
@@ -159,8 +169,6 @@ void JeepActor::tick(seconds timeStep)
 	torque /= 1.1;
 	
 	/*moving sideways*/
-	btScalar XAxis = input->XAxis;
-	btScalar delta = XAxis * max_rotate;
 	btScalar omega = 0;
 	if(delta != 0)	//if actually turning
 	{

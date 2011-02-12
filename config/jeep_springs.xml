@@ -1,20 +1,21 @@
 <?xml version="1.0" ?>
 <param type="0" name="offset_x" value="2.3" />
 <param type="0" name="offset_z" value="2.9" />
-<param type="0" name="spring_top" value="0.0" />
+<param type="0" name="spring_top" value="0" />
 <param type="0" name="spring_bottom" value="-1.7" />
 <param type="0" name="width" value="4.8" />
-<param type="0" name="height" value="1.3" />
+<param type="0" name="height" value="1.0" />
 <param type="0" name="depth" value="6.0" />
 <param type="0" name="comx" value="0.0" />
 <param type="0" name="comy" value="0" />
 <param type="0" name="comz" value="0" />
 <param type="0" name="mass" value="10.0" />
-<param type="0" name="torque_k" value="0.5" />
+<param type="0" name="torque_k" value="0.75" />
 <param type="0" name="weight_shift" value="0.55" />
 <param type="0" name="engine_torque" value="10" />
 <param type="0" name="c_drag" value="0.03" />
-<param type="0" name="c_roll" value="200" />
-<param type="0" name="c_roll2" value="1.5" />
+<param type="0" name="c_roll" value="300" />
+<param type="0" name="c_roll2" value="3.5" />
 <param type="0" name="breaking" value="-400" />
 <param type="0" name="max_rotate" value="0.523598776" />
+<param type="0" name="turn_time" value="20" />

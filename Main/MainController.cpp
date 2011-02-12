@@ -8,7 +8,9 @@ MainController * MainController::ptr = NULL;
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-jeepModel("testBox.bmp", "jeep2_flipx.obj")
+jeepModel("testBox.bmp", "jeep2_flipx.obj"),
+cubeModel("testBox.bmp", "cube.obj")
+
 {
 	if(ptr == NULL)
 		ptr = this;
@@ -22,6 +24,13 @@ jeepModel("testBox.bmp", "jeep2_flipx.obj")
 
 	/*setup various lists*/	
 	ActorList temp;
+	for(int i=0; i<10; i++)
+	{
+		Actor * act = new Actor(mCube, cubeModel, btVector3(0,3+3*i, 3*i % 2) );		
+		actorList.push_back(act);
+		temp.push_back(act);
+	}
+
 	
 	
 	 Actor * act = new Actor(mPlane, jeepModel, btVector3(0,-5,0));
@@ -58,10 +67,9 @@ void MainController::explode()
 {
 	static int counter = 0;
 	ActorList temp;
-	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, jeepModel, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
+	Actor * act = new Actor(mCube, cubeModel, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		
