@@ -6,7 +6,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
 {	
 		
-	dynamicsWorld.setGravity(btVector3(0,LoadFloat("config/world.xml", "gravity"),0));   
+	dynamicsWorld.setGravity(btVector3(0,0,0));   
 	
 	newActors(actors);
 	

@@ -6,6 +6,8 @@
 
 #include "Physics.h"
 #include "Common/prelude.h"
+#include "Renderer/RenderObject.h"
+#include "Common/Actor.h"
 
 class Spring
 {
@@ -30,6 +32,8 @@ private:
 	btVector3 plane_normal;
 	btScalar wheel_speed;
 	btScalar const & wheel_radius;
+	RenderObject wheelModel;
+	Actor * wheel_actor;
 };
 
 #endif

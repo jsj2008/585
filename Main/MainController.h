@@ -22,7 +22,10 @@ public:
 	void yield();
 	void tick(unsigned long);
 	
+	static void addActor(Actor *);
+	
 protected:
+	static MainController * ptr;
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
@@ -38,5 +41,5 @@ protected:
 	const libChasis mChasis;
 
 	/*renderObjectTest*/
-	RenderObject renderTest;
+	RenderObject jeepModel;
 };

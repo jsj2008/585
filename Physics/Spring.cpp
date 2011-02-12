@@ -2,6 +2,10 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 #include <math.h>
+#include "Main/MainController.h"
+
+// RenderObject Spring::wheelModel;
+
 
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
@@ -74,11 +78,18 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
-chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")){
+chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")),
+wheelModel("testBox.bmp", "wheel_final.obj")
+{
 	debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;
 	current_weight = 0;
 	wheel_speed = 0;
+	
+	wheel_actor = new Actor(wheelModel, btVector3(0,0,0));
+	wheel_actor->orientation = btQuaternion::getIdentity();
+	
+	MainController::addActor(wheel_actor);
 }
 
 btScalar Spring::getWeight()
@@ -88,21 +99,28 @@ btScalar Spring::getWeight()
 
 void Spring::tick(seconds timeStep, btVector3 const & pos)
 {
-	static btScalar const & gravity = LoadFloat("config/world.xml", "gravity");
+	static btScalar const & gravity = fabs(LoadFloat("config/world.xml", "gravity"));
 	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
 	static btScalar const & k= LoadFloat("config/spring.xml", "k");
 	static btScalar const & k2 = LoadFloat("config/spring.xml", "c");
 	static btScalar	const & mass = LoadFloat("config/jeep_springs.xml", "mass");
-	static btScalar	const & weight = LoadFloat("config/spring.xml", "weight");
+	static btScalar	const & weight = mass * gravity / 4.0;
 	btScalar c = k2*sqrt(k/mass);
+
+	wheel_actor->orientation = chasis->getOrientation();
+
 
 	btVector3 rest = rest_fraction*(to - from);
 	btVector3 spring_unit = (to - from).normalize();
 
 	btCollisionWorld::ClosestRayResultCallback result(from, to);	
 	physics->dynamicsWorld.rayTest( from, to, result);
+	// std::cout << to.x() << "," << to.y() << "," << to.z() << std::endl;
+	// std::cout << from.x() << "," << from.y() << "," << from.z() << std::endl;
 	if(result.hasHit() )
 	{		
+		// std::cout << "hit" << std::endl;
+		
 		plane_normal = result.m_hitNormalWorld;
 
 		btVector3 physical_spring = (result.m_hitPointWorld - from);	//the spring as it is compressed
@@ -120,6 +138,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));		
 		debugger->drawLine(result.m_hitPointWorld,result.m_hitPointWorld + btVector3(10,0,0) ,btVector3(255,255,0));
 		debugger->drawSphere(result.m_hitPointWorld - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
+		wheel_actor->pos = result.m_hitPointWorld - btVector3(0,0.25,0);
 		
 		btVector3 projection = -spring_unit;//unit * unit.dot(spring_normal);
 		
@@ -129,6 +148,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 		if(force > 0)
 		{
 			chasis->applyForce( projection * force , from - pos);
+			// std::cout << "spring_force:" << force << std::endl;
 			current_weight = force;
 		}
 		chasis->activate();
@@ -138,6 +158,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos)
 	{
 		plane_normal = btVector3(0,0,0);
 		debugger->drawSphere(to - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
+		wheel_actor->pos = to - btVector3(0,0.25,0);
 		debugger->drawLine(from, to, btVector3(0,255,0));
 		was_hit = false;
 		current_weight = 0;

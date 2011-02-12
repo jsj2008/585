@@ -140,7 +140,7 @@ void Renderer::renderObjects() {
 			//glScaled(0.02, 0.02, 0.02);
 			// glScaled(-1,1,1);
 			currentActor->renderObject.draw();
-			currentActor->renderObject.drawNormals();
+			// currentActor->renderObject.drawNormals();
 			glPopMatrix();
 
 			// Clear all textures

@@ -58,7 +58,6 @@ input(input)
 void JeepActor::tick(seconds timeStep)
 {
 	static float torque = 0;
-	static float gravity = 1.0;
 	static float const & torque_k = LoadFloat("config/jeep_springs.xml", "torque_k");
 	static float const & comx= LoadFloat("config/jeep_springs.xml", "comx");
 	static float const & comz = LoadFloat("config/jeep_springs.xml", "comz");
@@ -69,10 +68,12 @@ void JeepActor::tick(seconds timeStep)
 	static float const & weight_shift = LoadFloat("config/jeep_springs.xml", "weight_shift");
 	static float const & max_rotate = LoadFloat("config/jeep_springs.xml", "max_rotate");
 	static float const & c_roll2 = LoadFloat("config/jeep_springs.xml", "c_roll2");
+	static btScalar	const & gravity = LoadFloat("config/world.xml", "gravity");
 	static btScalar weight_front = 0;
 	static btScalar weight_rear = 0;
 	for(int i=0; i<4; i++)
 	{
+		std::cout << i << std::endl;
 		springs[i]->tick(timeStep, pos);	/*apply springs*/
 	}
 	
@@ -142,18 +143,18 @@ void JeepActor::tick(seconds timeStep)
 	btScalar L = 2*offset_x;
 	btScalar c = fabs(offset_x - comx);
 	btScalar b = fabs(offset_x - comx);
-	btScalar W = mass * gravity;
+	btScalar W = mass * fabs(gravity);
 	btScalar h = fabs(spring_bottom - comz);
 	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
 	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
 	
-	//std::cout << "weight_front:" << weight_front << std::endl;
-	//std::cout << "weight_rear :" << weight_rear << std::endl;
+	// std::cout << "weight_front:" << weight_front << std::endl;
+	// std::cout << "weight_rear :" << weight_rear << std::endl;
 	
-	btVector3 gravity_v(0,-1.0, 0);
+	chasis->applyCentralForce(btVector3(0,gravity*mass,0));
 	//std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
-	chasis->applyForce(gravity_v * weight_front, front_tire);
-	chasis->applyForce(gravity_v * weight_rear, rear_tire);
+	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
+	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 	
 	torque /= 1.1;
 	
@@ -164,7 +165,7 @@ void JeepActor::tick(seconds timeStep)
 	if(delta != 0)	//if actually turning
 	{
 		btScalar R = L/sin(delta);
-		omega = speed / R * fabs(torque)/torque;
+		omega = speed / R;
 	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));

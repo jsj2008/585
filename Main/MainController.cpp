@@ -3,38 +3,34 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
+MainController * MainController::ptr = NULL;
+
 
 MainController::MainController() : 
-physics(PhysicsFactory::newPhysics(actorList, debugger) )
+physics(PhysicsFactory::newPhysics(actorList, debugger) ),
+jeepModel("testBox.bmp", "jeep2_flipx.obj")
 {
+	if(ptr == NULL)
+		ptr = this;
 
 	float const & planeY = LoadFloat("config/start.xml", "planeY");
 	float const & jeepX = LoadFloat("config/start.xml", "jeepX");
 	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
 	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
 
-	
-	renderTest = RenderObject("testBox.bmp", "jeep_final.obj");
-	// renderTest = RenderObject("testBox.bmp", "quad.obj");
-	//renderTest = RenderObject("testBox.bmp", "ducky.obj");
+		//renderTest = RenderObject("testBox.bmp", "ducky.obj");
 
 	/*setup various lists*/	
 	ActorList temp;
-	for(int i=0; i<1; i++)
-	{
-		Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0) );
-		actorList.push_back(act);
-		temp.push_back(act);
-	}
 	
-//	Actor * act = new Actor(mPlane, btVector3(0,planeY,0));
-	Actor * act = new Actor(mPlane, renderTest, btVector3(0,-5,0));
+	
+	 Actor * act = new Actor(mPlane, jeepModel, btVector3(0,-5,0));
 
-	actorList.push_back(act);
-	temp.push_back(act);
+	 actorList.push_back(act);
+	 temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, renderTest, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));
+	jeep = new JeepActor(mChasis, jeepModel, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));
 	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
@@ -65,11 +61,16 @@ void MainController::explode()
 	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
+	Actor * act = new Actor(mCube, jeepModel, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		
 	physics->newActors(temp);
+}
+
+void MainController::addActor(Actor * actor)
+{
+	ptr->actorList.push_back(actor);
 }
 
 MainController::~MainController()
