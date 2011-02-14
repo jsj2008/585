@@ -74,10 +74,31 @@ void JeepActor::tick(seconds timeStep)
 	static btScalar weight_rear = 0;
 	static btScalar turn_time = LoadFloat("config/jeep_springs.xml", "turn_time");
 	/*get steering info*/
+	
+	btScalar engine_force = 0;
+	if(input->AcceleratePressed)
+	{
+		engine_force = 2;
+		torque += engine_torque;
+	}
+	
 	btScalar XAxis = -1*input->XAxis;
+
+	if(input->BrakePressed)
+	{
+		engine_force = 2;	//for now just make it one or the other
+		// torque += engine_force;
+		torque -= engine_torque;
+		XAxis *= -1;
+		// u *= -1;
+		//f_breaking = -u * c_breaking;
+		
+	}
+
+	
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
-	
+
 	for(int i=0; i<4; i++)
 	{
 		// std::cout << i << std::endl;
@@ -94,22 +115,7 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
 	btScalar speed = velocity.length();
 
-	btScalar engine_force = 0;
-	if(input->AcceleratePressed)
-	{
-		engine_force = 2;
-		torque += engine_torque;
-	}
 	
-	if(input->BrakePressed)
-	{
-		engine_force = 2;	//for now just make it one or the other
-		// torque += engine_force;
-		torque = 0;
-		// u *= -1;
-		//f_breaking = -u * c_breaking;
-		
-	}
 	
 	//rear wheel driving
 	btVector3 long_force(0,0,0);

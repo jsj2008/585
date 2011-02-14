@@ -63,8 +63,9 @@ void MainController::tick(unsigned long interval)
 	
 	/*giant hack for camera*/
 
+	static btVector3 pos = btVector3(0,0,0);
 	btVector3 look = jeep->pos;
-	btVector3 pos = look + 40*quatRotate(jeep->orientation, btVector3(-1,0.4,0) );
+	pos += (look + 40*quatRotate(jeep->orientation, btVector3(-1,0.4,0) ) - pos ) / 30.0;
 	
 	renderer->setCamera(pos,look);
 	
