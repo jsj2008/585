@@ -29,6 +29,12 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	paintGL();
 }
 
+void Renderer::setCamera(btVector3 const & pos, btVector3 const & look)
+{
+	camPos = pos;
+	camLook = look;
+}
+
 Renderer::~Renderer() { }
 
 

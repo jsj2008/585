@@ -22,6 +22,7 @@ public:
 	void step();
 	void reset();
 	void resetView();
+	void setCamera(btVector3 const &, btVector3 const &);	//giant hack
 	//GLuint listIndex;
 	
 protected:

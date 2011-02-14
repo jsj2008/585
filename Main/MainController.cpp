@@ -61,6 +61,13 @@ void MainController::tick(unsigned long interval)
 	physics->step( interval / 1000.0);
 	jeep->tick(interval / 1000.0);
 	
+	/*giant hack for camera*/
+
+	btVector3 look = jeep->pos;
+	btVector3 pos = look + 40*quatRotate(jeep->orientation, btVector3(-1,0.4,0) );
+	
+	renderer->setCamera(pos,look);
+	
 }
 
 void MainController::explode()
