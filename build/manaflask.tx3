@@ -1,0 +1,26 @@
+#tex
+/textures/manaflask.bmp
+0.124854
+0
+-0.07
+1
+
+#tex
+/textures/manaflask3.bmp
+0.0686407
+0.02
+0.01
+1
+
+#tex
+/textures/manaflask2.bmp
+5.58794e-009
+0
+0
+1
+
+#att
+Specular 0.2 1.04 0
+Refraction 1.1 0.5 0
+Orientation 3.2 0.5 0
+

@@ -1,0 +1,27 @@
+#tex
+/textures/earthtexmap.bmp
+0.997573
+0
+0
+1
+
+#tex
+/textures/earthtexmap2.bmp
+0.572815
+0
+0
+1
+
+#tex
+/textures/skyblue.bmp
+0.0728155
+0
+0
+1
+
+#att
+ReflectionLongitude 1 0.5 0
+ReflectionLatitude 1 0.5 0
+Orientation 1.4 0.5 0
+
+#autospecular

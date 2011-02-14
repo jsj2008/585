@@ -1,0 +1,21 @@
+#tex
+/textures/blank.bmp
+0
+0
+0
+0
+
+#tex
+/textures/pitch.bmp
+0.505
+0.6
+-0.38
+0
+
+#att
+SuperDiffuse 11 0.5 1
+Orientation 11 0.5 1
+Orientation 3.2 0.5 1
+
+#bgcolor
+1 1 1
