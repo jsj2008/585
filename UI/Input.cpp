@@ -49,7 +49,7 @@ bool Input::UpdateInput(SDL_Event& event){
 		if(event.key.keysym.sym==BRAKEKEY) BrakePressed=true;
 		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=true;
 		if(event.key.keysym.sym==MASTERQUITKEY) {SDL_JoystickClose(0);return true;}
-
+		
 	}//end if type
 	else if( event.type == SDL_KEYUP )//key released
 	{

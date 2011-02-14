@@ -7,14 +7,13 @@
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) )
 {
-
 	float const & planeY = LoadFloat("config/start.xml", "planeY");
 	float const & jeepX = LoadFloat("config/start.xml", "jeepX");
 	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
 	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
 
 			
-	/*setup various lists*/	
+	/*setup various lists*/
 	ActorList temp;
 	for(int i=0; i<0; i++)
 	{
@@ -30,7 +29,10 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
 	jeep = new JeepActor(mChasis, physics, window.aInput , Point(jeepX, jeepY, jeepZ));
 	actorList.push_back(jeep);
-		
+
+	camera = new Camera();
+	camera->attachActor(jeep);
+
 	/*setup subcomponents*/
 	renderer = new Renderer(window);
 	physics->newActors(temp);
@@ -48,7 +50,7 @@ void MainController::tick(unsigned long interval)
 	//std::cout << interval << std::endl;
 	physics->step( interval / 1000.0);
 	jeep->tick(interval / 1000.0);
-	
+	camera->step(interval / 1000.0);
 }
 
 void MainController::explode()

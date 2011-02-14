@@ -1,6 +1,7 @@
 #pragma once
 #include "IController.h"
 #include "UI/Window.h"
+#include <Renderer/Camera.h>
 #include <Renderer/Renderer.h>
 #include <Renderer/GLDebugDrawer.h>
 #include <Physics/IPhysics.h>
@@ -21,17 +22,19 @@ public:
 	void explode();
 	void yield();
 	void tick(unsigned long);
-	
+
 protected:
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
 	Physics * const physics;
 	Window window;
-	
+
 	/*more game-oriented stuff*/
 	JeepActor * jeep;
-	
+
+	Camera * camera;
+
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;

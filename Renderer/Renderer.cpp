@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <iostream>
 #include "Common/SettingsFactory.h"
+#include "Driving/JeepActor.h"
 
 
 Renderer::Renderer(IWindow const & window) {
@@ -38,9 +39,7 @@ Renderer::~Renderer() { }
 void Renderer::paintGL() {
 	glLoadIdentity();
 
-	updateCamera();
-	//glMultMatrixf(trackball.getMatrix()); // Rotate the 3D fractal by the trackball's rotation matrix
-	//renderObjects();
+	//updateCamera();
 	
 }
 
@@ -83,6 +82,7 @@ void Renderer::initializeGL() {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
+
 	glEnable(GL_CULL_FACE);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
@@ -91,56 +91,9 @@ void Renderer::initializeGL() {
 		camLook.x, camLook.y, camLook.z,
 		camUp.x, camUp.y, camUp.z);
 
-	trackball.reset();
+	//trackball.reset();
 }
 
-/*void Renderer::mousePressEvent(QMouseEvent *event) {
-	updateMousePosition(event->x(), event->y());
-	if (event->buttons() == Qt::LeftButton) {
-		trackball.press(getScreenPosition(mouseX, mouseY)); // Press the trackball at this point
-		updateGL();
-	}
-	
-	
-}
-
-void Renderer::mouseReleaseEvent(QMouseEvent *event) {
-	updateCamera();
-	trackball.release();
-	updateGL();
-}
-
-void Renderer::mouseMoveEvent(QMouseEvent *event) { 
-	if (event->buttons() & Qt::RightButton) { // Pan the camera on right mouse button drag
-		int oldMouseX = mouseX; // Remember where the mouse was
-		int oldMouseY = mouseY;
-		updateMousePosition(event->x(), event->y());
-		int diffX = oldMouseX - mouseX; // Find the difference in the mouse position
-		int diffY = mouseY - oldMouseY;
-		camPos = camPos + (Point(diffX, diffY)*camPos.z)/(double)min(width, height); // Move the camera position and look point to pan it
-		camLook = camLook + (Point(diffX, diffY)*camPos.z)/(double)min(width, height);
-		updateCamera();
-		updateGL();
-	}
-	else if (event->buttons() & Qt::LeftButton) {
-		updateMousePosition(event->x(), event->y());
-		trackball.move(getScreenPosition(mouseX, mouseY)); // Rotate the trackball on left mouse button drag
-		updateCamera();
-		updateGL();
-	}
-}
-
-void Renderer::wheelEvent(QWheelEvent *event) {
-	if (event->orientation() == Qt::Vertical) { // Zoom in and out with the mouse wheel
-		int numDegrees = event->delta() / 8;
-		int numSteps = numDegrees / 15;
-
-		camPos.z -= ((camPos.z)/20.0)*numSteps;
-		setProjection();
-
-		updateGL();
-	}
-}*/
 
 void Renderer::updateMousePosition(int x, int y) {
 	mouseX = x;

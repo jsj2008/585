@@ -8,6 +8,7 @@
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
 #include "depend.h"
+#include <Renderer/Camera.h>
 
 using namespace std;
 
@@ -20,6 +21,8 @@ public:
 	void reset();
 	void resetView();
 	//GLuint listIndex;
+
+
 	
 	
 protected:
