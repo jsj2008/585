@@ -8,7 +8,7 @@ JeepEngine::JeepEngine()
 
 void JeepEngine::step(seconds const timeStep, btScalar const accelerate)
 {
-	m_torque += accelerate * 40;	//for now assume linear torque
+	m_torque += accelerate * 400;	//for now assume linear torque
 	m_torque -= timeStep * 1200;	
 	
 	if(m_torque < MIN_TORQUE)

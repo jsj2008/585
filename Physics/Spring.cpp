@@ -79,7 +79,7 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
 chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("testBox.bmp", "wheel_final.obj")
+wheelModel("blank.bmp", "wheel_final.obj")
 {
 	debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;

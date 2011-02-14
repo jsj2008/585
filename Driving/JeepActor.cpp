@@ -77,6 +77,7 @@ void JeepActor::tick(seconds timeStep)
 	btScalar XAxis = -1*input->XAxis;
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
+	std::cout << XAxis << std::endl;
 	
 	for(int i=0; i<4; i++)
 	{

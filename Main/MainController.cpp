@@ -8,8 +8,8 @@ MainController * MainController::ptr = NULL;
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-jeepModel("testBox.bmp", "jeep2_flipx.obj"),
-cubeModel("testBox.bmp", "cube.obj")
+jeepModel("blank.bmp", "jeep2_flipx.obj"),
+cubeModel("RAADicle.bmp", "cube.obj")
 
 {
 	if(ptr == NULL)

@@ -34,7 +34,6 @@ Input::Input(){
 }
 
 bool Input::UpdateInput(SDL_Event& event){ 
-
     //If a key was pressed
     if( event.type == SDL_KEYDOWN )
     {
@@ -45,8 +44,8 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_DOWN: YAxis=-1.0;  break;
             case SDLK_UP: YAxis=1.0; break;
         }//end switch
-		if(event.key.keysym.sym==ACCELKEY) AcceleratePressed=true;
-		if(event.key.keysym.sym==BRAKEKEY) BrakePressed=true;
+		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=true;
+		if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=true;
 		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=true;
 		if(event.key.keysym.sym==MASTERQUITKEY) {SDL_JoystickClose(0);return true;}
 
@@ -60,23 +59,25 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_DOWN: YAxis=0;  break;
             case SDLK_UP: YAxis=0; break;
         }
-		if(event.key.keysym.sym==ACCELKEY) AcceleratePressed=false;
-        if(event.key.keysym.sym==BRAKEKEY) BrakePressed=false;
+		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=false;
+        if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=false;
 		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=false;
 
 	}//end if type key released
-
 	else if(event.type ==SDL_JOYAXISMOTION){
+		XAxis=0.0;
+		YAxis=0.0;
 			if ( ( event.jaxis.value < -3200 ) || (event.jaxis.value > 3200 ) ) 
 			{
 				if( event.jaxis.axis == 0) 
 				{
+
 					//TODO: Have a scale value to make controls move faster depending on axis
 					if(event.jaxis.value<0)
 					{
 						XAxis=-1.0;//LEFT
 					}
-					if(event.jaxis.value>0)
+					else if(event.jaxis.value>0)
 					{
 						XAxis=1.0;//RIGHT
 					}
@@ -88,7 +89,7 @@ bool Input::UpdateInput(SDL_Event& event){
 					{
 						YAxis=-1.0;  //DOWN
 					}
-					if(event.jaxis.value>0)
+					else if(event.jaxis.value>0)
 					{
 						YAxis=1.0;  //UP
 					}

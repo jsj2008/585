@@ -13,8 +13,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	//lightPos = btVector3(5,15,24);
-	lightPos = btVector3(5,15,24);
+	lightPos = btVector3(50,150,240);
 
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
@@ -44,18 +43,22 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
+	
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, actorList.front()->renderObject.texture);
+
 	shader->on();
 		applyShader();
 		glColor3f(1,1,1);
-		drawQuad(btVector3( 10, -5, -10), btVector3( 10, -5,  10), btVector3(-10, -5, -10), btVector3(-10, -5,  10)); //Floor
-		drawQuad(btVector3( 10, -5, -30), btVector3( 10, -5,  -10), btVector3(-10, -5, -30), btVector3(-10, -5,  -10));
-		drawQuad(btVector3( -10, -5, -10), btVector3( -10, -5,  10), btVector3(-30, -5, -10), btVector3(-30, -5,  10));
-		drawQuad(btVector3( -10, -5, -30), btVector3( -10, -5,  -10), btVector3(-30, -5, -30), btVector3(-30, -5,  -10));
-		drawQuad(btVector3( 10, -5, 10), btVector3( 10, -5,  30), btVector3(-10, -5, 10), btVector3(-10, -5,  30));
-		drawQuad(btVector3( -10, -5, 10), btVector3( -10, -5,  30), btVector3(-30, -5, 10), btVector3(-30, -5,  30));
-		drawQuad(btVector3( 30, -5, -10), btVector3( 30, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10));
-		drawQuad(btVector3( 30, -5, 10), btVector3( 30, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
-		drawQuad(btVector3( 30, -5, -30), btVector3( 30, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
+		drawQuad(btVector3( -10, -5, -10), btVector3( -10, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10)); //Floor
+		drawQuad(btVector3( -10, -5, -30), btVector3( -10, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
+		drawQuad(btVector3( 10, -5, -10), btVector3( 10, -5,  10), btVector3(30, -5, -10), btVector3(30, -5,  10));
+		drawQuad(btVector3( 10, -5, -30), btVector3( 10, -5,  -10), btVector3(30, -5, -30), btVector3(30, -5,  -10));
+		drawQuad(btVector3( -10, -5, 10), btVector3( -10, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
+		drawQuad(btVector3( 10, -5, 10), btVector3( 10, -5,  30), btVector3(30, -5, 10), btVector3(30, -5,  30));
+		drawQuad(btVector3( -30, -5, -10), btVector3( -30, -5,  10), btVector3(-10, -5, -10), btVector3(-10, -5,  10));
+		drawQuad(btVector3( -30, -5, 10), btVector3( -30, -5,  30), btVector3(-10, -5, 10), btVector3(-10, -5,  30));
+		drawQuad(btVector3( -30, -5, -30), btVector3( -30, -5,  -10), btVector3(-10, -5, -30), btVector3(-10, -5,  -10));
 	shader->off();
 
 		//light
@@ -78,8 +81,6 @@ void Renderer::paintGL() {
 }
 
 void Renderer::step() {
-	// camPos = camPos.rotate(btVector3(0,1,0),0.005);
-	// camPos = camPos.rotate(btVector3(1,0,0),0.001);
 	paintGL();
 }
 
@@ -95,29 +96,6 @@ void Renderer::renderObjects() {
 		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
 		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
 		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
-		/*btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
-		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,1,0));
-		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,0,1));*/
-
-		/*****AXES FOR TESTING*****//*
-		glColor3f(1,0,0);
-		glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(h.getX(), h.getY(), h.getZ());
-		glEnd();
-
-		glColor3f(0,1,0);
-		glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(b.getX(), b.getY(), b.getZ());
-		glEnd();
-
-		glColor3f(0,0,1);
-		glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(n.getX(), n.getY(), n.getZ());
-		glEnd();
-		*//**************************/
 
 		// This matrix is defined columnwise
 		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
@@ -132,19 +110,8 @@ void Renderer::renderObjects() {
 			applyShader();
 
 			glColor3f(1,1,1);
-			/*drawCube(btVector3( currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
-					 btVector3( currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
-					 btVector3( currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
-					 btVector3( currentActor->height/2,  currentActor->width/2,  currentActor->depth/2),
-					 btVector3(-currentActor->height/2, -currentActor->width/2, -currentActor->depth/2),
-					 btVector3(-currentActor->height/2,  currentActor->width/2, -currentActor->depth/2),
-					 btVector3(-currentActor->height/2, -currentActor->width/2,  currentActor->depth/2),
-					 btVector3(-currentActor->height/2,  currentActor->width/2,  currentActor->depth/2));*/
-
 			glPushMatrix();
 			//glScaled(0.2, 0.2, 0.2);
-			//glScaled(0.02, 0.02, 0.02);
-			// glScaled(-1,1,1);
 			currentActor->renderObject.draw();
 			// currentActor->renderObject.drawNormals();
 			glPopMatrix();
@@ -288,7 +255,7 @@ void Renderer::initializeGL() {
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		load3DTexture("sunrisecopper.tx3");
-		//load3DTexture("spacemirror.tx3");
+		//load3DTexture("toonhill.tx3");
 		//load3DTexture("goldmist2.tx3");
 		loadTextures();
 	}
