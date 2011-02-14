@@ -280,7 +280,7 @@ void Renderer::initializeGL() {
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		load3DTexture("sunrisecopper.tx3");
-		//load3DTexture("spacemirror.tx3");
+		//load3DTexture("contrast_with_skew_inverse.tx3");
 		//load3DTexture("goldmist2.tx3");
 		loadTextures();
 	}
