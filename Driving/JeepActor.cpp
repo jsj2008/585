@@ -86,10 +86,10 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
-		engine_force = 2;	//for now just make it one or the other
+		engine_force = torque;	//for now just make it one or the other
 		// torque += engine_force;
-		torque -= engine_torque;
-		XAxis *= -1;
+		torque /= 2;
+		//XAxis *= -1;
 		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
@@ -119,7 +119,7 @@ void JeepActor::tick(seconds timeStep)
 	//rear wheel driving
 	btVector3 long_force(0,0,0);
 	btVector3 forward(0,0,0);
-	if(engine_force != 0)	//only call if wheels are doing something fancy
+	if(engine_force >= 0.02)	//only call if wheels are doing something fancy
 	{
 		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
 		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );

@@ -43,4 +43,5 @@ protected:
 	/*renderObjectTest*/
 	RenderObject jeepModel;
 	RenderObject cubeModel;
+	RenderObject planeModel;
 };

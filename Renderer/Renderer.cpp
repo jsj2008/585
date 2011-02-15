@@ -50,15 +50,15 @@ void Renderer::paintGL() {
 	shader->on();
 		applyShader();
 		glColor3f(1,1,1);
-		drawQuad(btVector3( -10, -5, -10), btVector3( -10, -5,  10), btVector3(10, -5, -10), btVector3(10, -5,  10)); //Floor
-		drawQuad(btVector3( -10, -5, -30), btVector3( -10, -5,  -10), btVector3(10, -5, -30), btVector3(10, -5,  -10));
-		drawQuad(btVector3( 10, -5, -10), btVector3( 10, -5,  10), btVector3(30, -5, -10), btVector3(30, -5,  10));
-		drawQuad(btVector3( 10, -5, -30), btVector3( 10, -5,  -10), btVector3(30, -5, -30), btVector3(30, -5,  -10));
-		drawQuad(btVector3( -10, -5, 10), btVector3( -10, -5,  30), btVector3(10, -5, 10), btVector3(10, -5,  30));
-		drawQuad(btVector3( 10, -5, 10), btVector3( 10, -5,  30), btVector3(30, -5, 10), btVector3(30, -5,  30));
-		drawQuad(btVector3( -30, -5, -10), btVector3( -30, -5,  10), btVector3(-10, -5, -10), btVector3(-10, -5,  10));
-		drawQuad(btVector3( -30, -5, 10), btVector3( -30, -5,  30), btVector3(-10, -5, 10), btVector3(-10, -5,  30));
-		drawQuad(btVector3( -30, -5, -30), btVector3( -30, -5,  -10), btVector3(-10, -5, -30), btVector3(-10, -5,  -10));
+		drawQuad(btVector3( -1000, -5, -1000), btVector3( -1000, -5,  1000), btVector3(1000, -5, -1000), btVector3(1000, -5,  1000)); //Floor
+		drawQuad(btVector3( -1000, -5, -3000), btVector3( -1000, -5,  -1000), btVector3(1000, -5, -3000), btVector3(1000, -5,  -1000));
+		drawQuad(btVector3( 1000, -5, -1000), btVector3( 1000, -5,  1000), btVector3(3000, -5, -1000), btVector3(3000, -5,  1000));
+		drawQuad(btVector3( 1000, -5, -3000), btVector3( 1000, -5,  -1000), btVector3(3000, -5, -3000), btVector3(3000, -5,  -1000));
+		drawQuad(btVector3( -1000, -5, 1000), btVector3( -1000, -5,  3000), btVector3(1000, -5, 1000), btVector3(1000, -5,  3000));
+		drawQuad(btVector3( 1000, -5, 1000), btVector3( 1000, -5,  3000), btVector3(3000, -5, 1000), btVector3(3000, -5,  3000));
+		drawQuad(btVector3( -3000, -5, -1000), btVector3( -3000, -5,  1000), btVector3(-1000, -5, -1000), btVector3(-1000, -5,  1000));
+		drawQuad(btVector3( -3000, -5, 1000), btVector3( -3000, -5,  3000), btVector3(-1000, -5, 1000), btVector3(-1000, -5,  3000));
+		drawQuad(btVector3( -3000, -5, -3000), btVector3( -3000, -5,  -1000), btVector3(-1000, -5, -3000), btVector3(-1000, -5,  -1000));
 	shader->off();
 
 		//light
@@ -85,7 +85,7 @@ void Renderer::step() {
 }
 
 void Renderer::renderObjects() {
-	
+
 	Actor* currentActor = 0;
 	for (ActorList::const_iterator i = actorList.begin(); i != actorList.end(); i++) {
 		currentActor = *i;
@@ -113,7 +113,7 @@ void Renderer::renderObjects() {
 			glPushMatrix();
 			//glScaled(0.2, 0.2, 0.2);
 			currentActor->renderObject.draw();
-			// currentActor->renderObject.drawNormals();
+			//currentActor->renderObject.drawNormals();
 			glPopMatrix();
 
 			// Clear all textures
@@ -192,7 +192,7 @@ void Renderer::applyShader() {
 }
 
 void Renderer::initializeGL() {
-	glClearColor(0, 0, 0, 0);
+	glClearColor(0.7, 0.8, 1, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};

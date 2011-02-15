@@ -9,7 +9,8 @@ MainController * MainController::ptr = NULL;
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
 jeepModel("blank.bmp", "jeep2_flipx.obj"),
-cubeModel("RAADicle.bmp", "cube.obj")
+cubeModel("RAADicle.bmp", "cube.obj"),
+planeModel("RAADicleXtreme.bmp", "quad.obj")
 
 {
 	if(ptr == NULL)
@@ -22,20 +23,21 @@ cubeModel("RAADicle.bmp", "cube.obj")
 
 		//renderTest = RenderObject("testBox.bmp", "ducky.obj");
 
-	/*setup various lists*/	
 	ActorList temp;
+	 Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
+	 actorList.push_back(act);
+
+	/*setup various lists*/	
 	for(int i=0; i<10; i++)
 	{
-		Actor * act = new Actor(mCube, cubeModel, btVector3(0,3+3*i, 3*i % 2) );		
+		Actor * act = new Actor(mCube, cubeModel, btVector3(0,3+3*i, 25+3*i % 2) );		
 		actorList.push_back(act);
 		temp.push_back(act);
 	}
 
 	
 	
-	 Actor * act = new Actor(mPlane, jeepModel, btVector3(0,-5,0));
 
-	 actorList.push_back(act);
 	 temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
@@ -63,7 +65,7 @@ void MainController::tick(unsigned long interval)
 	
 	/*giant hack for camera*/
 
-	static btVector3 pos = btVector3(0,0,0);
+	static btVector3 pos = btVector3(9,11,15);
 	btVector3 look = jeep->pos;
 	pos += (look + 40*quatRotate(jeep->orientation, btVector3(-1,0.4,0) ) - pos ) / 30.0;
 	
