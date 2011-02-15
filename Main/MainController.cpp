@@ -1,28 +1,52 @@
 #include "MainController.h"
 #include "Physics/PhysicsFactory.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
+
+MainController * MainController::ptr = NULL;
 
 
-MainController::MainController()
+MainController::MainController() : 
+physics(PhysicsFactory::newPhysics(actorList, debugger) ),
+jeepModel("blank.bmp", "jeep2_flipx.obj"),
+cubeModel("RAADicle.bmp", "cube.obj"),
+planeModel("RAADicleXtreme.bmp", "quad.obj")
+
 {
-	
-	renderTest = RenderObject("testBox.bmp", "jeep_final.obj");
-	//renderTest = RenderObject("testBox.bmp", "pitcher.obj");
-	//renderTest = RenderObject("testBox.bmp", "ducky.obj");
+	if(ptr == NULL)
+		ptr = this;
+
+	float const & planeY = LoadFloat("config/start.xml", "planeY");
+	float const & jeepX = LoadFloat("config/start.xml", "jeepX");
+	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
+	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
+
+		//renderTest = RenderObject("testBox.bmp", "ducky.obj");
+
+	ActorList temp;
+	 Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
+	 actorList.push_back(act);
 
 	/*setup various lists*/	
-	for(int i=0; i<0; i++)
+	for(int i=0; i<10; i++)
 	{
-		Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0) );
+		Actor * act = new Actor(mCube, cubeModel, btVector3(0,3+3*i, 25+3*i % 2) );		
 		actorList.push_back(act);
+		temp.push_back(act);
 	}
+
 	
-	Actor * act = new Actor(mPlane, renderTest, btVector3(0,-5,0));
-	actorList.push_back(act);
+	
+
+	 temp.push_back(act);
+		
+	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
+	jeep = new JeepActor(mChasis, jeepModel, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));
+	actorList.push_back(jeep);
 		
 	/*setup subcomponents*/
+	physics->newActors(temp);
 	renderer = new Renderer(window, actorList);
-	physics = PhysicsFactory::newPhysics(actorList, debugger);
 	window.run(this);	//launch window
 
 }
@@ -34,18 +58,18 @@ void MainController::yield()
 
 void MainController::tick(unsigned long interval)
 {
-	static int counter = 0;
-	
-	counter ++;
-	
-	if(counter > (1000/10) )
-	{
-		counter = 0;
-		explode();
-	}
-
-	physics->step( interval / 1000.0 );
+	//std::cout << interval << std::endl;
 	renderer->step();
+	physics->step( interval / 1000.0);
+	jeep->tick(interval / 1000.0);
+	
+	/*giant hack for camera*/
+
+	static btVector3 pos = btVector3(9,11,15);
+	btVector3 look = jeep->pos;
+	pos += (look + 40*quatRotate(jeep->orientation, btVector3(-1,0.4,0) ) - pos ) / 30.0;
+	
+	renderer->setCamera(pos,look);
 	
 }
 
@@ -53,14 +77,18 @@ void MainController::explode()
 {
 	static int counter = 0;
 	ActorList temp;
-	
 	Real rad = 3.1415926 / 6 * counter++;	//pick random angle
 	
-	Actor * act = new Actor(mCube, renderTest, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
+	Actor * act = new Actor(mCube, cubeModel, btVector3(0,-3, 0), btVector3(cos(rad)*5, 10, sin(rad)*5 ) );
 	actorList.push_back(act);
 	temp.push_back(act);
 		
 	physics->newActors(temp);
+}
+
+void MainController::addActor(Actor * actor)
+{
+	ptr->actorList.push_back(actor);
 }
 
 MainController::~MainController()
@@ -72,5 +100,4 @@ MainController::~MainController()
 	
 	delete physics;
 	delete renderer;
-	
 }

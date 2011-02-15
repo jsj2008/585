@@ -14,6 +14,7 @@
 
 #include "Renderer/GLDebugDrawer.h"
 #include "IPhysics.h"
+class Spring;
 
 class Physics : public IPhysics
 {
@@ -22,8 +23,10 @@ public:
 	~Physics();
 	void newActors(ActorList const & newActors);	//physics needs to know if new objects have been added to actorList
 	void step(seconds timeStep);
-	
+	btRigidBody * const newActor(Actor * const);
+	friend class Spring;	
 private:
+	
 	ActorList const & actorList;
 	btIDebugDraw & debugger;
 	btDbvtBroadphase broadphase;

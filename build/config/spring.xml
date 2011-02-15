@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<param type="0" name="k" value="1000" />
+<param type="0" name="c" value="4000" />
+<param type="0" name="rest" value="0.55" />
+<param type="0" name="radius" value="0.25" />

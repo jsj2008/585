@@ -1,6 +1,6 @@
 #include "Window.h"
 #include <iostream>
-#include <fstream>
+#include "Common/SettingsFactory.h"
 
 Window::Window()
 {
@@ -18,6 +18,7 @@ Window::Window()
 	SDL_Surface * drawContext;
 	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
+	aInput=new Input();
 }
 
 Uint32 Window::Timer(Uint32 interval, void* )
@@ -44,6 +45,7 @@ void Window::updateGL()
 
 void Window::run(IController * controller)
 {     
+	static int const & delay = LoadInt("config/window.xml", "delay");
 	bool quit = false;
 	Uint32 before = SDL_GetTicks();
 	while(!quit) {
@@ -59,13 +61,12 @@ void Window::run(IController * controller)
 			case SDL_QUIT:
 				quit = true;
 				break;
-			case SDL_KEYDOWN:
-				if(event.key.keysym.sym == 'q') quit = true;
-				break;
+			default:
+				quit=aInput->UpdateInput(event);
 			}
 		}
 		updateGL();
 		controller->yield();	//gives control to main loop
-		SDL_Delay(10);
+		SDL_Delay( delay );
 	}
 }

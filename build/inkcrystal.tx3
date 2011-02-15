@@ -1,0 +1,28 @@
+#tex
+/textures/comicbook1.bmp
+3.35276e-008
+0
+0
+1
+
+#tex
+/textures/comicbook2.bmp
+0.498654
+-0.09
+0.01
+1
+
+#tex
+/textures/contrast.bmp
+0.985728
+0
+0
+1
+
+#att
+SuperDiffuse 1.92 0.5 0
+Orientation 2.96 0.5 0
+SuperDiffuse 0.9 0.5 0
+
+#bgcolor
+0.403922 0.164706 0.615686

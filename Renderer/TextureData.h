@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include <direct.h>
 #include <stdlib.h>
 using namespace std;
 

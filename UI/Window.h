@@ -3,6 +3,7 @@
 
 #include "Main/IController.h"
 #include "IWindow.h"
+#include "Input.h"
 #include <SDL.h>
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
@@ -19,6 +20,7 @@ public:
 	int ScreenWidth() const {return SDL_GetVideoSurface()->w;}
 	int ScreenHeight() const {return SDL_GetVideoSurface()->h;}
 	int ScreenDepth() const {return SCREEN_DEPTH;}
+	Input *aInput;
 
 private:
 	

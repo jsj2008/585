@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RENDEROBJECT_H
+#define RENDEROBJECT_H
 
 #include "Common/prelude.h"
 #include "Model.h"
@@ -24,3 +25,4 @@ public:
 	void drawNormals() const;
 
 };
+#endif
