@@ -24,8 +24,8 @@ planeModel("RAADicleXtreme.bmp", "quad.obj")
 		//renderTest = RenderObject("testBox.bmp", "ducky.obj");
 
 	ActorList temp;
-	 Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
-	 actorList.push_back(act);
+	 // Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
+	 // actorList.push_back(act);
 
 	/*setup various lists*/	
 	for(int i=0; i<10; i++)
@@ -38,7 +38,7 @@ planeModel("RAADicleXtreme.bmp", "quad.obj")
 	
 	
 
-	 temp.push_back(act);
+	 // temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
 	jeep = new JeepActor(mChasis, jeepModel, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));

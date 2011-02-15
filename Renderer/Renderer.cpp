@@ -73,7 +73,7 @@ void Renderer::paintGL() {
 			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
 			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
 			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
-	glEnable(GL_LIGHTING);
+	// glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE);
 
 	renderObjects();

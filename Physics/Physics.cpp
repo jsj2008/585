@@ -1,6 +1,8 @@
 #include "Physics.h"
 #include <iostream>
 #include "Common/SettingsFactory.h"
+#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
@@ -13,6 +15,32 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	/*turn on debugging*/
 	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 	dynamicsWorld.setDebugDrawer(&debugger);
+
+	float * map = new float[400];
+	for(int i=0; i<400; i++)
+	{
+		
+		map[i] = -5.0 + (rand() % 5);//5.0/(rand() % 10);
+	}
+	
+    btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(20, 20,
+					  map,
+					  1.0,
+					  -1000.0, 1000.0,
+					  1, PHY_FLOAT, false);
+
+	btTransform tr;
+	tr.setIdentity();
+	// tr.setOrigin(btVector3())			
+	btVector3 localInertia(0,0,0);	
+	
+	heightfieldShape->setLocalScaling(btVector3(15, 1, 15));
+
+	btRigidBody* body = new btRigidBody(0,0,heightfieldShape,localInertia);	
+	body->setWorldTransform(tr);
+
+	dynamicsWorld.addRigidBody(body);
+	
 
 }
 
