@@ -111,7 +111,7 @@ void main() {
 		xAttrVal = mod(c_angle+xMod*0.1-0.1, 1.0);
 	} else if (xAttr == 11) {
 		float c_angle;
-		if (trueNormal.y >= 0)
+		if (trueNormal.y >= 0.0)
 			c_angle = (1.0-acos(trueNormal.y)/PI);
 		else
 			c_angle = (acos(-trueNormal.y)/PI);
@@ -175,7 +175,7 @@ void main() {
 		yAttrVal = mod(c_angle+yMod*0.1-0.1, 1.0);
 	} else if (yAttr == 11) {
 		float c_angle;
-		if (trueNormal.y >= 0)
+		if (trueNormal.y >= 0.0)
 			c_angle = (1.0-acos(trueNormal.y)/PI);
 		else
 			c_angle = (acos(-trueNormal.y)/PI);
@@ -239,7 +239,7 @@ void main() {
 		zAttrVal = mod(c_angle+zMod*0.1-0.1, 1.0);
 	} else if (zAttr == 11) {
 		float c_angle;
-		if (trueNormal.y >= 0)
+		if (trueNormal.y >= 0.0)
 			c_angle = (1.0-acos(trueNormal.y)/PI);
 		else
 			c_angle = (acos(-trueNormal.y)/PI);
@@ -351,7 +351,7 @@ void main() {
 	else if (prevTex == 3)
 		prevTexColour = (texture2D(tex3, texcoord));
 	else
-		prevTexColour = (vec4(1.0f, 1.0f, 1.0f, 1.0));
+		prevTexColour = (vec4(1.0, 1.0, 1.0, 1.0));
 		
 	if (nextTex == 0)
 		nextTexColour = (texture2D(tex0, texcoord));
@@ -362,7 +362,7 @@ void main() {
 	else if (nextTex == 3)
 		nextTexColour = (texture2D(tex3, texcoord));
 	else
-		nextTexColour = (vec4(1.0f, 1.0f, 1.0f, 1.0));
+		nextTexColour = (vec4(1.0, 1.0, 1.0, 1.0));
 		
 	if (prevTex == -1 && nextTex != -1) {
 		gl_FragColor = nextTexColour;

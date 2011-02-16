@@ -256,7 +256,7 @@ void Renderer::initializeGL() {
 		
 		load3DTexture("sunrisecopper.tx3");
 		//load3DTexture("toonhill.tx3");
-		//load3DTexture("goldmist2.tx3");
+		//load3DTexture("gold.tx3");
 		loadTextures();
 	}
 	shader->off();
