@@ -391,10 +391,10 @@ void Renderer::drawGround() {
 			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
 			glNormal3f(n.getX(), n.getY(), n.getZ());
-			glVertex3f(v1.getZ(), v1.getY(), v1.getX());
-			glVertex3f(v2.getZ(), v2.getY(), v2.getX());
-			glVertex3f(v3.getZ(), v3.getY(), v3.getX());
-			glVertex3f(v4.getZ(), v4.getY(), v4.getX());
+			glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
+			glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
+			glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
+			glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
 		}
 	}
 	glEnd();
