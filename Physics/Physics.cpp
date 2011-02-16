@@ -72,7 +72,6 @@ void Physics::step(seconds timeStep)
 {
 	dynamicsWorld.stepSimulation(timeStep,1);	//keep an eye on the number of substeps (10 is pretty random)
 	//dynamicsWorld.debugDrawWorld();
-
 }
 
 Physics::~Physics()

@@ -112,6 +112,7 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
+
 	btScalar speed = velocity.length();
 
 	
@@ -145,7 +146,6 @@ void JeepActor::tick(seconds timeStep)
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
 	btVector3 f_rolling = -c_rolling * velocity;
-	
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	/*find car acceleration*/
@@ -181,6 +181,10 @@ void JeepActor::tick(seconds timeStep)
 		btScalar R = L/s;
 		omega = speed / R;
 	}
+	
+	
+		
+	
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));
 	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
