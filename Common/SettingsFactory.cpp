@@ -123,6 +123,7 @@ bool SettingsFactory::HashVisitor::VisitEnter(TiXmlElement const & elem , TiXmlA
 
 SettingsFactory::~SettingsFactory()
 {
+	/*
 	for(AllSettings::iterator itr=ptr->all_settings.begin(); itr != ptr->all_settings.end(); ++ itr)
 		{
 			Settings * settings = itr->second;
@@ -131,5 +132,5 @@ SettingsFactory::~SettingsFactory()
 				delete itr2->second;
 			}
 			delete itr->second;
-		}
+		}*/
 }

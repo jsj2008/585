@@ -44,13 +44,16 @@ SOURCE_GROUP("UI\\Src" FILES ${UI_SOURCES})
 SOURCE_GROUP("Tinyxml\\Include" FILES ${XML_HEADERS})
 SOURCE_GROUP("Tinyxml\\Src" FILES ${XML_SOURCES})
 
+SOURCE_GROUP("Driving\\Include" FILES ${DRIVING_HEADERS})
+SOURCE_GROUP("Driving\\Src" FILES ${DRIVING_SOURCES})
+
 #OpenGL
 find_package(OpenGL)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 #GLEW
 find_package(Glew)
-include_directories(${GLEW_INCLUDE_DIR})
+include_directories(${GLEW_INCLUDE_PATH})
 
 #bullet
 find_package(Bullet REQUIRED)

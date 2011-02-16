@@ -2,7 +2,7 @@
 <param type="0" name="offset_x" value="2.3" />
 <param type="0" name="offset_z" value="2.9" />
 <param type="0" name="spring_top" value="0" />
-<param type="0" name="spring_bottom" value="-1.7" />
+<param type="0" name="spring_bottom" value="-2.7" />
 <param type="0" name="width" value="4.8" />
 <param type="0" name="height" value="1.0" />
 <param type="0" name="depth" value="6.0" />
