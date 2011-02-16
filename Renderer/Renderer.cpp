@@ -380,15 +380,17 @@ void Renderer::drawGround() {
 	float zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
 	glPushMatrix();
-	glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0);
+	glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
+	glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+
 	glBegin(GL_QUADS);
 	btVector3 v1, v2, v3, v4, n;
 	for (int x = 0; x < hm->width - 1; x++) {
 		for (int z = 0; z < hm->height - 1; z++) {
+			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
-			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
 			glNormal3f(n.getX(), n.getY(), n.getZ());
 			glVertex3f(v1.getZ(), v1.getY(), v1.getX());
