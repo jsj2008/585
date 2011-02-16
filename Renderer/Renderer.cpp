@@ -399,4 +399,6 @@ void Renderer::drawGround() {
 	}
 	glEnd();
 	glPopMatrix();
+	
+	delete hm;
 }
