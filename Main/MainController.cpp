@@ -25,15 +25,7 @@ planeModel("RAADicleXtreme.bmp", "quad.obj")
 
 	ActorList temp;
 	 // Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
-	 // actorList.push_back(act);
-
-	/*setup various lists*/	
-	for(int i=0; i<10; i++)
-	{
-		Actor * act = new Actor(mCube, cubeModel, btVector3(0,3+3*i, 25+3*i % 2) );		
-		actorList.push_back(act);
-		temp.push_back(act);
-	}
+	 // actorList.push_back(act);	
 
 	
 	

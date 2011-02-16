@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<param type="0" name="jeepX" value="-20" />
-<param type="0" name="jeepY" value="5" />
-<param type="0" name="jeepZ" value="0" />
+<param type="0" name="jeepX" value="-140" />
+<param type="0" name="jeepY" value="55" />
+<param type="0" name="jeepZ" value="-120" />
 <param type="0" name="planeY" value="-7.5" />

@@ -81,7 +81,7 @@ Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 con
 chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")),
 wheelModel("blank.bmp", "wheel_final.obj")
 {
-	debugger = physics->dynamicsWorld.getDebugDrawer();
+	// debugger = physics->dynamicsWorld.getDebugDrawer();
 	was_hit = false;
 	current_weight = 0;
 	wheel_speed = 0;
@@ -99,6 +99,7 @@ btScalar Spring::getWeight()
 
 void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 {
+	
 	static btScalar const & gravity = fabs(LoadFloat("config/world.xml", "gravity"));
 	static btScalar const & rest_fraction = LoadFloat("config/spring.xml", "rest");
 	static btScalar const & k= LoadFloat("config/spring.xml", "k");
@@ -120,7 +121,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	// std::cout << from.x() << "," << from.y() << "," << from.z() << std::endl;
 	if(result.hasHit() )
 	{		
-		// std::cout << "hit" << std::endl;
+		// std::cout << "hit: " << timeStep * 1000.0 << std::endl;
 		
 		plane_normal = result.m_hitNormalWorld;
 
@@ -136,9 +137,9 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 		if(!was_hit)
 			spring_v = 0;
 				
-		debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));		
-		debugger->drawLine(result.m_hitPointWorld,result.m_hitPointWorld + btVector3(10,0,0) ,btVector3(255,255,0));
-		debugger->drawSphere(result.m_hitPointWorld - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
+		// debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));		
+		// debugger->drawLine(result.m_hitPointWorld,result.m_hitPointWorld + btVector3(10,0,0) ,btVector3(255,255,0));
+		// debugger->drawSphere(result.m_hitPointWorld - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
 		wheel_actor->pos = result.m_hitPointWorld - btVector3(0,0.25,0);
 		
 		btVector3 projection = -spring_unit;//unit * unit.dot(spring_normal);
@@ -158,9 +159,9 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
-		debugger->drawSphere(to - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
+		// debugger->drawSphere(to - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
 		wheel_actor->pos = to - btVector3(0,0.25,0);
-		debugger->drawLine(from, to, btVector3(0,255,0));
+		// debugger->drawLine(from, to, btVector3(0,255,0));
 		was_hit = false;
 		current_weight = 0;
 	}

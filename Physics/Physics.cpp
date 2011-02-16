@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#include "HeightMap.h"
 
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
@@ -16,25 +17,25 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 	dynamicsWorld.setDebugDrawer(&debugger);
 
-	float * map = new float[400];
-	for(int i=0; i<400; i++)
+	/*float * map = new float[50*50];
+	for(int i=0; i<50*50; i++)
 	{
 		
 		map[i] = -5.0 + (rand() % 5);//5.0/(rand() % 10);
-	}
+	}*/
 	
-    btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(20, 20,
-					  map,
-					  1.0,
-					  -1000.0, 1000.0,
-					  1, PHY_FLOAT, false);
+	HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
+    btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
+					  m->map,
+					  0.2,
+					  -300.0, 300.0,
+					  1, PHY_UCHAR, false);
 
 	btTransform tr;
 	tr.setIdentity();
-	// tr.setOrigin(btVector3())			
 	btVector3 localInertia(0,0,0);	
 	
-	heightfieldShape->setLocalScaling(btVector3(15, 1, 15));
+	heightfieldShape->setLocalScaling(btVector3(LoadFloat("config/world.xml","height_map_scale_x"), 1, LoadFloat("config/world.xml","height_map_scale_z")));
 
 	btRigidBody* body = new btRigidBody(0,0,heightfieldShape,localInertia);	
 	body->setWorldTransform(tr);

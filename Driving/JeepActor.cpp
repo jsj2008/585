@@ -175,9 +175,10 @@ void JeepActor::tick(seconds timeStep)
 	
 	/*moving sideways*/
 	btScalar omega = 0;
-	if(delta != 0)	//if actually turning
+	btScalar s = sin(delta);
+	if(s != 0)	//if actually turning
 	{
-		btScalar R = L/sin(delta);
+		btScalar R = L/s;
 		omega = speed / R;
 	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
