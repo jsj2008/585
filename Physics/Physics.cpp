@@ -27,7 +27,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
 					  m->map,
-					  0.2,
+					  LoadFloat("config/world.xml","height_map_scale_y"),
 					  -300.0, 300.0,
 					  1, PHY_UCHAR, false);
 

@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <LinearMath/btIDebugDraw.h>
+#include "Common/SettingsFactory.h"
+#include "Physics/Heightmap.h"
 
 #define MAX_TEXTURES 3
 
@@ -35,12 +37,13 @@ private:
 	IWindow * window;
 	
 	void renderObjects();
+	void drawGround();
 	void applyShader();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	void drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br);
-	void drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf);
+//	void drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br);
+//	void drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf);
 	void updateMousePosition(int x, int y);
 	btVector3* getScreenPosition(int x, int y);
 

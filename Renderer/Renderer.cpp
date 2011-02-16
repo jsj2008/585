@@ -1,6 +1,5 @@
 #include "Renderer.h"
 #include <iostream>
-#include "Common/SettingsFactory.h"
 
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
@@ -50,19 +49,13 @@ void Renderer::paintGL() {
 	shader->on();
 		applyShader();
 		glColor3f(1,1,1);
-		drawQuad(btVector3( -1000, -5, -1000), btVector3( -1000, -5,  1000), btVector3(1000, -5, -1000), btVector3(1000, -5,  1000)); //Floor
-		drawQuad(btVector3( -1000, -5, -3000), btVector3( -1000, -5,  -1000), btVector3(1000, -5, -3000), btVector3(1000, -5,  -1000));
-		drawQuad(btVector3( 1000, -5, -1000), btVector3( 1000, -5,  1000), btVector3(3000, -5, -1000), btVector3(3000, -5,  1000));
-		drawQuad(btVector3( 1000, -5, -3000), btVector3( 1000, -5,  -1000), btVector3(3000, -5, -3000), btVector3(3000, -5,  -1000));
-		drawQuad(btVector3( -1000, -5, 1000), btVector3( -1000, -5,  3000), btVector3(1000, -5, 1000), btVector3(1000, -5,  3000));
-		drawQuad(btVector3( 1000, -5, 1000), btVector3( 1000, -5,  3000), btVector3(3000, -5, 1000), btVector3(3000, -5,  3000));
-		drawQuad(btVector3( -3000, -5, -1000), btVector3( -3000, -5,  1000), btVector3(-1000, -5, -1000), btVector3(-1000, -5,  1000));
-		drawQuad(btVector3( -3000, -5, 1000), btVector3( -3000, -5,  3000), btVector3(-1000, -5, 1000), btVector3(-1000, -5,  3000));
-		drawQuad(btVector3( -3000, -5, -3000), btVector3( -3000, -5,  -1000), btVector3(-1000, -5, -3000), btVector3(-1000, -5,  -1000));
+		
+		drawGround();
+
 	shader->off();
 
 		//light
-	glColor3f(1,1,1);
+/*	glColor3f(1,1,1);
 	glDisable(GL_TEXTURE);
 	glDisable(GL_LIGHTING);
 	drawCube(btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
@@ -74,7 +67,7 @@ void Renderer::paintGL() {
 			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
 			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
 	// glEnable(GL_LIGHTING);
-	glEnable(GL_TEXTURE);
+	glEnable(GL_TEXTURE);*/
 
 	renderObjects();
 	
@@ -256,7 +249,7 @@ void Renderer::initializeGL() {
 		
 		load3DTexture("sunrisecopper.tx3");
 		//load3DTexture("toonhill.tx3");
-		//load3DTexture("goldmist2.tx3");
+		//load3DTexture("gold.tx3");
 		loadTextures();
 	}
 	shader->off();
@@ -301,7 +294,7 @@ void Renderer::updateCamera() {
 	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
-
+/*
 void Renderer::drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br) {
 	glBegin(GL_QUADS);
 	btVector3 normal = (tl-tr).cross(tl-bl);
@@ -327,7 +320,7 @@ void Renderer::drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 
 	drawQuad(tlf, trf, blf, brf); // Front face
 	drawQuad(blb, brb, tlb, trb); // Back face
 }
-
+*/
 void Renderer::load3DTexture(string filename) {
 	texData->load(filename);
 	attrData->load(filename);
@@ -377,4 +370,33 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 	 
 	if (surface) SDL_FreeSurface(surface);
 	return true;
+}
+
+void Renderer::drawGround() {
+	HeightMap* hm = new HeightMap(LoadString2("config/world.xml","height_map"));
+
+	float xscale = LoadFloat("config/world.xml","height_map_scale_x");
+	float yscale = LoadFloat("config/world.xml","height_map_scale_y");
+	float zscale = LoadFloat("config/world.xml","height_map_scale_z");
+
+	glPushMatrix();
+	glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0);
+	glBegin(GL_QUADS);
+	btVector3 v1, v2, v3, v4, n;
+	for (int x = 0; x < hm->width - 1; x++) {
+		for (int z = 0; z < hm->height - 1; z++) {
+			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
+			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+			n = (v1-v3).cross(v1-v2);
+			glNormal3f(n.getX(), n.getY(), n.getZ());
+			glVertex3f(v1.getZ(), v1.getY(), v1.getX());
+			glVertex3f(v2.getZ(), v2.getY(), v2.getX());
+			glVertex3f(v3.getZ(), v3.getY(), v3.getX());
+			glVertex3f(v4.getZ(), v4.getY(), v4.getX());
+		}
+	}
+	glEnd();
+	glPopMatrix();
 }
