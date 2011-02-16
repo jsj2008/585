@@ -53,7 +53,7 @@ include_directories(${OPENGL_INCLUDE_DIR})
 
 #GLEW
 find_package(Glew)
-include_directories(${GLEW_INCLUDE_DIR})
+include_directories(${GLEW_INCLUDE_PATH})
 
 #bullet
 find_package(Bullet REQUIRED)
