@@ -112,6 +112,8 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
+	if(isnan(velocity.x()) || isnan(velocity.y()) || isnan(velocity.z() ))
+		std::cout << "velocity is nan" << std::endl;
 	btScalar speed = velocity.length();
 
 	
@@ -123,6 +125,8 @@ void JeepActor::tick(seconds timeStep)
 	{
 		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
 		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );
+		std::cout << "f_0" << f0.length();
+		std::cout << "f_1" << f1.length();
 		chasis->applyCentralForce(f0);
 		chasis->applyCentralForce(f1);
 		
@@ -136,6 +140,8 @@ void JeepActor::tick(seconds timeStep)
 	
 	if(lat0.length() > 0)
 	{
+		std::cout << "lat0" << lat0.length();
+		std::cout << "lat1" << lat1.length();
 		chasis->applyCentralForce((lat0 + lat1) * c_roll2);
 	}
 		
@@ -145,7 +151,7 @@ void JeepActor::tick(seconds timeStep)
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
 	btVector3 f_rolling = -c_rolling * velocity;
-	
+			std::cout << "f_drag+f_rolling" << f_drag.length() + f_rolling.length() << std::endl;
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	/*find car acceleration*/
@@ -170,6 +176,7 @@ void JeepActor::tick(seconds timeStep)
 	//std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
+	std::cout << "weight_front/rear" << weight_front + weight_rear;
 	
 	torque /= 1.1;
 	
@@ -181,6 +188,19 @@ void JeepActor::tick(seconds timeStep)
 		btScalar R = L/s;
 		omega = speed / R;
 	}
+	
+	if(isnan(speed))
+	{
+		std::cout << "speed NAN" << std::endl;
+	}
+	
+	if(isnan(omega))
+	{
+		std::cout << "omega NAN" << std::endl;
+		omega = 0;
+	}
+		
+	
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));
 	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
