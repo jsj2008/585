@@ -203,19 +203,17 @@ void Renderer::initializeGL() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	//glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_RESCALE_NORMAL);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteDir);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteDir);
 	glMaterialf(GL_FRONT, GL_SHININESS, 1.0f);
 
-	//glShadeModel(GL_SMOOTH);
-	//glEnable(GL_TEXTURE_2D);
-	//glEnable(GL_CULL_FACE);
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_SAMPLE_BUFFERS_ARB);
 
 	GLenum err = glewInit();
 	if (GLEW_OK == err) {
@@ -250,8 +248,7 @@ void Renderer::initializeGL() {
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		load3DTexture("sunrisecopper.tx3");
-		//load3DTexture("toonhill.tx3");
-		//load3DTexture("gold.tx3");
+		//load3DTexture("deepbluesea.tx3");
 		loadTextures();
 	}
 	shader->off();
@@ -336,6 +333,7 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	 
 		glTexImage2D(GL_TEXTURE_2D, 0, numColors, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
 	} 
@@ -348,7 +346,6 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 	return true;
 }
 
-// some of this needs to be moved to a load function, since it only needs to be done once
 void Renderer::drawGround() {
 	glCallList(groundGeometry);
 }
@@ -400,7 +397,7 @@ void Renderer::initGround() {
 	glNewList(groundGeometry, GL_COMPILE);
 		glPushMatrix();
 		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
-		glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+		//glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
 
 		glBegin(GL_QUADS);
 		for (int x = 0; x < hm->width - 1; x++) {
