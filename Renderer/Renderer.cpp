@@ -4,6 +4,8 @@
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
 
+	hm = 0;
+
 	ratio = 1.0;
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
@@ -255,7 +257,7 @@ void Renderer::initializeGL() {
 	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
-	//updateCamera();
+	initGround();
 }
 
 void Renderer::updateMousePosition(int x, int y) {
@@ -294,33 +296,7 @@ void Renderer::updateCamera() {
 	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
-/*
-void Renderer::drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br) {
-	glBegin(GL_QUADS);
-	btVector3 normal = (tl-tr).cross(tl-bl);
-	glNormal3d(normal.getX(), normal.getY(), normal.getZ());
-	glTexCoord2f(0, 0);
-	glVertex3d(tr.getX(), tr.getY(), tr.getZ()); // Top Right Corner
-	glTexCoord2f(0, 1);
-	glVertex3d(tl.getX(), tl.getY(), tl.getZ()); // Top Left Corner
-	glTexCoord2f(1, 1);
-	glVertex3d(bl.getX(), bl.getY(), bl.getZ()); // Bottom Right Corner
-	glTexCoord2f(1, 0);
-	glVertex3d(br.getX(), br.getY(), br.getZ()); // Bottom Left Corner
-	glEnd();
-}
 
-void Renderer::drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf) {
-	drawQuad(tlb, trb, tlf, trf); // Top face
-	drawQuad(brb, blb, brf, blf); // Bottom face
-	
-	drawQuad(tlf, blf, tlb, blb); // Left face
-	drawQuad(trb, brb, trf, brf); // Right face
-
-	drawQuad(tlf, trf, blf, brf); // Front face
-	drawQuad(blb, brb, tlb, trb); // Back face
-}
-*/
 void Renderer::load3DTexture(string filename) {
 	texData->load(filename);
 	attrData->load(filename);
@@ -372,35 +348,87 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 	return true;
 }
 
+// some of this needs to be moved to a load function, since it only needs to be done once
 void Renderer::drawGround() {
-	HeightMap* hm = new HeightMap(LoadString2("config/world.xml","height_map"));
+	glCallList(groundGeometry);
+}
 
-	float xscale = LoadFloat("config/world.xml","height_map_scale_x");
-	float yscale = LoadFloat("config/world.xml","height_map_scale_y");
-	float zscale = LoadFloat("config/world.xml","height_map_scale_z");
+void Renderer::initGround() {
+	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 
-	glPushMatrix();
-	glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
-	glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+	xscale = LoadFloat("config/world.xml","height_map_scale_x");
+	yscale = LoadFloat("config/world.xml","height_map_scale_y");
+	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
-	glBegin(GL_QUADS);
 	btVector3 v1, v2, v3, v4, n;
+	vector<vector<Point>> faceNormals = vector<vector<Point>>();
 	for (int x = 0; x < hm->width - 1; x++) {
+		vector<Point> row = vector<Point>();
 		for (int z = 0; z < hm->height - 1; z++) {
-			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
-			glNormal3f(n.getX(), n.getY(), n.getZ());
-			glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
-			glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
-			glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
-			glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
+			row.push_back(Point(n.getX(), n.getY(), n.getZ()));
 		}
+		faceNormals.push_back(row);
 	}
-	glEnd();
-	glPopMatrix();
-	
-	delete hm;
+
+	for (int x = 0; x < hm->width; x++) {
+		vector<Point> row = vector<Point>();
+		for (int z = 0; z < hm->height; z++) {
+			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
+			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+			n = (v1-v3).cross(v1-v2);
+
+			if (x == 0 || x == hm->width - 1 || z == 0 || z == hm->height - 1) {
+				row.push_back(Point(n.getX(), n.getY(), n.getZ()));
+			} else {
+				Point pn =  faceNormals.at(x-1).at(z-1)+
+							faceNormals.at( x ).at(z-1)+
+							faceNormals.at(x-1).at( z )+
+							faceNormals.at( x ).at( z );
+				row.push_back(pn);
+			}
+		}
+		mapVertexNormals.push_back(row);
+	}
+
+	groundGeometry = glGenLists(1);
+	glNewList(groundGeometry, GL_COMPILE);
+		glPushMatrix();
+		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
+		glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+
+		glBegin(GL_QUADS);
+		for (int x = 0; x < hm->width - 1; x++) {
+			for (int z = 0; z < hm->height - 1; z++) {
+				v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+				v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
+				v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+				v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+				n = (v1-v3).cross(v1-v2);
+
+				Point pn = mapVertexNormals.at(x).at(z);
+				glNormal3f(pn.x, pn.y, pn.z);
+				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
+
+				pn = mapVertexNormals.at(x+1).at(z);
+				glNormal3f(pn.x, pn.y, pn.z);
+				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
+				
+				pn = mapVertexNormals.at(x+1).at(z+1);
+				glNormal3f(pn.x, pn.y, pn.z);
+				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
+
+				pn = mapVertexNormals.at(x).at(z+1);
+				glNormal3f(pn.x, pn.y, pn.z);
+				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
+			}
+		}
+		glEnd();
+		glPopMatrix();
+	glEndList();
 }
