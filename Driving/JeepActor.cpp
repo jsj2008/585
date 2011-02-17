@@ -182,9 +182,6 @@ void JeepActor::tick(seconds timeStep)
 		omega = speed / R;
 	}
 	
-	
-		
-	
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));
 	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));

@@ -14,8 +14,8 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	newActors(actors);
 	
 	/*turn on debugging*/
-	 debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-	 dynamicsWorld.setDebugDrawer(&debugger);
+	 // debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	 // dynamicsWorld.setDebugDrawer(&debugger);
 
 	/*float * map = new float[50*50];
 	for(int i=0; i<50*50; i++)
@@ -71,7 +71,7 @@ void Physics::newActors(ActorList const & newActors)
 void Physics::step(seconds timeStep)
 {
 	dynamicsWorld.stepSimulation(timeStep,1);	//keep an eye on the number of substeps (10 is pretty random)
-	 dynamicsWorld.debugDrawWorld();
+	 // dynamicsWorld.debugDrawWorld();
 
 }
 

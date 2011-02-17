@@ -13,7 +13,8 @@ HeightMap::HeightMap(std::string const & filename)
 	
 	width = surface->w;
 	height = surface->h;
-	map = static_cast<unsigned char *>(surface->pixels);
+	map = static_cast<unsigned char *>(surface->pixels);	
+	
 }
 
 HeightMap::~HeightMap()
