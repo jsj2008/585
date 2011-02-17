@@ -347,10 +347,14 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 }
 
 void Renderer::drawGround() {
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, groundTex);
 	glCallList(groundGeometry);
 }
 
 void Renderer::initGround() {
+	loadTexture("ground_wrap.bmp", &groundTex);
+
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");
@@ -410,22 +414,34 @@ void Renderer::initGround() {
 
 				Point pn = mapVertexNormals.at(x).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
+				groundTexCoord(x, z, false, false);
 				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
 
 				pn = mapVertexNormals.at(x+1).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
+				groundTexCoord(x+1, z, true, false);
 				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 				
 				pn = mapVertexNormals.at(x+1).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
+				groundTexCoord(x+1, z+1, true, true);
 				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
 
 				pn = mapVertexNormals.at(x).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
+				groundTexCoord(x, z+1, false, true);
 				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
 			}
 		}
 		glEnd();
 		glPopMatrix();
 	glEndList();
+}
+
+void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
+	float xc = ((float)(x%10))/10.0;
+	float zc = ((float)(z%10))/10.0;
+	if (xend && xc == 0) xc = 1;
+	if (zend && zc == 0) zc = 1;
+	glTexCoord2f(xc, zc);
 }
