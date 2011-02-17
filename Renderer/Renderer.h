@@ -104,7 +104,7 @@ private:
 
 	// Heightmap rendering
 	HeightMap* hm;
-	vector<vector<Point>> mapVertexNormals;
+	vector<vector<Point> > mapVertexNormals;
 	float xscale;
 	float yscale;
 	float zscale;

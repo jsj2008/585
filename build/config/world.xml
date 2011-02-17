@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <param type="0" name="gravity" value="-20" />
-<param type="3" name="height_map" value="map3.bmp" />
+<param type="3" name="height_map" value="map4.bmp" />
 <param type="0" name="height_map_scale_x" value="10" />
-<param type="0" name="height_map_scale_y" value="0.4" />
+<param type="0" name="height_map_scale_y" value="0.2" />
 <param type="0" name="height_map_scale_z" value="10" />

@@ -361,7 +361,7 @@ void Renderer::initGround() {
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
 	btVector3 v1, v2, v3, v4, n;
-	vector<vector<Point>> faceNormals = vector<vector<Point>>();
+	vector<vector<Point> > faceNormals = vector<vector<Point> >();
 	for (int x = 0; x < hm->width - 1; x++) {
 		vector<Point> row = vector<Point>();
 		for (int z = 0; z < hm->height - 1; z++) {
