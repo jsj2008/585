@@ -247,8 +247,8 @@ void Renderer::initializeGL() {
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
-		load3DTexture("sunrisecopper.tx3");
-		//load3DTexture("deepbluesea.tx3");
+		//load3DTexture("sunrisecopper.tx3");
+		load3DTexture("toonhill.tx3");
 		loadTextures();
 	}
 	shader->off();
@@ -281,7 +281,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(50.0, ratio, 0.05*camPos.getZ(), max(1000.0*camPos.getZ(), 10.0));
+	gluPerspective(50.0f, ratio, 0.01f, 8000.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
