@@ -12,6 +12,7 @@
 #include <LinearMath/btIDebugDraw.h>
 #include "Common/SettingsFactory.h"
 #include "Physics/Heightmap.h"
+#include "Common/Point.h" //I don't want this here but btVector3 is not cooperating
 
 #define MAX_TEXTURES 3
 
@@ -38,18 +39,19 @@ private:
 	
 	void renderObjects();
 	void drawGround();
+	void initGround();
 	void applyShader();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-//	void drawQuad(btVector3 const & tl, btVector3 const & tr, btVector3 const & bl, btVector3 const & br);
-//	void drawCube(btVector3 const & tlb, btVector3 const & trb, btVector3 const & tlf, btVector3 const & trf, btVector3 const & blb, btVector3 const & brb, btVector3 const & blf, btVector3 const & brf);
 	void updateMousePosition(int x, int y);
 	btVector3* getScreenPosition(int x, int y);
 
 	void load3DTexture(string filename);
 	void loadTextures();
 	bool loadTexture(string name, GLuint *texID);
+
+	void groundTexCoord(int x, int z, bool xend, bool zend);
 	
 	int mouseX;
 	int mouseY;
@@ -101,4 +103,13 @@ private:
 
 	int autoDiffuseLoc;
 	int autoSpecularLoc;
+
+	// Heightmap rendering
+	HeightMap* hm;
+	vector<vector<Point> > mapVertexNormals;
+	float xscale;
+	float yscale;
+	float zscale;
+	GLuint groundGeometry;
+	GLuint groundTex;
 };
