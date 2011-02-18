@@ -50,6 +50,8 @@ private:
 	void load3DTexture(string filename);
 	void loadTextures();
 	bool loadTexture(string name, GLuint *texID);
+
+	void groundTexCoord(int x, int z, bool xend, bool zend);
 	
 	int mouseX;
 	int mouseY;
@@ -109,4 +111,5 @@ private:
 	float yscale;
 	float zscale;
 	GLuint groundGeometry;
+	GLuint groundTex;
 };
