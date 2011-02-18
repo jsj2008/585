@@ -391,7 +391,11 @@ void main() {
 		kspec = pow(kspec, 7.0);
 		gl_FragColor = gl_FragColor+kspec*gl_LightSource[0].specular;
 	}
-		
-	//gl_FragColor = gl_FragColor+gl_LightSource[0].ambient;
-	gl_FragColor = 0.8*(gl_FragColor + gl_LightSource[0].ambient) + 0.3*(texture2D(tex3,gl_TexCoord[0].st));
+
+	vec4 texValue = texture2D(tex3,gl_TexCoord[0].st);
+	float balance = 0.3;
+	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
+	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
+	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
+	gl_FragColor = (1.1 - balance)*(gl_FragColor + gl_LightSource[0].ambient) + balance * texValue;
 }

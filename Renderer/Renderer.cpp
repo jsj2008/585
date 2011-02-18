@@ -10,8 +10,8 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-	camPos = btVector3(9,21,45);
-	camLook = btVector3(1.5,0,5);
+	//camPos = btVector3(9,21,45);
+	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
 	lightPos = btVector3(50,150,240);
@@ -29,8 +29,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	paintGL();
 }
 
-void Renderer::setCamera(btVector3 const & pos, btVector3 const & look)
-{
+void Renderer::setCamera(btVector3 const & pos, btVector3 const & look) {
 	camPos = pos;
 	camLook = look;
 }
@@ -45,34 +44,8 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, actorList.front()->renderObject.texture);
-
-	shader->on();
-		applyShader();
-		glColor3f(1,1,1);
-		
-		drawGround();
-
-	shader->off();
-
-		//light
-/*	glColor3f(1,1,1);
-	glDisable(GL_TEXTURE);
-	glDisable(GL_LIGHTING);
-	drawCube(btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
-	// glEnable(GL_LIGHTING);
-	glEnable(GL_TEXTURE);*/
-
+	drawGround();
 	renderObjects();
-	
 }
 
 void Renderer::step() {
@@ -187,7 +160,8 @@ void Renderer::applyShader() {
 }
 
 void Renderer::initializeGL() {
-	glClearColor(0.7, 0.8, 1, 0);
+	//glClearColor(0.63, 0.77, 0.77, 0);
+	glClearColor(1, 1, 1, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
@@ -248,18 +222,14 @@ void Renderer::initializeGL() {
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		//load3DTexture("sunrisecopper.tx3");
-		load3DTexture("toonhill.tx3");
+		//load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
+		load3DTexture("goldmist.tx3");
 		loadTextures();
 	}
 	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
 	initGround();
-}
-
-void Renderer::updateMousePosition(int x, int y) {
-	mouseX = x;
-	mouseY = y;
 }
 
 btVector3* Renderer::getScreenPosition(int x, int y) {
@@ -347,9 +317,14 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 }
 
 void Renderer::drawGround() {
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, groundTex);
-	glCallList(groundGeometry);
+	//drawGroundNormals();
+	shader->on();
+		applyShader();
+		glColor3f(1,1,1);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, groundTex);
+		glCallList(groundGeometry);
+	shader->off();
 }
 
 void Renderer::initGround() {
@@ -444,4 +419,25 @@ void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
 	if (xend && xc == 0) xc = 1;
 	if (zend && zc == 0) zc = 1;
 	glTexCoord2f(xc, zc);
+}
+
+void Renderer::drawGroundNormals() {
+	glPushMatrix();
+		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
+		glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+		btVector3 p, v;
+		Point pv;
+		for (int x = 0; x < hm->width; x++) {
+			for (int z = 0; z < hm->height; z++) {
+				glBegin(GL_LINES);
+				p = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+				pv = mapVertexNormals.at(x).at(z);
+				v = btVector3(pv.x, pv.y, pv.z).normalize()*3;
+				v += p;
+				glVertex3f(p.getZ(), p.getY(), p.getX());
+				glVertex3f(v.getZ(), v.getY(), v.getX());
+				glEnd();
+			}
+		}
+	glPopMatrix();
 }
