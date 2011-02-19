@@ -53,7 +53,7 @@ void MainController::tick(unsigned long interval)
 	//std::cout << interval << std::endl;
 	renderer->step();
 	physics->step( interval / 1000.0);
-	jeep->tick(interval / 1000.0);
+	// jeep->tick(interval / 1000.0);
 	
 	/*giant hack for camera*/
 

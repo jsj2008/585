@@ -50,11 +50,18 @@ input(input)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
+	physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
 	chasis->setGravity(btVector3(0,0,0));	//we do it manually
 	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
+}
+
+void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
+{
+	JeepActor * jeep = static_cast<JeepActor *>(world->getWorldUserInfo());
+	jeep->tick(timeStep);
 }
 
 void JeepActor::tick(seconds timeStep)
@@ -87,16 +94,15 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
-		engine_force = torque;	//for now just make it one or the other
+		engine_force = 2;//torque;	//for now just make it one or the other
 		// torque += engine_force;
-		torque /= 2;
+		torque = 0;
 		//XAxis *= -1;
 		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
 
-	
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
 	for(int i=0; i<4; i++)
@@ -121,7 +127,7 @@ void JeepActor::tick(seconds timeStep)
 	//rear wheel driving
 	btVector3 long_force(0,0,0);
 	btVector3 forward(0,0,0);
-	if(engine_force >= 0.02)	//only call if wheels are doing something fancy
+	if(engine_force > 0)	//only call if wheels are doing something fancy
 	{
 		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
 		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );
@@ -164,9 +170,6 @@ void JeepActor::tick(seconds timeStep)
 	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
 	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
 	
-	// std::cout << "weight_front:" << weight_front << std::endl;
-	// std::cout << "weight_rear :" << weight_rear << std::endl;
-	LOG("A" << "B" << btVector3(1,2,3), "default");
 	chasis->applyCentralForce(btVector3(0,gravity*mass,0));
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
@@ -182,9 +185,24 @@ void JeepActor::tick(seconds timeStep)
 		omega = speed / R;
 	}
 	
+	btVector3 total_torque(0,0,0);
+	
+	for(int i=0; i<4; i++)
+	{
+
+		btVector3 tire = from[i] - pos;
+		tire.setY(0);
+		tire = quatRotate(chasis->getOrientation(), tire);
+		LOG("tire  " << tire, "jeep");
+		btVector3 torque_i = springs[i]->getFriction(chasis->getLinearVelocity(), chasis->getAngularVelocity() ).cross(tire);
+		LOG("torque_i " << torque_i, "jeep");
+		total_torque += torque_i;
+
+	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
-		// chasis->applyTorque( btVector3(0,omega*3,0));
-	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
+		LOG("total_torque:" << total_torque, "jeep");
+		chasis->applyTorque( total_torque);
+	// chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
 	
 }
 

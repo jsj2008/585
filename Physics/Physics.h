@@ -16,6 +16,7 @@
 #include "IPhysics.h"
 
 class Spring;
+class JeepActor;
 
 class Physics : public IPhysics
 {
@@ -26,6 +27,7 @@ public:
 	void step(seconds timeStep);
 	btRigidBody * const newActor(Actor * const);
 	friend class Spring;
+	friend class JeepActor;
 private:
 	
 	ActorList const & actorList;

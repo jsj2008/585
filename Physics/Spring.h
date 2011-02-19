@@ -17,6 +17,7 @@ public:
 	btScalar getWeight();
 	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);
+	btVector3 const & getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
 private:
 	
 	btScalar slip_ratio_lookup(btScalar);
@@ -34,6 +35,8 @@ private:
 	btScalar const & wheel_radius;
 	RenderObject wheelModel;
 	Actor * wheel_actor;
+	btQuaternion current_direction;
+	btVector3 const & planeProjection(btVector3 const & tire_direction) const;
 };
 
 #endif
