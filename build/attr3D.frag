@@ -1,4 +1,4 @@
-varying vec3 normal;
+varying vec3 tNormal;
 varying vec3 lightDir;
 varying vec3 viewDir;
 varying vec3 trueNormal;
@@ -51,15 +51,31 @@ const float PI = 3.1415926535;
 
 void main() {
 
-	view = viewDir; //???
+	view = normalize(viewDir); //???
 	light = normalize(lightDir);
 	
 	vec3 bump = normalize(texture2D(normalMap, gl_TexCoord[0].st).xyz * 2.0 - 1.0);
-	reflection = normalize(reflect(view, bump));
-
+//	bump = tNormal;
+	
 	float xAttrVal;
 	float yAttrVal;
 	float zAttrVal;
+	
+	if (xAttr == 5) { // Fade bump mapping intensity with distance
+		xAttrVal = (log((-position.z)/xZMin)/log(xMod));
+		bump = (1.0-xAttrVal)*bump + xAttrVal*tNormal;
+	}
+	if (yAttr == 5) {
+		yAttrVal = (log((-position.z)/yZMin)/log(yMod));
+		bump = (1.0-yAttrVal)*bump + yAttrVal*tNormal;
+	}
+	if (zAttr == 5) {
+		zAttrVal = (log((-position.z)/zZMin)/log(zMod));
+		bump = (1.0-zAttrVal)*bump + zAttrVal*tNormal;
+	}
+	
+	reflection = normalize(reflect(view, bump));
+
 	
 	// X Attribute
 	if (xAttr == 0) {
@@ -401,5 +417,5 @@ void main() {
 	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
 	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
-	//gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 }

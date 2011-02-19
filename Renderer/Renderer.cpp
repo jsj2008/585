@@ -330,8 +330,8 @@ void Renderer::drawGround() {
 }
 
 void Renderer::initGround() {
-	loadTexture("ground_wrap.bmp", &groundTex);
-	loadTexture("ground_wrap_NRM.bmp", &groundBump);
+	loadTexture("sand_wrap.bmp", &groundTex);
+	loadTexture("sand_wrap_NRM.bmp", &groundBump);
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 
@@ -351,7 +351,7 @@ void Renderer::initGround() {
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
-			t = n.cross(v1-v2);
+			t = (v1-v3).cross(n);
 			row.push_back(Point(n.getX(), n.getY(), n.getZ()));
 			rowt.push_back(Point(t.getX(), t.getY(), t.getZ()));
 		}
@@ -368,7 +368,7 @@ void Renderer::initGround() {
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
-			t = n.cross(v1-v2);
+			t = (v1-v3).cross(n);
 
 			if (x == 0 || x == hm->width - 1 || z == 0 || z == hm->height - 1) {
 				row.push_back(Point(n.getX(), n.getY(), n.getZ()));
