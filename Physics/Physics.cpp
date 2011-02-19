@@ -4,7 +4,7 @@
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "HeightMap.h"
 
-#define DEBUG_RENDERING
+//#define DEBUG_RENDERING
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), 

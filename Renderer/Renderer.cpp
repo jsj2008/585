@@ -397,40 +397,46 @@ void Renderer::initGround() {
 		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
 		//glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
 
-		glBegin(GL_QUADS);
-		for (int x = 0; x < hm->width - 1; x++) {
-			for (int z = 0; z < hm->height - 1; z++) {
-				v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
-				v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
-				v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
-				v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
-				n = (v1-v3).cross(v1-v2);
+			glBegin(GL_QUADS);
+			for (int x = 0; x < hm->width - 1; x++) {
+				for (int z = 0; z < hm->height - 1; z++) {
+					v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+					v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
+					v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+					v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
+					n = (v1-v3).cross(v1-v2);
 
-				Point pn = mapVertexNormals.at(x+1).at(z);
-				glNormal3f(pn.x, pn.y, pn.z);
-				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
-				groundTexCoord(x+1, z, true, false);
-				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
-				
-				pn = mapVertexNormals.at(x).at(z);
-				glNormal3f(pn.x, pn.y, pn.z);
-				groundTexCoord(x, z, false, false);
-				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
-				
-				pn = mapVertexNormals.at(x).at(z+1);
-				pt = mapVertexTangents.at(x).at(z+1);
-				glNormal3f(pn.x, pn.y, pn.z);
-				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
-				groundTexCoord(x, z+1, false, true);
-				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
+					Point pn =  mapVertexNormals.at(x+1).at(z);
+					Point pt = 	mapVertexTangents.at(x+1).at(z);
+					glNormal3f(pn.x, pn.y, pn.z);
+					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					groundTexCoord(x+1, z, true, false);
+					glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 
-				pn = mapVertexNormals.at(x+1).at(z+1);
-				glNormal3f(pn.x, pn.y, pn.z);
-				groundTexCoord(x+1, z+1, true, true);
-				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
+					pn  = mapVertexNormals.at(x).at(z);
+					pt = mapVertexTangents.at(x).at(z);
+					glNormal3f(pn.x, pn.y, pn.z);
+					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					groundTexCoord(x, z, false, false);
+					glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
+					
+					pn = mapVertexNormals.at(x).at(z+1);
+					pt = mapVertexTangents.at(x).at(z+1);
+					glNormal3f(pn.x, pn.y, pn.z);
+					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					groundTexCoord(x, z+1, false, true);
+					glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
+					
+					pn = mapVertexNormals.at(x+1).at(z+1);
+					pt = mapVertexTangents.at(x+1).at(z+1);
+					glNormal3f(pn.x, pn.y, pn.z);
+					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					groundTexCoord(x+1, z+1, true, true);
+					glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
+					
+				}
 			}
-		}
-		glEnd();
+			glEnd();
 		glPopMatrix();
 	glEndList();
 }

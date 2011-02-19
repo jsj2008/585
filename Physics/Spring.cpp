@@ -7,7 +7,7 @@
 
 // RenderObject Spring::wheelModel;
 
-#define DEBUG_RENDERER
+//#define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
 	if(slip < 3)
