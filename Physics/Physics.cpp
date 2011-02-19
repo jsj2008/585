@@ -4,7 +4,7 @@
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "HeightMap.h"
 
-//#define DEBUG_RENDERING
+// #define DEBUG_RENDERING
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), 
@@ -22,12 +22,6 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 	dynamicsWorld.setDebugDrawer(&debugger);
 	#endif
-	/*float * map = new float[50*50];
-	for(int i=0; i<50*50; i++)
-	{
-		
-		map[i] = -5.0 + (rand() % 5);//5.0/(rand() % 10);
-	}*/
 	
 	HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
