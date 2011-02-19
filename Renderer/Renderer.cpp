@@ -412,25 +412,25 @@ void Renderer::initGround() {
 				v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 				n = (v1-v3).cross(v1-v2);
 
-				Point pn = mapVertexNormals.at(x).at(z);
-				glNormal3f(pn.x, pn.y, pn.z);
-				groundTexCoord(x, z, false, false);
-				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
-
-				pn = mapVertexNormals.at(x+1).at(z);
+				Point pn = mapVertexNormals.at(x+1).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
 				groundTexCoord(x+1, z, true, false);
 				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 				
-				pn = mapVertexNormals.at(x+1).at(z+1);
+				pn = mapVertexNormals.at(x).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
-				groundTexCoord(x+1, z+1, true, true);
-				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
-
+				groundTexCoord(x, z, false, false);
+				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
+				
 				pn = mapVertexNormals.at(x).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
 				groundTexCoord(x, z+1, false, true);
 				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
+
+				pn = mapVertexNormals.at(x+1).at(z+1);
+				glNormal3f(pn.x, pn.y, pn.z);
+				groundTexCoord(x+1, z+1, true, true);
+				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
 			}
 		}
 		glEnd();
