@@ -3,10 +3,11 @@
 #include "Common/SettingsFactory.h"
 #include <math.h>
 #include "Main/MainController.h"
+#include "Common/Debug.h"
 
 // RenderObject Spring::wheelModel;
 
-
+// #define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
 	if(slip < 3)
@@ -41,7 +42,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
-	//std::cout << "slip_ratio:" << slip_ratio << std::endl;	
+	LOG("slip_ratio:" << slip_ratio, "springs");
 	return direction * slip_ratio_lookup(slip_ratio) * current_weight;
 	
 	
@@ -56,7 +57,6 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 	}
 	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
 	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
-	//std::cout << "direction:" << direction.x() << "," << direction.y() << "," << direction.z() << std::endl;
 	btVector3 lateral = direction.cross(plane_normal);
 	if(lateral.dot(linear_velocity) > 0)	//on the same half-plane so flip it
 		lateral *= -1;
@@ -78,10 +78,16 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
-chasis(chasis), from(from), to(to), physics(physics), wheel_radius(LoadFloat("config/spring.xml", "radius")),
+chasis(chasis),
+from(from), 
+to(to), 
+physics(physics), 
+wheel_radius(LoadFloat("config/spring.xml", "radius")),
 wheelModel("blank.bmp", "wheel_final.obj")
 {
-	// debugger = physics->dynamicsWorld.getDebugDrawer();
+	#ifdef DEBUG_RENDERER
+	debugger = physics->dynamicsWorld.getDebugDrawer();
+	#endif
 	was_hit = false;
 	current_weight = 0;
 	wheel_speed = 0;
@@ -117,11 +123,11 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 
 	btCollisionWorld::ClosestRayResultCallback result(from, to);	
 	physics->dynamicsWorld.rayTest( from, to, result);
-	// std::cout << to.x() << "," << to.y() << "," << to.z() << std::endl;
-	// std::cout << from.x() << "," << from.y() << "," << from.z() << std::endl;
+	LOG("to:" << to, "springs");
+	LOG("from:" << to, "springs");
+
 	if(result.hasHit() )
 	{		
-		// std::cout << "hit: " << timeStep * 1000.0 << std::endl;
 		
 		plane_normal = result.m_hitNormalWorld;
 
@@ -130,19 +136,18 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 
 		btScalar x = rest.length() - physical_length;
 
-
-
 		btScalar spring_v = (x - old_x) * timeStep;
 		
 		if(!was_hit)
 			spring_v = 0;
 				
-		// debugger->drawLine(from, from + physical_spring, btVector3(0,255,0));		
-		// debugger->drawLine(result.m_hitPointWorld,result.m_hitPointWorld + btVector3(10,0,0) ,btVector3(255,255,0));
-		// debugger->drawSphere(result.m_hitPointWorld - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
-		wheel_actor->pos = result.m_hitPointWorld - btVector3(0,0.25,0);
+		#ifdef DEBUG_RENDERER		
+		debugger->drawLine(from, from + physical_spring, btVector3(0,0,0));		
+		LOG("DEBUG_RENDERER is ON", "springs");
+		#endif
+		wheel_actor->pos = result.m_hitPointWorld + btVector3(0,wheel_radius,0);
 		
-		btVector3 projection = -spring_unit;//unit * unit.dot(spring_normal);
+		btVector3 projection = -spring_unit;
 		
 		btScalar force = k*x + c*spring_v + weight;
 		btScalar angle_scale = projection.dot(result.m_hitNormalWorld);
@@ -150,7 +155,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 		if(force > 0)
 		{
 			chasis->applyForce( projection * force , from - pos);
-			// std::cout << "spring_force:" << force << std::endl;
+			LOG("spring_force:" << force, "springs");
 			current_weight = force;
 		}
 		chasis->activate();
@@ -159,9 +164,11 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
-		// debugger->drawSphere(to - btVector3(0,0.25,0), 0.5, btVector3(255,0,0));
-		wheel_actor->pos = to - btVector3(0,0.25,0);
-		// debugger->drawLine(from, to, btVector3(0,255,0));
+		wheel_actor->pos = to + btVector3(0,wheel_radius,0);
+		#ifdef DEBUG_RENDERER
+		debugger->drawLine(from, to, btVector3(0,0,0));
+		LOG("DEBUG_RENDERER is ON", "springs");
+		#endif
 		was_hit = false;
 		current_weight = 0;
 	}

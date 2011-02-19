@@ -105,8 +105,9 @@ private:
 
 	// Heightmap rendering
 	HeightMap* hm;
-	vector<vector<Point>> mapVertexNormals;
-	vector<vector<Point>> mapVertexTangents;
+	vector<vector<Point> > mapVertexNormals;
+	vector<vector<Point> > mapVertexTangents;
+
 	float xscale;
 	float yscale;
 	float zscale;

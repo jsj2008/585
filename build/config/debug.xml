@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<param type="1" name="default" value="0" />
+<param type="1" name="springs" value="0" />
+<param type="1" name="console" value="1" />
+<param type="1" name="file" value="1" />
+<param type="3" name="file_path" value="log.txt" />

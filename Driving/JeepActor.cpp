@@ -1,6 +1,7 @@
 #include "JeepActor.h"
 #include <iostream>
 #include "Common/SettingsFactory.h"
+#include "Common/Debug.h"
 
 JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics,  Input const * input, btVector3 const & pos, btVector3 const & vel) : 
 Actor(physObj, renderObj, pos, vel),
@@ -165,9 +166,8 @@ void JeepActor::tick(seconds timeStep)
 	
 	// std::cout << "weight_front:" << weight_front << std::endl;
 	// std::cout << "weight_rear :" << weight_rear << std::endl;
-	
+	LOG("A" << "B" << btVector3(1,2,3), "default");
 	chasis->applyCentralForce(btVector3(0,gravity*mass,0));
-	//std::cout << "gravity_v: " << gravity_v.x() <<","<< gravity_v.y() <<"," << gravity_v.z() << std::endl;
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 	
@@ -181,9 +181,6 @@ void JeepActor::tick(seconds timeStep)
 		btScalar R = L/s;
 		omega = speed / R;
 	}
-	
-	
-		
 	
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// chasis->applyTorque( btVector3(0,omega*3,0));

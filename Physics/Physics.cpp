@@ -4,9 +4,13 @@
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "HeightMap.h"
 
+// #define DEBUG_RENDERING
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
-	actorList(actors), debugger(debugger), dispatcher(&collisionConfiguration), dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
+	actorList(actors), 
+	debugger(debugger), 
+	dispatcher(&collisionConfiguration), 
+	dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
 {	
 		
 	dynamicsWorld.setGravity(btVector3(0,LoadFloat("config/world.xml", "gravity"),0));   
@@ -14,15 +18,10 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	newActors(actors);
 	
 	/*turn on debugging*/
-	//debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
-	//dynamicsWorld.setDebugDrawer(&debugger);
-
-	/*float * map = new float[50*50];
-	for(int i=0; i<50*50; i++)
-	{
-		
-		map[i] = -5.0 + (rand() % 5);//5.0/(rand() % 10);
-	}*/
+	#ifdef DEBUG_RENDERING
+	debugger.setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+	dynamicsWorld.setDebugDrawer(&debugger);
+	#endif
 	
 	HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
@@ -70,8 +69,10 @@ void Physics::newActors(ActorList const & newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld.stepSimulation(timeStep,1);	//keep an eye on the number of substeps (10 is pretty random)
-	//dynamicsWorld.debugDrawWorld();
+	dynamicsWorld.stepSimulation(timeStep,100);
+	#ifdef DEBUG_RENDERING 
+	dynamicsWorld.debugDrawWorld();
+	#endif
 }
 
 Physics::~Physics()
