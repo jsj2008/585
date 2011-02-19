@@ -225,8 +225,7 @@ void Renderer::initializeGL() {
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		//load3DTexture("sunrisecopper.tx3");
-		//load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
-		load3DTexture("basicDepth.tx3");
+		load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
 		loadTextures();
 	}
 	shader->off();

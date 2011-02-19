@@ -401,5 +401,5 @@ void main() {
 	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
 	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
-	gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	//gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 }

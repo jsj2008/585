@@ -5,3 +5,4 @@
 <param type="3" name="window" value="config/window.xml" />
 <param type="3" name="jeep_springs" value="config/jeep_springs.xml" />
 <param type="3" name="world" value="config/world.xml" />
+<param type="3" name="renderer" value="config/renderer.xml" />
