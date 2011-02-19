@@ -10,11 +10,11 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-	camPos = btVector3(9,21,45);
-	camLook = btVector3(1.5,0,5);
+	//camPos = btVector3(9,21,45);
+	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	lightPos = btVector3(50,150,240);
+	lightPos = btVector3(50,15,240);
 
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
@@ -29,8 +29,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	paintGL();
 }
 
-void Renderer::setCamera(btVector3 const & pos, btVector3 const & look)
-{
+void Renderer::setCamera(btVector3 const & pos, btVector3 const & look) {
 	camPos = pos;
 	camLook = look;
 }
@@ -45,34 +44,8 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, actorList.front()->renderObject.texture);
-
-	shader->on();
-		applyShader();
-		glColor3f(1,1,1);
-		
-		drawGround();
-
-	shader->off();
-
-		//light
-/*	glColor3f(1,1,1);
-	glDisable(GL_TEXTURE);
-	glDisable(GL_LIGHTING);
-	drawCube(btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() + 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() - 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() - 0.5, lightPos.getZ() + 0.5),
-			 btVector3(lightPos.getX() - 0.5, lightPos.getY() + 0.5, lightPos.getZ() + 0.5));
-	// glEnable(GL_LIGHTING);
-	glEnable(GL_TEXTURE);*/
-
+	drawGround();
 	renderObjects();
-	
 }
 
 void Renderer::step() {
@@ -154,7 +127,6 @@ void Renderer::applyShader() {
 			texPos[i] = texData->getTexturePos(index[i]);
 			texHSkew[i] = texData->getTextureHSkew(index[i]);
 			texVSkew[i] = texData->getTextureVSkew(index[i]);
-			texInterp[i] = (int) texData->getTextureInterpolate(index[i]);
 
 			glActiveTexture(GL_TEXTURE0+i);
 			glEnable(GL_TEXTURE_2D);
@@ -173,11 +145,13 @@ void Renderer::applyShader() {
 	glUniform1i(tex1Loc, 1);
 	glUniform1i(tex2Loc, 2);
 	glUniform1i(tex3Loc, 3);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, groundBump);
+	glUniform1i(normalMapLoc, 4);
 
 	glUniform1fv(texPosLoc, MAX_TEXTURES, texPos);
 	glUniform1fv(texHskewLoc, MAX_TEXTURES, texHSkew);
 	glUniform1fv(texVskewLoc, MAX_TEXTURES, texVSkew);
-	glUniform1iv(texInterpLoc, MAX_TEXTURES, texInterp);
 
 	// Auto shading options
 	glUniform1i(autoDiffuseLoc, (int) optData->autoDiffuse);
@@ -187,7 +161,8 @@ void Renderer::applyShader() {
 }
 
 void Renderer::initializeGL() {
-	glClearColor(0.7, 0.8, 1, 0);
+	//glClearColor(0.63, 0.77, 0.77, 0);
+	glClearColor(1, 1, 1, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
@@ -237,29 +212,27 @@ void Renderer::initializeGL() {
 		texPosLoc = shader->getUniLoc("texPos");
 		texHskewLoc = shader->getUniLoc("texHSkew");
 		texVskewLoc = shader->getUniLoc("texVSkew");
-		texInterpLoc = shader->getUniLoc("texInterp");
 
 		tex0Loc = shader->getUniLoc("tex0");
 		tex1Loc = shader->getUniLoc("tex1");
 		tex2Loc = shader->getUniLoc("tex2");
 		tex3Loc = shader->getUniLoc("tex3");
+		normalMapLoc = shader->getUniLoc("normalMap");
+
+		tangentLoc = shader->getAttrLoc("vertTangent");
 
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
-		load3DTexture("sunrisecopper.tx3");
-		//load3DTexture("deepbluesea.tx3");
+		//load3DTexture("sunrisecopper.tx3");
+		//load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
+		load3DTexture("basicDepth.tx3");
 		loadTextures();
 	}
 	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
 	initGround();
-}
-
-void Renderer::updateMousePosition(int x, int y) {
-	mouseX = x;
-	mouseY = y;
 }
 
 btVector3* Renderer::getScreenPosition(int x, int y) {
@@ -281,7 +254,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(50.0, ratio, 0.05*camPos.getZ(), max(1000.0*camPos.getZ(), 10.0));
+	gluPerspective(50.0f, ratio, 0.01f, 8000.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -347,13 +320,19 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 }
 
 void Renderer::drawGround() {
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, groundTex);
-	glCallList(groundGeometry);
+	//drawGroundNormals();
+	shader->on();
+		applyShader();
+		glColor3f(1,1,1);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, groundTex);
+		glCallList(groundGeometry);
+	shader->off();
 }
 
 void Renderer::initGround() {
 	loadTexture("ground_wrap.bmp", &groundTex);
+	loadTexture("ground_wrap_NRM.bmp", &groundBump);
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 
@@ -361,40 +340,55 @@ void Renderer::initGround() {
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
-	btVector3 v1, v2, v3, v4, n;
-	vector<vector<Point> > faceNormals = vector<vector<Point> >();
+	btVector3 v1, v2, v3, v4, n, t;
+	vector<vector<Point> > faceNormals;
+	vector<vector<Point> > faceTangents;
+
 	for (int x = 0; x < hm->width - 1; x++) {
 		vector<Point> row = vector<Point>();
+		vector<Point> rowt = vector<Point>();
 		for (int z = 0; z < hm->height - 1; z++) {
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
+			t = n.cross(v1-v2);
 			row.push_back(Point(n.getX(), n.getY(), n.getZ()));
+			rowt.push_back(Point(t.getX(), t.getY(), t.getZ()));
 		}
 		faceNormals.push_back(row);
+		faceTangents.push_back(rowt);
 	}
 
 	for (int x = 0; x < hm->width; x++) {
 		vector<Point> row = vector<Point>();
+		vector<Point> rowt = vector<Point>();
 		for (int z = 0; z < hm->height; z++) {
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
+			t = n.cross(v1-v2);
 
 			if (x == 0 || x == hm->width - 1 || z == 0 || z == hm->height - 1) {
 				row.push_back(Point(n.getX(), n.getY(), n.getZ()));
+				rowt.push_back(Point(t.getX(), t.getY(), t.getZ()));
 			} else {
 				Point pn =  faceNormals.at(x-1).at(z-1)+
 							faceNormals.at( x ).at(z-1)+
 							faceNormals.at(x-1).at( z )+
 							faceNormals.at( x ).at( z );
+				Point pt =  faceTangents.at(x-1).at(z-1)+
+							faceTangents.at( x ).at(z-1)+
+							faceTangents.at(x-1).at( z )+
+							faceTangents.at( x ).at( z );
 				row.push_back(pn);
+				rowt.push_back(pt);
 			}
 		}
 		mapVertexNormals.push_back(row);
+		mapVertexTangents.push_back(rowt);
 	}
 
 	groundGeometry = glGenLists(1);
@@ -414,6 +408,7 @@ void Renderer::initGround() {
 
 				Point pn = mapVertexNormals.at(x+1).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x+1, z, true, false);
 				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 				
@@ -423,7 +418,9 @@ void Renderer::initGround() {
 				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
 				
 				pn = mapVertexNormals.at(x).at(z+1);
+				pt = mapVertexTangents.at(x).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x, z+1, false, true);
 				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
 
@@ -444,4 +441,25 @@ void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
 	if (xend && xc == 0) xc = 1;
 	if (zend && zc == 0) zc = 1;
 	glTexCoord2f(xc, zc);
+}
+
+void Renderer::drawGroundNormals() {
+	glPushMatrix();
+		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
+		glTranslated(xscale/2.0, 0, zscale/2.0); // centering of tiles
+		btVector3 p, v;
+		Point pv;
+		for (int x = 0; x < hm->width; x++) {
+			for (int z = 0; z < hm->height; z++) {
+				glBegin(GL_LINES);
+				p = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
+				pv = mapVertexNormals.at(x).at(z);
+				v = btVector3(pv.x, pv.y, pv.z).normalize()*3;
+				v += p;
+				glVertex3f(p.getZ(), p.getY(), p.getX());
+				glVertex3f(v.getZ(), v.getY(), v.getX());
+				glEnd();
+			}
+		}
+	glPopMatrix();
 }

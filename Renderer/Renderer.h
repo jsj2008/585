@@ -40,11 +40,11 @@ private:
 	void renderObjects();
 	void drawGround();
 	void initGround();
+	void drawGroundNormals();
 	void applyShader();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	void updateMousePosition(int x, int y);
 	btVector3* getScreenPosition(int x, int y);
 
 	void load3DTexture(string filename);
@@ -52,9 +52,6 @@ private:
 	bool loadTexture(string name, GLuint *texID);
 
 	void groundTexCoord(int x, int z, bool xend, bool zend);
-	
-	int mouseX;
-	int mouseY;
 
 	btVector3 camPos;				// Position of the camera
 	btVector3 camLook;				// Point that the camera is looking at
@@ -94,12 +91,14 @@ private:
 	int texPosLoc;
 	int texHskewLoc;
 	int texVskewLoc;
-	int texInterpLoc;
 
 	int tex0Loc;
 	int tex1Loc;
 	int tex2Loc;
 	int tex3Loc;
+	int normalMapLoc;
+
+	int tangentLoc;
 
 	int autoDiffuseLoc;
 	int autoSpecularLoc;
@@ -107,9 +106,12 @@ private:
 	// Heightmap rendering
 	HeightMap* hm;
 	vector<vector<Point> > mapVertexNormals;
+	vector<vector<Point> > mapVertexTangents;
+
 	float xscale;
 	float yscale;
 	float zscale;
 	GLuint groundGeometry;
 	GLuint groundTex;
+	GLuint groundBump;
 };

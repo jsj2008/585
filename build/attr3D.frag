@@ -1,4 +1,6 @@
 varying vec3 normal;
+varying vec3 lightDir;
+varying vec3 viewDir;
 varying vec3 trueNormal;
 varying vec4 position;
 
@@ -21,7 +23,6 @@ uniform int numTex;
 uniform float texPos[3];
 uniform float texHSkew[3];
 uniform float texVSkew[3];
-uniform int texInterp[3];
 
 uniform int autoDiffuse;
 uniform int autoSpecular;
@@ -30,6 +31,7 @@ uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
 uniform sampler2D tex3;
+uniform sampler2D normalMap;
 
 vec3 view;
 vec3 light;
@@ -49,22 +51,24 @@ const float PI = 3.1415926535;
 
 void main() {
 
-	view = normalize(position.xyz);
-	light = normalize((position-gl_LightSource[0].position).xyz);
-	reflection = normalize(reflect(view, normal));
+	view = viewDir; //???
+	light = normalize(lightDir);
 	
+	vec3 bump = normalize(texture2D(normalMap, gl_TexCoord[0].st).xyz * 2.0 - 1.0);
+	reflection = normalize(reflect(view, bump));
+
 	float xAttrVal;
 	float yAttrVal;
 	float zAttrVal;
 	
 	// X Attribute
 	if (xAttr == 0) {
-		float kdiff = -dot(light, normal);
+		float kdiff = -dot(light, bump);
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, xMod);
 		xAttrVal = (kdiff);
 	} else if (xAttr == 1) {
-		float kdiff = (-dot(light, normal)+1.0)/2.0;
+		float kdiff = (-dot(light, bump)+1.0)/2.0;
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, xMod);
 		xAttrVal = (kdiff);
@@ -74,13 +78,13 @@ void main() {
 		kspec = pow(kspec, xMod);
 		xAttrVal = (kspec);
 	} else if (xAttr == 3) {
-		vec3 refraction = normalize(refract(view, normal, xZMin));
+		vec3 refraction = normalize(refract(view, bump, xZMin));
 		float krefr =-dot(refraction,light);
 		krefr = max(krefr, 0.0);
 		krefr = pow(krefr, xMod);
 		xAttrVal = (krefr);
 	} else if (xAttr == 4) {
-		float korient = abs(dot(view, normal));
+		float korient = abs(dot(view, bump));
 		korient = pow(korient, xMod);
 		xAttrVal = (korient);
 	} else if (xAttr == 5) {
@@ -123,12 +127,12 @@ void main() {
 				
 	// Y Attribute
 	if (yAttr == 0) {
-		float kdiff = -dot(light, normal);
+		float kdiff = -dot(light, bump);
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, yMod);
 		yAttrVal = (kdiff);
 	} else if (yAttr == 1) {
-		float kdiff = (-dot(light, normal)+1.0)/2.0;
+		float kdiff = (-dot(light, bump)+1.0)/2.0;
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, yMod);
 		yAttrVal = (kdiff);
@@ -138,13 +142,13 @@ void main() {
 		kspec = pow(kspec, yMod);
 		yAttrVal = (kspec);
 	} else if (yAttr == 3) {
-		vec3 refraction = normalize(refract(view, normal, yZMin));
+		vec3 refraction = normalize(refract(view, bump, yZMin));
 		float krefr =-dot(refraction,light);
 		krefr = max(krefr, 0.0);
 		krefr = pow(krefr, yMod);
 		yAttrVal = (krefr);
 	} else if (yAttr == 4) {
-		float korient = abs(dot(view, normal));
+		float korient = abs(dot(view, bump));
 		korient = pow(korient, yMod);
 		yAttrVal = (korient);
 	} else if (yAttr == 5) {
@@ -187,12 +191,12 @@ void main() {
 		
 	// Z Attribute
 	if (zAttr == 0) {
-		float kdiff = -dot(light, normal);
+		float kdiff = -dot(light, bump);
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, zMod);
 		zAttrVal = (kdiff);
 	} else if (zAttr == 1) {
-		float kdiff = (-dot(light, normal)+1.0)/2.0;
+		float kdiff = (-dot(light, bump)+1.0)/2.0;
 		kdiff = max(kdiff, 0.0);
 		kdiff = pow(kdiff, zMod);
 		zAttrVal = (kdiff);
@@ -202,13 +206,13 @@ void main() {
 		kspec = pow(kspec, zMod);
 		zAttrVal = (kspec);
 	} else if (zAttr == 3) {
-		vec3 refraction = normalize(refract(view, normal, zZMin));
+		vec3 refraction = normalize(refract(view, bump, zZMin));
 		float krefr =-dot(refraction,light);
 		krefr = max(krefr, 0.0);
 		krefr = pow(krefr, zMod);
 		zAttrVal = (krefr);
 	} else if (zAttr == 4) {
-		float korient = abs(dot(view, normal));
+		float korient = abs(dot(view, bump));
 		korient = pow(korient, zMod);
 		zAttrVal = (korient);
 	} else if (zAttr == 5) {
@@ -381,7 +385,7 @@ void main() {
 	
 	//Apply auto-shading techniques and ambient light
 	if (autoDiffuse == 1) {
-		float kdiff = -dot(light, normal);
+		float kdiff = -dot(light, bump);
 		kdiff = max(kdiff, 0.0);
 		gl_FragColor = gl_FragColor*kdiff;
 	}
@@ -391,7 +395,11 @@ void main() {
 		kspec = pow(kspec, 7.0);
 		gl_FragColor = gl_FragColor+kspec*gl_LightSource[0].specular;
 	}
-		
-	//gl_FragColor = gl_FragColor+gl_LightSource[0].ambient;
-	gl_FragColor = 0.8*(gl_FragColor + gl_LightSource[0].ambient) + 0.3*(texture2D(tex3,gl_TexCoord[0].st));
+
+	vec4 texValue = texture2D(tex3,gl_TexCoord[0].st);
+	float balance = 0.5;
+	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
+	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
+	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
+	gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 }
