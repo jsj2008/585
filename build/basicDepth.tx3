@@ -1,0 +1,21 @@
+#tex
+/textures/mistedges.bmp
+0.9999
+0
+0
+1
+
+#tex
+/textures/plain.bmp
+0.1
+0
+0
+1
+
+#att
+Diffuse 1.2 0 0
+Orientation 2.82 0.5 1
+Depth 37.24 36.5 0
+
+#bgcolor
+1 1 1

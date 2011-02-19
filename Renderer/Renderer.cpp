@@ -14,7 +14,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	lightPos = btVector3(50,150,240);
+	lightPos = btVector3(50,15,240);
 
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
@@ -127,7 +127,6 @@ void Renderer::applyShader() {
 			texPos[i] = texData->getTexturePos(index[i]);
 			texHSkew[i] = texData->getTextureHSkew(index[i]);
 			texVSkew[i] = texData->getTextureVSkew(index[i]);
-			texInterp[i] = (int) texData->getTextureInterpolate(index[i]);
 
 			glActiveTexture(GL_TEXTURE0+i);
 			glEnable(GL_TEXTURE_2D);
@@ -146,11 +145,13 @@ void Renderer::applyShader() {
 	glUniform1i(tex1Loc, 1);
 	glUniform1i(tex2Loc, 2);
 	glUniform1i(tex3Loc, 3);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, groundBump);
+	glUniform1i(normalMapLoc, 4);
 
 	glUniform1fv(texPosLoc, MAX_TEXTURES, texPos);
 	glUniform1fv(texHskewLoc, MAX_TEXTURES, texHSkew);
 	glUniform1fv(texVskewLoc, MAX_TEXTURES, texVSkew);
-	glUniform1iv(texInterpLoc, MAX_TEXTURES, texInterp);
 
 	// Auto shading options
 	glUniform1i(autoDiffuseLoc, (int) optData->autoDiffuse);
@@ -211,19 +212,21 @@ void Renderer::initializeGL() {
 		texPosLoc = shader->getUniLoc("texPos");
 		texHskewLoc = shader->getUniLoc("texHSkew");
 		texVskewLoc = shader->getUniLoc("texVSkew");
-		texInterpLoc = shader->getUniLoc("texInterp");
 
 		tex0Loc = shader->getUniLoc("tex0");
 		tex1Loc = shader->getUniLoc("tex1");
 		tex2Loc = shader->getUniLoc("tex2");
 		tex3Loc = shader->getUniLoc("tex3");
+		normalMapLoc = shader->getUniLoc("normalMap");
+
+		tangentLoc = shader->getAttrLoc("vertTangent");
 
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
 		//load3DTexture("sunrisecopper.tx3");
 		//load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
-		load3DTexture("goldmist.tx3");
+		load3DTexture("basicDepth.tx3");
 		loadTextures();
 	}
 	shader->off();
@@ -329,6 +332,7 @@ void Renderer::drawGround() {
 
 void Renderer::initGround() {
 	loadTexture("ground_wrap.bmp", &groundTex);
+	loadTexture("ground_wrap_NRM.bmp", &groundBump);
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 
@@ -336,40 +340,54 @@ void Renderer::initGround() {
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
-	btVector3 v1, v2, v3, v4, n;
+	btVector3 v1, v2, v3, v4, n, t;
 	vector<vector<Point>> faceNormals = vector<vector<Point>>();
+	vector<vector<Point>> faceTangents = vector<vector<Point>>();
 	for (int x = 0; x < hm->width - 1; x++) {
 		vector<Point> row = vector<Point>();
+		vector<Point> rowt = vector<Point>();
 		for (int z = 0; z < hm->height - 1; z++) {
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
+			t = n.cross(v1-v2);
 			row.push_back(Point(n.getX(), n.getY(), n.getZ()));
+			rowt.push_back(Point(t.getX(), t.getY(), t.getZ()));
 		}
 		faceNormals.push_back(row);
+		faceTangents.push_back(rowt);
 	}
 
 	for (int x = 0; x < hm->width; x++) {
 		vector<Point> row = vector<Point>();
+		vector<Point> rowt = vector<Point>();
 		for (int z = 0; z < hm->height; z++) {
 			v1 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+z]) * yscale, (float)z * zscale);
 			v2 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+z]) * yscale, (float)z * zscale);
 			v3 = btVector3((float)(x+1) * xscale, (float)(hm->map[(x+1)*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			v4 = btVector3((float)x * xscale, (float)(hm->map[x*hm->width+(z+1)]) * yscale, (float)(z+1) * zscale);
 			n = (v1-v3).cross(v1-v2);
+			t = n.cross(v1-v2);
 
 			if (x == 0 || x == hm->width - 1 || z == 0 || z == hm->height - 1) {
 				row.push_back(Point(n.getX(), n.getY(), n.getZ()));
+				rowt.push_back(Point(t.getX(), t.getY(), t.getZ()));
 			} else {
 				Point pn =  faceNormals.at(x-1).at(z-1)+
 							faceNormals.at( x ).at(z-1)+
 							faceNormals.at(x-1).at( z )+
 							faceNormals.at( x ).at( z );
+				Point pt =  faceTangents.at(x-1).at(z-1)+
+							faceTangents.at( x ).at(z-1)+
+							faceTangents.at(x-1).at( z )+
+							faceTangents.at( x ).at( z );
 				row.push_back(pn);
+				rowt.push_back(pt);
 			}
 		}
 		mapVertexNormals.push_back(row);
+		mapVertexTangents.push_back(rowt);
 	}
 
 	groundGeometry = glGenLists(1);
@@ -388,22 +406,30 @@ void Renderer::initGround() {
 				n = (v1-v3).cross(v1-v2);
 
 				Point pn = mapVertexNormals.at(x).at(z);
+				Point pt = mapVertexTangents.at(x).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x, z, false, false);
 				glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
 
 				pn = mapVertexNormals.at(x+1).at(z);
+				pt = mapVertexTangents.at(x+1).at(z);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x+1, z, true, false);
 				glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 				
 				pn = mapVertexNormals.at(x+1).at(z+1);
+				pt = mapVertexTangents.at(x+1).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x+1, z+1, true, true);
 				glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
 
 				pn = mapVertexNormals.at(x).at(z+1);
+				pt = mapVertexTangents.at(x).at(z+1);
 				glNormal3f(pn.x, pn.y, pn.z);
+				glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
 				groundTexCoord(x, z+1, false, true);
 				glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
 			}

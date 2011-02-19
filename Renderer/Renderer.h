@@ -91,12 +91,14 @@ private:
 	int texPosLoc;
 	int texHskewLoc;
 	int texVskewLoc;
-	int texInterpLoc;
 
 	int tex0Loc;
 	int tex1Loc;
 	int tex2Loc;
 	int tex3Loc;
+	int normalMapLoc;
+
+	int tangentLoc;
 
 	int autoDiffuseLoc;
 	int autoSpecularLoc;
@@ -104,9 +106,11 @@ private:
 	// Heightmap rendering
 	HeightMap* hm;
 	vector<vector<Point>> mapVertexNormals;
+	vector<vector<Point>> mapVertexTangents;
 	float xscale;
 	float yscale;
 	float zscale;
 	GLuint groundGeometry;
 	GLuint groundTex;
+	GLuint groundBump;
 };
