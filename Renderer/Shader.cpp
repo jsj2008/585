@@ -128,7 +128,7 @@ int Shader::getAttrLoc(const char *name) {
 	loc = glGetAttribLocation(p, name);
 
 	if (loc == -1)
-		printf("No such uniform named \"%s\"\n", name);
+		printf("No such attribute named \"%s\"\n", name);
 
 	return loc;
 }
