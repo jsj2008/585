@@ -3,7 +3,7 @@ PROJECT(585)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_definitions(-W -Wall -ansi -pedantic -g)
+#add_definitions(-W -Wall -ansi -pedantic -g)
 #release mode
 #add_definitions(-DRELEASE)
 
