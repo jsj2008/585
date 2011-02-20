@@ -1,4 +1,4 @@
-varying vec3 normal;
+varying vec3 tNormal;
 varying vec3 lightDir;
 varying vec3 viewDir;
 varying vec3 trueNormal;
@@ -9,7 +9,7 @@ void main() {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	gl_TexCoord[1] = gl_MultiTexCoord1;
 	
-	normal = normalize(gl_NormalMatrix * gl_Normal);
+	vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 	vec3 tangent = normalize(gl_NormalMatrix * vertTangent);
 	vec3 binormal = cross(normal, tangent);
 	trueNormal = normalize(gl_Normal);
@@ -27,4 +27,8 @@ void main() {
 	viewDir.x = dot(temp, tangent);
 	viewDir.y = dot(temp, binormal);
 	viewDir.z = dot(temp, normal);
+	
+	tNormal.x = dot(normal, tangent);
+	tNormal.y = dot(normal, binormal);
+	tNormal.z = dot(normal, normal);
 }

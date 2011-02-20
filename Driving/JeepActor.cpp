@@ -119,6 +119,7 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
 	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
+	btVector3 lateral = quatRotate(chasis->getOreintation(), btVector3(0,0,1));
 
 	btScalar speed = velocity.length();
 
@@ -187,7 +188,7 @@ void JeepActor::tick(seconds timeStep)
 	
 	btVector3 total_torque(0,0,0);
 	
-	for(int i=0; i<4; i++)
+	for(int i=0; i<0; i++)
 	{
 
 		btVector3 tire = from[i] - pos;
@@ -200,8 +201,13 @@ void JeepActor::tick(seconds timeStep)
 
 	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
-		LOG("total_torque:" << total_torque, "jeep");
-		chasis->applyTorque( total_torque);
+		// LOG("total_torque:" << total_torque, "jeep");
+		btScalar vlat = chasis->getLinearVelocity().dot(lateral);
+		btScalar alpha_front = atan( (vlat + omega*b) / (fabs(chasis->getLinearVelocity().dot(u))+0.001) ) - delta;
+		LOG("alpha_front " << alpha_front, "jeep");
+		
+		
+		// chasis->applyTorque( total_torque);
 	// chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
 	
 }
