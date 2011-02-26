@@ -83,7 +83,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("blank.bmp", "wheel_final.obj")
+wheelModel("blank.bmp", "models/wheel_final.obj")
 {
 	#ifdef DEBUG_RENDERER
 	debugger = physics->dynamicsWorld.getDebugDrawer();

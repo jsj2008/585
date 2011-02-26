@@ -3,14 +3,18 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
+#include <irrKlang.h>
+#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
+using namespace irrklang;
+
 MainController * MainController::ptr = NULL;
 
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-jeepModel("blank.bmp", "jeep2_flipx.obj"),
-cubeModel("RAADicle.bmp", "cube.obj"),
-planeModel("RAADicleXtreme.bmp", "quad.obj")
+jeepModel("sand_wrap.png", "models/jeep2_flipx.obj"),
+cubeModel("RAADicle.bmp", "models/cube.obj"),
+planeModel("RAADicleXtreme.bmp", "models/quad.obj")
 
 {
 	if(ptr == NULL)
@@ -27,7 +31,16 @@ planeModel("RAADicleXtreme.bmp", "quad.obj")
 	 // Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
 	 // actorList.push_back(act);	
 
-	
+	/***********Sound test********/ 
+	ISoundEngine* engine = createIrrKlangDevice();
+
+	if (!engine) {
+		std::cout << "Could not startup sound engine\n" << std::endl;
+	} else {
+		engine->play2D("sound/TribalGroove.mp3", true);
+		engine->play2D("sound/ExoticBirds.mp3", true);
+	}
+	/***********Sound test********/ 
 	
 
 	 // temp.push_back(act);

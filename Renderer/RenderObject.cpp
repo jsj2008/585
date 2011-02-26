@@ -2,9 +2,10 @@
 
 RenderObject::RenderObject() { }
 
-RenderObject::RenderObject(string textureName, string modelName) {
+RenderObject::RenderObject(string textureName, string modelName, float scale) {
 	loadTexture(textureName);
 	model = Model(modelName);
+	this->scale = scale;
 }
 
 RenderObject::~RenderObject() { }
@@ -12,6 +13,8 @@ RenderObject::~RenderObject() { }
 void RenderObject::draw() const {
 	Face currentFace;
 	btVector3* currentVector;
+	glPushMatrix();
+	glScalef(scale, scale, scale);
 	for (int i = 0; i < model.faces.size(); i++) {
 		currentFace = model.faces.at(i);
 		if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
@@ -30,9 +33,13 @@ void RenderObject::draw() const {
 		}
 		glEnd();
 	}
+	glPopMatrix();
 }
 
+// Draw model normals for debugging
 void RenderObject::drawNormals() const {
+	glPushMatrix();
+	glScalef(scale, scale, scale);
 	glBegin(GL_LINES);
 	Face currentFace;
 	btVector3 currentVertex;
@@ -59,14 +66,16 @@ void RenderObject::drawNormals() const {
 		glVertex3d(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ());
 	}
 	glEnd();
+	glPopMatrix();
 }
 
+// Loads this render object's texture internally
 bool RenderObject::loadTexture(string textureName) {
 	SDL_Surface *surface;
 	GLenum textureFormat;
 	int numColors;
 	 
-	if ((surface = SDL_LoadBMP(textureName.c_str()))) { 
+	if ((surface = IMG_Load(textureName.c_str()))) { 
 	 
 		numColors = surface->format->BytesPerPixel;
 		if (numColors == 4) { // Has alpha

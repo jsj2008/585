@@ -2,6 +2,7 @@
 #define HEIGHTMAP_H
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <string>
 
 class HeightMap

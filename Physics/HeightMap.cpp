@@ -3,7 +3,7 @@
 
 HeightMap::HeightMap(std::string const & filename)
 {
-	surface = SDL_LoadBMP(filename.c_str() );
+	surface = IMG_Load(filename.c_str() );
 	if(!surface)
 	{
 		std::cout << "Could not load heightmap " << filename << std::endl;

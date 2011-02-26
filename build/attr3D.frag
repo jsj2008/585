@@ -20,9 +20,9 @@ uniform float zZMin;
 uniform int zFlip;
 
 uniform int numTex;
-uniform float texPos[3];
-uniform float texHSkew[3];
-uniform float texVSkew[3];
+uniform float texPos[4];
+uniform float texHSkew[4];
+uniform float texVSkew[4];
 
 uniform int autoDiffuse;
 uniform int autoSpecular;
@@ -31,6 +31,7 @@ uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
 uniform sampler2D tex3;
+uniform sampler2D colourMap;
 uniform sampler2D normalMap;
 
 vec3 view;
@@ -55,7 +56,6 @@ void main() {
 	light = normalize(lightDir);
 	
 	vec3 bump = normalize(texture2D(normalMap, gl_TexCoord[0].st).xyz * 2.0 - 1.0);
-//	bump = tNormal;
 	
 	float xAttrVal;
 	float yAttrVal;
@@ -412,10 +412,22 @@ void main() {
 		gl_FragColor = gl_FragColor+kspec*gl_LightSource[0].specular;
 	}
 
-	vec4 texValue = texture2D(tex3,gl_TexCoord[0].st);
+	vec4 texValue = texture2D(colourMap,gl_TexCoord[0].st);
+	/*float balance;
+	if (xAttr == 5) balance = 1.0+xAttrVal;
+	if (yAttr == 5) balance = 1.0+yAttrVal;
+	if (zAttr == 5) balance = 1.0+zAttrVal;
+	texValue.x = min(texValue.x * balance, 1.0);
+	texValue.x = max(texValue.x * balance, 0.0);
+	texValue.y = min(texValue.y * balance, 1.0);
+	texValue.y = max(texValue.y * balance, 0.0);
+	texValue.z = min(texValue.z * balance, 1.0);
+	texValue.z = max(texValue.z * balance, 0.0);*/
+	
 	float balance = 0.5;
 	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
 	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
 	gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	//gl_FragColor = gl_FragColor * texValue;
 }

@@ -11,6 +11,7 @@ Model::Model(string name) {
 
 Model::~Model() { }
 
+// Loads all the vertex, texture coordinate, normal, and face information in the given obj file
 void Model::load(string filename) {
 	ifstream inFile;
 	inFile.open(filename.c_str());
@@ -74,6 +75,7 @@ void Model::load(string filename) {
 	inFile.close();
 }
 
+// Convenient for splitting lines in the obj file as well as face definitions (separated by '/')
 vector<string> Model::splitString(string str, char delim, bool leaveBlanks) {
 	int start = 0;
 	vector<string> result;

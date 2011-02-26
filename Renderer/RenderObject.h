@@ -4,6 +4,7 @@
 #include "Common/prelude.h"
 #include "Model.h"
 #include <SDL.h>
+#include <SDL_image.h>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -15,11 +16,12 @@ private:
 
 public:	
 	RenderObject();
-	RenderObject(string textureName, string modelName);
+	RenderObject(string textureName, string modelName, float scale = 1.0);
 	virtual ~RenderObject();
 
-	GLuint texture;
-	Model model;
+	GLuint texture;	// Texture to apply to this object when rendered
+	Model model;	// The model that represents this object (rendering only, not collision)
+	float scale;	// Scale factor to resize
 
 	void draw() const;
 	void drawNormals() const;
