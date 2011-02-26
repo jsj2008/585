@@ -65,9 +65,8 @@ bool Input::UpdateInput(SDL_Event& event){
 
 	}//end if type key released
 	else if(event.type ==SDL_JOYAXISMOTION){
-		XAxis=0.0;
-		YAxis=0.0;
-			if ( ( event.jaxis.value < -3200 ) || (event.jaxis.value > 3200 ) ) 
+
+			if ( ( event.jaxis.value < -200 ) || (event.jaxis.value > 200 ) ) //if analog is moved far enough
 			{
 				if( event.jaxis.axis == 0) 
 				{
@@ -75,11 +74,35 @@ bool Input::UpdateInput(SDL_Event& event){
 					//TODO: Have a scale value to make controls move faster depending on axis
 					if(event.jaxis.value<0)
 					{
+						if(event.jaxis.value<-4000)
 						XAxis=-1.0;//LEFT
+						else if(event.jaxis.value<-3250)
+						XAxis=-0.8;
+						else if(event.jaxis.value<-2500)
+						XAxis=-0.6;
+						else if(event.jaxis.value<-1750)
+						XAxis=-0.4;
+						else if(event.jaxis.value<-1000)
+						XAxis=-0.2;
+						else 
+						XAxis=-0.1;
+
 					}
 					else if(event.jaxis.value>0)
 					{
-						XAxis=1.0;//RIGHT
+						if(event.jaxis.value>4000)
+						XAxis=1.0;//Right
+						else if(event.jaxis.value>3250)
+						XAxis=0.8;
+						else if(event.jaxis.value>2500)
+						XAxis=0.6;
+						else if(event.jaxis.value>1750)
+						XAxis=0.4;
+						else if(event.jaxis.value>1000)
+						XAxis=0.2;
+						else 
+						XAxis=0.1;
+
 					}
 				}//end left/right joystick control
 
@@ -95,6 +118,10 @@ bool Input::UpdateInput(SDL_Event& event){
 					}
 				}//end updown movement joystick control
 			}//end joystick axis control
+			else{
+			XAxis=0;
+
+			}
 	}//end else if type
 	else if(event.type ==SDL_JOYBUTTONDOWN){
 		//TODO:Figure out which xbox button is which 
@@ -110,6 +137,7 @@ bool Input::UpdateInput(SDL_Event& event){
 	}//end else if type button
 
 
+	
 	return false;//tell quit to quit
 }//end startInput() function
 
