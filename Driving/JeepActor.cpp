@@ -198,10 +198,14 @@ void JeepActor::tick(seconds timeStep)
 	{
 		real_up = btVector3(0,1,0);
 	}
-	LOG("real_up " << real_up, "jeep");
+
 	btVector3 correction_axis = up_axis.cross(real_up);
 	
-	chasis->applyTorque(correction_axis * (1-up_axis.dot(correction_axis) ));
+	btScalar x = 1 - up_axis.dot(correction_axis);
+	static btScalar last_x = 0;
+	
+	chasis->applyTorque(correction_axis * x* LoadFloat("config/jeep_springs.xml", "auto_correct")  );
+	last_x = x;
 	
 	//angular friction
 	btScalar angular = chasis->getAngularVelocity().dot(real_up);
