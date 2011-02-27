@@ -118,10 +118,11 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0) );
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
-	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
-	btVector3 lateral = quatRotate(chasis->getOreintation(), btVector3(0,0,1));
+	btVector3 long_velocity = u*chasis->getLinearVelocity().dot(u);
+	btVector3 velocity = chasis->getLinearVelocity();
+	btVector3 lateral = quatRotate(chasis->getOrientation(), btVector3(0,0,1));
 
-	btScalar speed = velocity.length();
+	btScalar long_speed = long_velocity.length();
 
 	
 	
@@ -149,11 +150,11 @@ void JeepActor::tick(seconds timeStep)
 	}
 		
 	/*air resistance*/
-	 btVector3 f_drag = -c_drag * velocity * speed;
+	 btVector3 f_drag = -c_drag * long_velocity * long_speed;
 	
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
-	btVector3 f_rolling = -c_rolling * velocity;
+	btVector3 f_rolling = -c_rolling * long_velocity;
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	/*find car acceleration*/
@@ -183,7 +184,7 @@ void JeepActor::tick(seconds timeStep)
 	if(s != 0)	//if actually turning
 	{
 		btScalar R = L/s;
-		omega = speed / R;
+		omega = long_speed / R;
 	}
 	
 	btVector3 total_torque(0,0,0);
@@ -202,13 +203,62 @@ void JeepActor::tick(seconds timeStep)
 	}
 		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
 		// LOG("total_torque:" << total_torque, "jeep");
-		btScalar vlat = chasis->getLinearVelocity().dot(lateral);
-		btScalar alpha_front = atan( (vlat + omega*b) / (fabs(chasis->getLinearVelocity().dot(u))+0.001) ) - delta;
+		
+		btVector3 up_axis = quatRotate(chasis->getOrientation(), btVector3(0,1,0) );
+		btQuaternion steer = btQuaternion(up_axis, delta);
+		btVector3 delta_vector  = quatRotate(steer, u).normalize();
+		btVector3 norm_vel = velocity;
+		if(long_speed < 1)
+		{
+			
+			return;
+		}
+			
+			
+		norm_vel.normalize();
+		LOG("velocity " << chasis->getLinearVelocity(), "jeep");
+		btScalar cos_alpha = delta_vector.dot(norm_vel);
+		/*clamping because floating points are fun*/
+		if(cos_alpha < -1)
+			cos_alpha = -1;
+		
+		if(cos_alpha > 1)
+			cos_alpha = 1;
+			
+		btScalar alpha = acos(cos_alpha);
+
+		if(delta < 0)
+			alpha *= -1;
+		
+		btScalar vlat = sin(alpha);
+		btScalar vlong = cos(alpha);
+
+		btScalar sign = 1;
+		if(vlong < 0)
+			sign = -1;
+
+		if(vlong != 0)
+		{
+		
+		omega = chasis->getAngularVelocity().dot(up_axis);
+		btScalar alpha_front = 30*(atan( (vlat + omega*b) / (0.001 + fabs( vlong ) ) )  + delta * sign);
+		btScalar alpha_rear  = 30*atan( (vlat - omega*c) / (0.001 + fabs( vlong ) ) );
+		btScalar cornering = alpha_rear + cos(delta)*alpha_front;
+		
+		LOG("vlong       " << vlong, "jeep");
+		LOG("vlat        " << vlat, "jeep");
+		LOG("delta      " << delta, "jeep"); 
+		LOG("omega       " << omega, "jeep");
 		LOG("alpha_front " << alpha_front, "jeep");
+		LOG("alpha_rear  " << alpha_rear, "jeep");
 		
+		chasis->applyCentralForce(lateral*cornering);
+		chasis->applyTorque( up_axis*btVector3(0,cos(delta)*alpha_front*b, 0) );
+		chasis->applyTorque( up_axis*btVector3(0,-alpha_rear*c, 0) );
 		
-		// chasis->applyTorque( total_torque);
-	// chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
+		}
+	 
+	 //chasis->setAngularVelocity(btVector3(0,omega*0.65,0));
 	
 }
 
