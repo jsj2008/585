@@ -19,4 +19,6 @@
 <param type="0" name="c_roll3" value="10" />
 <param type="0" name="breaking" value="-400" />
 <param type="0" name="max_rotate" value="0.523598776" />
-<param type="0" name="turn_time" value="1" />
+<param type="0" name="turn_time" value="20" />
+<param type="0" name="rotate_friction" value="100" />
+<param type="0" name="turn_k" value="0.1" />

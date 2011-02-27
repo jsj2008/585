@@ -18,6 +18,8 @@ public:
 	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 const & getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
+	btVector3 plane_normal;
+	
 private:
 	
 	btScalar slip_ratio_lookup(btScalar);
@@ -30,7 +32,6 @@ private:
 	btScalar old_x;
 	bool was_hit;
 	btScalar current_weight;
-	btVector3 plane_normal;
 	btScalar wheel_speed;
 	btScalar const & wheel_radius;
 	RenderObject wheelModel;
