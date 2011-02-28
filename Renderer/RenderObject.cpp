@@ -2,8 +2,9 @@
 
 RenderObject::RenderObject() { }
 
-RenderObject::RenderObject(string textureName, string modelName, float scale) {
-	loadTexture(textureName);
+RenderObject::RenderObject(string textureName, string bumpMapName, string modelName, float scale) {
+	loadTexture(textureName, &texture);
+	loadTexture(bumpMapName, &bumpMap);
 	model = Model(modelName);
 	this->scale = scale;
 }
@@ -24,6 +25,7 @@ void RenderObject::draw() const {
 
 			currentVector = model.normals.at(currentFace.normals.at(j)-1);
 			glNormal3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
+
 			if (currentFace.texCoords.at(j) != 0) {
 				currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
 				glTexCoord2f(currentVector->getX(), currentVector->getY());
@@ -69,13 +71,13 @@ void RenderObject::drawNormals() const {
 	glPopMatrix();
 }
 
-// Loads this render object's texture internally
-bool RenderObject::loadTexture(string textureName) {
+// Loads a texture into the specified GL texture location
+bool RenderObject::loadTexture(string name, GLuint *texID) {
 	SDL_Surface *surface;
 	GLenum textureFormat;
 	int numColors;
 	 
-	if ((surface = IMG_Load(textureName.c_str()))) { 
+	if ((surface = IMG_Load(name.c_str()))) { 
 	 
 		numColors = surface->format->BytesPerPixel;
 		if (numColors == 4) { // Has alpha
@@ -85,22 +87,23 @@ bool RenderObject::loadTexture(string textureName) {
 				if (surface->format->Rmask == 0x000000ff) textureFormat = GL_RGB;
 				else textureFormat = GL_BGR;
 		} else {
-			cout << "Invalid texture format (" << textureName << ")" << endl;
+			cout << "Invalid texture format (" << name << ")" << endl;
 			return false;
 		}
 	 
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glGenTextures(1, texID);
+		glBindTexture(GL_TEXTURE_2D, *texID);
 	 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	 
 		glTexImage2D(GL_TEXTURE_2D, 0, numColors, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
 	} 
 	else {
-		cout << "Could not load texture \"" << textureName << "\" (" << SDL_GetError() << ")" << endl;
+		cout << "Could not load texture \"" << name << "\" (" << SDL_GetError() << ")" << endl;
 		return false;
 	}    
 	 

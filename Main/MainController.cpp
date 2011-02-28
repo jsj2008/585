@@ -12,9 +12,9 @@ MainController * MainController::ptr = NULL;
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-jeepModel("sand_wrap.png", "models/jeep2_flipx.obj"),
-cubeModel("RAADicle.bmp", "models/cube.obj"),
-planeModel("RAADicleXtreme.bmp", "models/quad.obj")
+jeepModel("", "", "models/jeep2_flipx.obj"),
+cubeModel("RAADicle.bmp", "", "models/cube.obj"),
+planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 
 {
 	if(ptr == NULL)
@@ -39,6 +39,7 @@ planeModel("RAADicleXtreme.bmp", "models/quad.obj")
 	} else {
 		engine->play2D("sound/TribalGroove.mp3", true);
 		engine->play2D("sound/ExoticBirds.mp3", true);
+		//engine->play3D("sound/FX/test.wav", vec3df(0,0,3));
 	}
 	/***********Sound test********/ 
 	

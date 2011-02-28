@@ -74,6 +74,8 @@ void Renderer::renderObjects() {
 
 		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
+		glActiveTexture(GL_TEXTURE5); // Apply the current actor's bump map
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.bumpMap);
 		shader->on();
 			applyShader();
 
@@ -230,7 +232,7 @@ void Renderer::initializeGL() {
 		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
 		autoSpecularLoc = shader->getUniLoc("autoSpecular");
 		
-		//load3DTexture("sunrisecopper.tx3");
+		//load3DTexture("goldmist.tx3");
 		load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
 		loadTextures();
 	}

@@ -12,14 +12,15 @@ using namespace std;
 class RenderObject {
 
 private:
-	bool loadTexture(string textureName);
+	bool loadTexture(string textureName, GLuint *texID);
 
 public:	
 	RenderObject();
-	RenderObject(string textureName, string modelName, float scale = 1.0);
+	RenderObject(string textureName, string bumpMapName, string modelName, float scale = 1.0);
 	virtual ~RenderObject();
 
 	GLuint texture;	// Texture to apply to this object when rendered
+	GLuint bumpMap;	// Bump map to apply to this object when rendered
 	Model model;	// The model that represents this object (rendering only, not collision)
 	float scale;	// Scale factor to resize
 
