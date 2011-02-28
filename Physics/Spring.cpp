@@ -10,23 +10,32 @@
 // #define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
+	btScalar ret = 0;
 	if(slip < 3)
 	{
-		return slip * 4;
+		ret = slip * 4;
 	}
 	
 	if(slip < 0)
 	{
-		return slip*4;
+		ret = slip*4;
 	}
 	
 	if(slip > 3)
 	{
+		ret = 2;
 		if( 12 - slip/2.0 > 1)
-			return (12-slip/2.0);
+			ret = (12-slip/2.0);
 		else
-			return 1;
+			ret = 1;
 	}
+	
+	if(ret > LoadFloat("config/jeep_springs.xml", "max_torque"))
+		ret = LoadFloat("config/jeep_springs.xml", "max_torque");
+	if(ret < -LoadFloat("config/jeep_springs.xml", "max_torque"))
+		ret = -LoadFloat("config/jeep_springs.xml", "max_torque");
+	
+	return ret;
 }
 
 btVector3 const & Spring::getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const

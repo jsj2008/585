@@ -23,3 +23,4 @@
 <param type="0" name="rotate_friction" value="100" />
 <param type="0" name="turn_k" value="0.15" />
 <param type="0" name="auto_correct" value="100" />
+<param type="0" name="max_torque" value="2" />

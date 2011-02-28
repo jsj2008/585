@@ -201,16 +201,25 @@ void JeepActor::tick(seconds timeStep)
 
 	btVector3 correction_axis = up_axis.cross(real_up);
 	
-	btScalar x = 1 - up_axis.dot(correction_axis);
-	static btScalar last_x = 0;
+	/*figure out direction of correction*/
+	btQuaternion q = btQuaternion( correction_axis, 3.14159/2.0);
+	btVector3 half_plane = quatRotate(q, up_axis);
+	btScalar correction_sign = half_plane.dot(real_up);
+	if(correction_sign > 0)
+		correction_sign = 1;
+	else
+		correction_sign = -1;
 	
-	chasis->applyTorque(correction_axis * x* LoadFloat("config/jeep_springs.xml", "auto_correct")  );
-	last_x = x;
+	LOG("correction_sign " << correction_sign, "correct");
+	btScalar x = 1 - up_axis.dot(correction_axis);
+	chasis->applyTorque(correction_axis * x*correction_axis* LoadFloat("config/jeep_springs.xml", "auto_correct")  );
 	
 	//angular friction
 	btScalar angular = chasis->getAngularVelocity().dot(real_up);
 	LOG("angular " << angular, "jeep");
 	chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	
+	//turning
 	
 	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
