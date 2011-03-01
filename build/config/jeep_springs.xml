@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<param type="0" name="offset_x" value="2.3" />
+<param type="0" name="offset_x" value="2.1" />
 <param type="0" name="offset_z" value="2.9" />
-<param type="0" name="spring_top" value="1" />
+<param type="0" name="spring_top" value="2" />
 <param type="0" name="spring_bottom" value="-3.5" />
 <param type="0" name="width" value="4.8" />
 <param type="0" name="height" value="3.0" />
@@ -9,18 +9,18 @@
 <param type="0" name="comx" value="0.0" />
 <param type="0" name="comy" value="2.4" />
 <param type="0" name="comz" value="0" />
-<param type="0" name="mass" value="10.0" />
+<param type="0" name="mass" value="15.0" />
 <param type="0" name="torque_k" value="0.0" />
 <param type="0" name="weight_shift" value="0.55" />
-<param type="0" name="engine_torque" value="4" />
+<param type="0" name="engine_torque" value="6" />
 <param type="0" name="c_drag" value="0.01" />
 <param type="0" name="c_roll" value="30" />
-<param type="0" name="c_roll2" value="2.5" />
+<param type="0" name="c_roll2" value="5" />
 <param type="0" name="c_roll3" value="10" />
 <param type="0" name="breaking" value="-400" />
 <param type="0" name="max_rotate" value="0.523598776" />
 <param type="0" name="turn_time" value="20" />
-<param type="0" name="rotate_friction" value="100" />
-<param type="0" name="turn_k" value="0.15" />
-<param type="0" name="auto_correct" value="100" />
+<param type="0" name="rotate_friction" value="300" />
+<param type="0" name="turn_k" value="0.1" />
+<param type="0" name="auto_correct" value="700" />
 <param type="0" name="max_torque" value="2" />

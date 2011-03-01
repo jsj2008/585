@@ -10,6 +10,8 @@
 // #define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
+	LOG("slip " << slip, "slip" );
+	return slip*2.0;
 	btScalar ret = 0;
 	if(slip < 3)
 	{
@@ -28,6 +30,11 @@ btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 			ret = (12-slip/2.0);
 		else
 			ret = 1;
+	}
+	
+	if(slip < -3)
+	{
+		
 	}
 	
 	if(ret > LoadFloat("config/jeep_springs.xml", "max_torque"))
@@ -69,7 +76,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
 	LOG("slip_ratio:" << slip_ratio, "springs");
-	return direction * slip_ratio_lookup(slip_ratio) * current_weight;
+	return direction * slip_ratio_lookup(slip_ratio)*100 /* * current_weight*/;
 	
 	
 }
@@ -129,6 +136,15 @@ btScalar Spring::getWeight()
 	return current_weight;
 }
 
+void Spring::render()
+{
+	if(plane_normal.length() == 0)	//in the air
+		wheel_actor->pos = to + quatRotate(chasis->getWorldTransform().getRotation(), btVector3(0,wheel_radius,0) );
+	else
+		wheel_actor->pos = hitPoint + quatRotate(chasis->getWorldTransform().getRotation(), btVector3(0,wheel_radius,0) );
+	
+}
+
 void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 {
 	
@@ -147,19 +163,17 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 
 	btVector3 rest = rest_fraction*(to - from);
 	btVector3 spring_unit = (to - from).normalize();
-
-	btCollisionWorld::ClosestRayResultCallback result(from, to);	
+	btCollisionWorld::ClosestRayResultCallback result(from, to);
 	physics->dynamicsWorld.rayTest( from, to, result);
-	LOG("to:" << to, "springs");
-	LOG("from:" << to, "springs");
-
-	if(result.hasHit() )
+	btVector3 physical_spring = (result.m_hitPointWorld - from);	//the spring as it is compressed
+	btScalar physical_length = physical_spring.length();
+	
+		
+	if(result.hasHit() &&  physical_length <= ( (to-from) ).length() )
 	{		
 		
 		plane_normal = result.m_hitNormalWorld;
-
-		btVector3 physical_spring = (result.m_hitPointWorld - from);	//the spring as it is compressed
-		btScalar physical_length = physical_spring.length();
+		this->hitPoint = result.m_hitPointWorld;
 
 		btScalar x = rest.length() - physical_length;
 
@@ -169,10 +183,10 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 			spring_v = 0;
 				
 		#ifdef DEBUG_RENDERER		
-		debugger->drawLine(from, from + physical_spring, btVector3(0,0,0));		
+		// debugger->drawLine(from, from + physical_spring, btVector3(0,0,0));		
+		debugger->drawLine(from, result.m_hitPointWorld, btVector3(0,0,0));		
 		LOG("DEBUG_RENDERER is ON", "springs");
 		#endif
-		wheel_actor->pos = result.m_hitPointWorld + btVector3(0,wheel_radius,0);
 		
 		btVector3 projection = -spring_unit;
 		
@@ -191,7 +205,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
-		wheel_actor->pos = to + btVector3(0,wheel_radius,0);
+		
 		#ifdef DEBUG_RENDERER
 		debugger->drawLine(from, to, btVector3(0,0,0));
 		LOG("DEBUG_RENDERER is ON", "springs");

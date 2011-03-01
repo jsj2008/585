@@ -16,7 +16,7 @@ Window::Window()
 	
 	/*sets up OpenGL drawing context*/
 	SDL_Surface * drawContext;
-	Uint32 flags = SDL_OPENGL | SDL_FULLSCREEN;
+	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
 	aInput=new Input();
 }
