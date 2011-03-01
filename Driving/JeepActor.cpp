@@ -99,6 +99,8 @@ void JeepActor::tick(seconds timeStep)
 	btScalar engine_force = 0;
 	if(input->AcceleratePressed)
 	{
+		if(torque < 0)
+			torque = 0;
 		engine_force = 2;
 		torque += engine_torque;
 	}
@@ -107,15 +109,26 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
+		if(torque > 0)
+			torque = 0;
 		engine_force = 2;//torque;	//for now just make it one or the other
 		// torque += engine_force;
-		torque = 0;
+		torque -= engine_torque;
 		//XAxis *= -1;
 		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
 	
+	if(torque > LoadFloat("config/jeep_springs.xml", "max_torque"))
+	{
+		torque = LoadFloat("config/jeep_springs.xml", "max_torque");
+	}
+	
+	if(torque < -LoadFloat("config/jeep_springs.xml", "max_torque"))
+	{
+		torque = -LoadFloat("config/jeep_springs.xml", "max_torque");
+	}
 	
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
@@ -165,7 +178,7 @@ void JeepActor::tick(seconds timeStep)
 	}
 		
 	/*air resistance*/
-	 btVector3 f_drag = -c_drag * long_velocity * fabs(long_speed);
+	 btVector3 f_drag = -c_drag * velocity * fabs(velocity.length() );
 	
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
@@ -256,7 +269,7 @@ void JeepActor::tick(seconds timeStep)
 		//chasis->setWorldTransform(current);
 		
 		btVector3 oldAngular = chasis->getAngularVelocity();
-		chasis->setAngularVelocity(oldAngular * 0.95);
+		// chasis->setAngularVelocity(oldAngular * 0.98);
 		
 		// btVector3 want = velocity;
 		
@@ -280,17 +293,24 @@ void JeepActor::tick(seconds timeStep)
 
 	
 	//angular friction
-	btScalar angular = chasis->getAngularVelocity().dot(real_up);
-	LOG("angular " << angular, "jeep");
-	chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
-	
+	//btScalar angular = chasis->getAngularVelocity().dot(real_up);
+	//LOG("angular " << angular, "jeep");
+	//chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	btScalar angular = chasis->getAngularVelocity().length();
+	// chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	chasis->applyTorque( -chasis->getAngularVelocity() * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+		
 	//turning
 	
 	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
-	chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * real_up * turning_weight * long_speed);
-	// chasis->setAngularVelocity(up_axis * btVector3(0,omega*0.65,0));
-	
+	if(turning_weight > 1e-6) {
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * real_up * long_speed);
+		
+		btScalar delta_sign = delta < 0 ? -1 : +1;
+		chasis->applyCentralForce( lateral*delta_sign *
+			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
+	}
 }
 
 JeepActor::~JeepActor()

@@ -10,8 +10,8 @@
 // #define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
+	return slip*200.0;
 	LOG("slip " << slip, "slip" );
-	return slip*2.0;
 	btScalar ret = 0;
 	if(slip < 3)
 	{
@@ -32,10 +32,7 @@ btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 			ret = 1;
 	}
 	
-	if(slip < -3)
-	{
-		
-	}
+	
 	
 	if(ret > LoadFloat("config/jeep_springs.xml", "max_torque"))
 		ret = LoadFloat("config/jeep_springs.xml", "max_torque");
@@ -76,7 +73,8 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
 	LOG("slip_ratio:" << slip_ratio, "springs");
-	return direction * slip_ratio_lookup(slip_ratio)*100 /* * current_weight*/;
+	// return direction * slip_ratio_lookup(slip_ratio);
+	return direction*wheel_speed;
 	
 	
 }
