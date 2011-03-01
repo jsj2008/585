@@ -23,5 +23,5 @@
 <param type="0" name="centrifugal" value="-240" />
 <param type="0" name="turn_k" value="12" />
 <param type="0" name="auto_correct" value="700" />
-<param type="0" name="max_torque" value="300" />
+<param type="0" name="max_torque" value="350" />
 <param type="0" name="engine_torque" value="150" />
