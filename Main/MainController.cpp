@@ -53,6 +53,7 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	/*setup subcomponents*/
 	physics->newActors(temp);
 	renderer = new Renderer(window, actorList);
+	levelAI = new LevelAI(jeep);
 	window.run(this);	//launch window
 
 }
@@ -66,8 +67,9 @@ void MainController::tick(unsigned long interval)
 {
 	//std::cout << interval << std::endl;
 	renderer->step();
+	levelAI->step();
 	physics->step( interval / 1000.0);
-	jeep->tick(interval / 1000.0);
+	// jeep->tick(interval / 1000.0);
 	
 	/*giant hack for camera*/
 
@@ -107,4 +109,5 @@ MainController::~MainController()
 	
 	delete physics;
 	delete renderer;
+	delete levelAI;
 }

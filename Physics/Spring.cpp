@@ -10,24 +10,51 @@
 // #define DEBUG_RENDERER
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
+	btScalar ret = 0;
 	if(slip < 3)
 	{
-		return slip * 4;
+		ret = slip * 4;
 	}
 	
 	if(slip < 0)
 	{
-		return slip*4;
+		ret = slip*4;
 	}
 	
 	if(slip > 3)
 	{
+		ret = 2;
 		if( 12 - slip/2.0 > 1)
-			return (12-slip/2.0);
+			ret = (12-slip/2.0);
 		else
-			return 1;
+			ret = 1;
 	}
+	
+	if(ret > LoadFloat("config/jeep_springs.xml", "max_torque"))
+		ret = LoadFloat("config/jeep_springs.xml", "max_torque");
+	if(ret < -LoadFloat("config/jeep_springs.xml", "max_torque"))
+		ret = -LoadFloat("config/jeep_springs.xml", "max_torque");
+	
+	return ret;
 }
+
+btVector3 const & Spring::getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const
+{
+	static btScalar c = LoadFloat("config/jeep_springs.xml", "c_roll3");
+	btVector3 heading = quatRotate(current_direction, btVector3(1,0,0) );
+	btScalar aligned = heading.dot(linear_velocity);
+	btVector3 d = c*quatRotate(current_direction, btVector3(1,0,0) * aligned );
+	LOG(d, "jeep");
+	return d;
+}
+
+btVector3 const & Spring::planeProjection(btVector3 const & tire_direction) const
+{
+	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
+	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
+	return direction;
+}
+
 
 btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction)
 {
@@ -38,8 +65,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 		return btVector3(0,0,0);
 	}
 	
-	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
-	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
+	btVector3 direction = planeProjection(tire_direction);
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
 	LOG("slip_ratio:" << slip_ratio, "springs");
@@ -55,17 +81,16 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 	{
 		return btVector3(0,0,0);
 	}
-	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
-	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
+	
+	btVector3 direction = planeProjection(tire_direction);	//direction on the plane
 	btVector3 lateral = direction.cross(plane_normal);
 	if(lateral.dot(linear_velocity) > 0)	//on the same half-plane so flip it
 		lateral *= -1;
 	
 	
-	btScalar k2 = linear_velocity.dot(plane_normal);	//projection onto normal
-
-	btVector3 planar_direction = (linear_velocity - k2*plane_normal).normalize();	//linear velocity on plane
+	btVector3 planar_direction = planeProjection(linear_velocity);
 	btScalar dir = planar_direction.dot(direction);
+	
 	if(dir > 1)
 		dir = 1;
 	if(dir<-1)
@@ -83,7 +108,8 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("blank.bmp", "", "models/wheel_final.obj")
+wheelModel("blank.bmp", "", "models/wheel_final.obj"),
+current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
 	debugger = physics->dynamicsWorld.getDebugDrawer();
@@ -115,7 +141,8 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	btScalar c = k2*sqrt(k/mass);
 
 	btQuaternion steer = btQuaternion( quatRotate(chasis->getOrientation(), btVector3(0,1,0) ), steer_angle);
-	wheel_actor->orientation = chasis->getOrientation() * steer;
+	current_direction = chasis->getOrientation() * steer;
+	wheel_actor->orientation = current_direction;
 
 
 	btVector3 rest = rest_fraction*(to - from);

@@ -50,11 +50,18 @@ input(input)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
+	physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
 	chasis->setGravity(btVector3(0,0,0));	//we do it manually
 	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
+}
+
+void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
+{
+	JeepActor * jeep = static_cast<JeepActor *>(world->getWorldUserInfo());
+	jeep->tick(timeStep);
 }
 
 void JeepActor::tick(seconds timeStep)
@@ -87,16 +94,15 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
-		engine_force = torque;	//for now just make it one or the other
+		engine_force = 2;//torque;	//for now just make it one or the other
 		// torque += engine_force;
-		torque /= 2;
+		torque = 0;
 		//XAxis *= -1;
 		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
 
-	
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
 	for(int i=0; i<4; i++)
@@ -112,16 +118,18 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0) );
 	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
 	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
-	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
 
-	btScalar speed = velocity.length();
+	btVector3 velocity = chasis->getLinearVelocity();
+	btVector3 lateral = quatRotate(chasis->getOrientation(), btVector3(0,0,1));
 
+	btScalar long_speed = velocity.dot(u);
+	btVector3 long_velocity = u*long_speed;
 	
 	
 	//rear wheel driving
 	btVector3 long_force(0,0,0);
 	btVector3 forward(0,0,0);
-	if(engine_force >= 0.02)	//only call if wheels are doing something fancy
+	if(engine_force > 0)	//only call if wheels are doing something fancy
 	{
 		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
 		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );
@@ -142,11 +150,11 @@ void JeepActor::tick(seconds timeStep)
 	}
 		
 	/*air resistance*/
-	 btVector3 f_drag = -c_drag * velocity * speed;
+	 btVector3 f_drag = -c_drag * long_velocity * fabs(long_speed);
 	
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
-	btVector3 f_rolling = -c_rolling * velocity;
+	btVector3 f_rolling = -c_rolling * long_velocity;
 	chasis->applyCentralForce( f_drag + f_rolling );
 		
 	/*find car acceleration*/
@@ -164,27 +172,59 @@ void JeepActor::tick(seconds timeStep)
 	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
 	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
 	
-	// std::cout << "weight_front:" << weight_front << std::endl;
-	// std::cout << "weight_rear :" << weight_rear << std::endl;
-	LOG("A" << "B" << btVector3(1,2,3), "default");
 	chasis->applyCentralForce(btVector3(0,gravity*mass,0));
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 	
 	torque /= 1.1;
 	
-	/*moving sideways*/
-	btScalar omega = 0;
-	btScalar s = sin(delta);
-	if(s != 0)	//if actually turning
+			
+	btVector3 up_axis = quatRotate(chasis->getOrientation(), btVector3(0,1,0) );
+	btVector3 real_up = btVector3(0,0,0);
+	float count = 0;
+	for(int i=0; i<4; i++)
 	{
-		btScalar R = L/s;
-		omega = speed / R;
+		if(springs[i]->plane_normal.length() >= 1)
+		{
+			real_up += springs[i]->plane_normal;
+			count += 1;
+		}
 	}
 	
-		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
-		// chasis->applyTorque( btVector3(0,omega*3,0));
-	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
+	if(count > 0)
+	{
+		real_up *= (1/count);
+	}else
+	{
+		real_up = btVector3(0,1,0);
+	}
+
+	btVector3 correction_axis = up_axis.cross(real_up);
+	
+	/*figure out direction of correction*/
+	btQuaternion q = btQuaternion( correction_axis, 3.14159/2.0);
+	btVector3 half_plane = quatRotate(q, up_axis);
+	btScalar correction_sign = half_plane.dot(real_up);
+	if(correction_sign > 0)
+		correction_sign = 1;
+	else
+		correction_sign = -1;
+	
+	LOG("correction_sign " << correction_sign, "correct");
+	btScalar x = 1 - up_axis.dot(correction_axis);
+	//chasis->applyTorque(correction_axis * x*correction_axis* LoadFloat("config/jeep_springs.xml", "auto_correct")  );
+	
+	//angular friction
+	btScalar angular = chasis->getAngularVelocity().dot(real_up);
+	LOG("angular " << angular, "jeep");
+	chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	
+	//turning
+	
+	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
+	
+	chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * real_up * turning_weight * long_speed);
+	// chasis->setAngularVelocity(up_axis * btVector3(0,omega*0.65,0));
 	
 }
 

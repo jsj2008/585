@@ -337,7 +337,7 @@ void Renderer::drawGround() {
 void Renderer::initGround() {
 	//loadTexture("testc_c.png", &groundTex);
 	loadTexture("sand_wrap.png", &groundTex);		// Load the ground texture
-	loadTexture("sand_wrap_NRM.png", &groundBump);	// Load the ground bump map
+	//loadTexture("sand_wrap_NRM.png", &groundBump);	// Load the ground bump map
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));	// Load the heightmap from the image
 

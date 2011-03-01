@@ -17,6 +17,7 @@ public:
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);
 	void tick(seconds);
+	static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 		
 private:
 	Physics * const physics;
