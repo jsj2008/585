@@ -39,7 +39,6 @@ planeModel("RAADicleXtreme.bmp", "quad.obj")
 	/*setup subcomponents*/
 	physics->newActors(temp);
 	renderer = new Renderer(window, actorList);
-	window.run(this);	//launch window
 
 }
 

@@ -23,6 +23,7 @@ public:
 	void tick(unsigned long);
 	
 	static void addActor(Actor *);
+	Window window;
 	
 protected:
 	static MainController * ptr;
@@ -30,7 +31,6 @@ protected:
 	GLDebugDrawer debugger;
 	Renderer * renderer;
 	Physics * const physics;
-	Window window;
 	
 	/*more game-oriented stuff*/
 	JeepActor * jeep;
