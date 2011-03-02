@@ -3,6 +3,8 @@
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
 
+// #define DEBUG_DRAW
+
 JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics,  Input const * input, btVector3 const & pos, btVector3 const & vel) : 
 Actor(physObj, renderObj, pos, vel),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
@@ -56,6 +58,17 @@ input(input)
 
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
+	
+	#ifdef DEBUG_RENDERER
+	debugger = physics->dynamicsWorld.getDebugDrawer();
+	#endif
+	
+}
+
+void JeepActor::render()
+{
+	for(int i=0; i<4; i++)
+		springs[i]->render();
 }
 
 void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
@@ -86,6 +99,8 @@ void JeepActor::tick(seconds timeStep)
 	btScalar engine_force = 0;
 	if(input->AcceleratePressed)
 	{
+		if(torque < 0)
+			torque = 0;
 		engine_force = 2;
 		torque += engine_torque;
 	}
@@ -94,15 +109,27 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
+		if(torque > 0)
+			torque = 0;
 		engine_force = 2;//torque;	//for now just make it one or the other
 		// torque += engine_force;
-		torque = 0;
+		torque -= engine_torque;
 		//XAxis *= -1;
 		// u *= -1;
 		//f_breaking = -u * c_breaking;
 		
 	}
-
+	
+	if(torque > LoadFloat("config/jeep_springs.xml", "max_torque"))
+	{
+		torque = LoadFloat("config/jeep_springs.xml", "max_torque");
+	}
+	
+	if(torque < -LoadFloat("config/jeep_springs.xml", "max_torque"))
+	{
+		torque = -LoadFloat("config/jeep_springs.xml", "max_torque");
+	}
+	
 	static btScalar delta = 0;
 	delta += (XAxis * max_rotate - delta) / turn_time;
 	for(int i=0; i<4; i++)
@@ -136,6 +163,7 @@ void JeepActor::tick(seconds timeStep)
 		chasis->applyCentralForce(f0);
 		chasis->applyCentralForce(f1);
 		
+		
 		forward = f0 / 2.0 + f1 / 2.0;
 		
 		long_force += (f0 + f1);
@@ -150,7 +178,7 @@ void JeepActor::tick(seconds timeStep)
 	}
 		
 	/*air resistance*/
-	 btVector3 f_drag = -c_drag * long_velocity * fabs(long_speed);
+	 btVector3 f_drag = -c_drag * velocity * fabs(velocity.length() );
 	
 	/*rolling resistance*/
 	btScalar c_rolling = c_roll * c_drag;
@@ -176,10 +204,19 @@ void JeepActor::tick(seconds timeStep)
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
 	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 	
+	
 	torque /= 1.1;
 	
 			
 	btVector3 up_axis = quatRotate(chasis->getOrientation(), btVector3(0,1,0) );
+	
+	/*debugging jump*/
+	if(input ->EBrakePressed)
+	{
+		chasis->applyImpulse( btVector3(0,40,0), btVector3(0,0,0));
+	}
+	
+	
 	btVector3 real_up = btVector3(0,0,0);
 	float count = 0;
 	for(int i=0; i<4; i++)
@@ -199,33 +236,81 @@ void JeepActor::tick(seconds timeStep)
 		real_up = btVector3(0,1,0);
 	}
 
-	btVector3 correction_axis = up_axis.cross(real_up);
 	
-	/*figure out direction of correction*/
-	btQuaternion q = btQuaternion( correction_axis, 3.14159/2.0);
-	btVector3 half_plane = quatRotate(q, up_axis);
-	btScalar correction_sign = half_plane.dot(real_up);
-	if(correction_sign > 0)
-		correction_sign = 1;
-	else
-		correction_sign = -1;
+
+	/*set up correction frame*/
+	btScalar k = u.dot(real_up);	//projection onto real_up
+	btVector3 real_forward = u - k*real_up;
+	btVector3 real_lateral = real_forward.cross(real_up);
 	
-	LOG("correction_sign " << correction_sign, "correct");
-	btScalar x = 1 - up_axis.dot(correction_axis);
-	//chasis->applyTorque(correction_axis * x*correction_axis* LoadFloat("config/jeep_springs.xml", "auto_correct")  );
+	
+	#ifdef DEBUG_DRAW
+	// physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + real_forward*10, btVector3(0,0,0));		
+	// 	physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + up_axis*10, btVector3(255,0,0));		
+		physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + real_up*10, btVector3(0,0,0));		
+		physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + real_lateral*10, btVector3(0,0,0));		
+	// 	physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + lateral*10, btVector3(255,0,0));		
+	 	#endif
+	
+	/*forward tilt*/
+	// real_up = btVector3(0,1,0);
+	static btScalar lastX = 0;
+	btScalar x = -u.dot(real_up);
+	if( x >  0.1)	//sinking
+	{
+		// chasis->applyTorque(real_lateral *LoadFloat("config/jeep_springs.xml", "auto_correct")  );
+		btTransform current = chasis->getWorldTransform();
+		//btTransform atOrigin = chasis->.translate(-pos);
+		btQuaternion toRotate = current.getRotation();
+		toRotate *= btQuaternion(real_lateral, x);
+		current.setRotation(toRotate);
+		//btTransform final = current.translate(pos);
+		
+		//chasis->setWorldTransform(current);
+		
+		btVector3 oldAngular = chasis->getAngularVelocity();
+		// chasis->setAngularVelocity(oldAngular * 0.98);
+		
+		// btVector3 want = velocity;
+		
+		// chasis->applyCentralForce(real_up * LoadFloat("config/jeep_springs.xml", "auto_correct") );
+		#ifdef DEBUG_DRAW
+		physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + up_axis*10, btVector3(255,0,0));		
+		#endif
+	}
+	lastX = x;
+	
+	/*lateral tilt*/
+	x = lateral.dot(real_up);
+	if( fabs(x) > 1.1)
+	{
+		// chasis->applyTorque(real_forward * x * LoadFloat("config/jeep_springs.xml", "auto_correct")  );
+		
+		#ifdef DEBUG_DRAW
+		// physics->dynamicsWorld.getDebugDrawer()->drawLine(pos, pos + lateral*10, btVector3(255,0,0));		
+		#endif
+	}
+
 	
 	//angular friction
-	btScalar angular = chasis->getAngularVelocity().dot(real_up);
-	LOG("angular " << angular, "jeep");
-	chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
-	
+	//btScalar angular = chasis->getAngularVelocity().dot(real_up);
+	//LOG("angular " << angular, "jeep");
+	//chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	btScalar angular = chasis->getAngularVelocity().length();
+	// chasis->applyTorque( -angular * real_up * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+	chasis->applyTorque( -chasis->getAngularVelocity() * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+		
 	//turning
 	
 	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
-	chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * real_up * turning_weight * long_speed);
-	// chasis->setAngularVelocity(up_axis * btVector3(0,omega*0.65,0));
-	
+	if(turning_weight > 1e-6) {
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * real_up * long_speed);
+		
+		btScalar delta_sign = delta < 0 ? -1 : +1;
+		chasis->applyCentralForce( lateral*delta_sign *
+			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
+	}
 }
 
 JeepActor::~JeepActor()

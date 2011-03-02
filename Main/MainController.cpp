@@ -70,6 +70,7 @@ void MainController::tick(unsigned long interval)
 	levelAI->step();
 	physics->step( interval / 1000.0);
 	// jeep->tick(interval / 1000.0);
+	jeep->render();
 	
 	/*giant hack for camera*/
 

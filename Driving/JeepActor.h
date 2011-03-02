@@ -8,6 +8,7 @@
 #include "Physics/Spring.h"
 #include "UI/Input.h"
 #include "Renderer/RenderObject.h"
+#include <LinearMath/btIDebugDraw.h>
 
 class JeepActor : public Actor
 {
@@ -18,6 +19,7 @@ public:
 	void setPosition(btVector3 const &);
 	void tick(seconds);
 	static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
+	void render();
 		
 private:
 	Physics * const physics;
@@ -29,6 +31,9 @@ private:
 	Springs springs;
 	btRigidBody * chasis;
 	Input const * input;
+	
+	btIDebugDraw * debugger;
+	
 	
 	bool isForward;
 	bool isBackward;

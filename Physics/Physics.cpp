@@ -5,6 +5,7 @@
 #include "HeightMap.h"
 
 // #define DEBUG_RENDERING
+//#define DEBUG_RENDERING2
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), 
@@ -70,7 +71,7 @@ void Physics::newActors(ActorList const & newActors)
 void Physics::step(seconds timeStep)
 {
 	dynamicsWorld.stepSimulation(timeStep,5);
-	#ifdef DEBUG_RENDERING 
+	#ifdef DEBUG_RENDERING2
 	dynamicsWorld.debugDrawWorld();
 	#endif
 }
