@@ -1,6 +1,7 @@
 #pragma once
 #include "IController.h"
 #include "UI/Window.h"
+#include <AI/LevelAI.h>
 #include <Renderer/Renderer.h>
 #include <Renderer/GLDebugDrawer.h>
 #include <Physics/IPhysics.h>
@@ -29,6 +30,7 @@ protected:
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
+	LevelAI * levelAI;
 	Physics * const physics;
 	Window window;
 	
