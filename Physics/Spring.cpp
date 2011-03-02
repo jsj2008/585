@@ -42,17 +42,16 @@ btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 	return ret;
 }
 
-btVector3 const & Spring::getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const
+btVector3 Spring::getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const
 {
 	static btScalar c = LoadFloat("config/jeep_springs.xml", "c_roll3");
 	btVector3 heading = quatRotate(current_direction, btVector3(1,0,0) );
 	btScalar aligned = heading.dot(linear_velocity);
 	btVector3 d = c*quatRotate(current_direction, btVector3(1,0,0) * aligned );
-	LOG(d, "jeep");
 	return d;
 }
 
-btVector3 const & Spring::planeProjection(btVector3 const & tire_direction) const
+btVector3 Spring::planeProjection(btVector3 const & tire_direction) const
 {
 	btScalar k = tire_direction.dot(plane_normal);	//projection onto normal
 	btVector3 direction = (tire_direction - k*plane_normal).normalize();	//direction on the plane
@@ -82,7 +81,7 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction)
 {
 	
-	if(current_weight <1e-6 || linear_velocity.length2() < 1e-6)	//off the ground
+	if(current_weight <1e-6)	//off the ground
 	{
 		return btVector3(0,0,0);
 	}
@@ -105,7 +104,6 @@ btVector3 Spring::getLateralForce(btVector3 const & linear_velocity, btVector3 c
 	return alpha * lateral;
 	
 }
-
 
 Spring::Spring(btRigidBody * const chasis, btVector3 const & from, btVector3 const & to, Physics * const physics) : 
 chasis(chasis),
