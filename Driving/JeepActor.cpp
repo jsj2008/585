@@ -59,7 +59,7 @@ turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
-	physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
+	// physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
 	chasis->setGravity(btVector3(0,0,0));	//we do it manually
 	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
@@ -80,6 +80,7 @@ void JeepActor::render()
 void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
 	JeepActor * jeep = static_cast<JeepActor *>(world->getWorldUserInfo());
+		LOG("pos " << jeep->pos, "temp");
 	jeep->tick(timeStep);
 }
 
@@ -172,6 +173,7 @@ void JeepActor::tick(seconds timeStep)
 	/*get steering info*/
 	static btScalar delta = 0;
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
+	LOG("input: " << input->XAxis, "temp");
 	for(int i=0; i<4; i++)
 	{
 		if(i == 2 || i == 3)

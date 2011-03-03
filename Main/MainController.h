@@ -13,6 +13,8 @@
 #include "Renderer/depend.h"
 #include "Common/SettingsFactory.h"
 #include "Driving/JeepActor.h"
+#include "Driving/JeepManager.h"
+
 
 class MainController : public IController{
 public:
@@ -34,7 +36,12 @@ protected:
 	
 	/*more game-oriented stuff*/
 	JeepActor * jeep;
-	
+	JeepActor * jeep2;
+	JeepActor * jeep3;
+	JeepActor * jeep4;
+	JeepActor * jeep5;
+	JeepActor * jeep6;
+					
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;
@@ -44,5 +51,8 @@ protected:
 	RenderObject jeepModel;
 	RenderObject cubeModel;
 	RenderObject planeModel;
+	
+	JeepManager::Jeeps jeeps;
+	JeepManager * jeepManager;
 	
 };

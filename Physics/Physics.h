@@ -17,6 +17,7 @@
 
 class Spring;
 class JeepActor;
+class JeepManager;
 
 class Physics : public IPhysics
 {
@@ -28,6 +29,7 @@ public:
 	btRigidBody * const newActor(Actor * const);
 	friend class Spring;
 	friend class JeepActor;
+	friend class JeepManager;
 private:
 	
 	ActorList const & actorList;
