@@ -173,7 +173,6 @@ void JeepActor::tick(seconds timeStep)
 	/*get steering info*/
 	static btScalar delta = 0;
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
-	LOG("input: " << input->XAxis, "temp");
 	for(int i=0; i<4; i++)
 	{
 		if(i == 2 || i == 3)
@@ -255,7 +254,10 @@ void JeepActor::tick(seconds timeStep)
 	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
 	if(turning_weight > 1e-6) {
-		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * plane_up * this->long_speed);
+		btScalar turn_factor = this->long_speed;
+		if(turn_factor > 60)
+			turn_factor = 60;
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * plane_up * turn_factor);
 		
 		btScalar delta_sign = delta < 0 ? -1 : +1;
 		chasis->applyCentralForce( lateral*delta_sign *

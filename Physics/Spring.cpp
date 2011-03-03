@@ -71,7 +71,6 @@ btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, b
 	btVector3 direction = planeProjection(tire_direction);
 	btScalar tire_speed = direction.dot(linear_velocity);	//checks contribution to tire speed on this plane		
 	btScalar weightScale = btVector3(0,1,0).dot(this->plane_normal);
-	LOG("weightScale " << weightScale, "temp");
 	btScalar slip_ratio = (wheel_speed * wheel_radius - tire_speed) / (fabs(tire_speed) + 0.001);	//0.001 deals with speed=0
 	LOG("slip_ratio:" << slip_ratio, "springs");
 	// return direction * slip_ratio_lookup(slip_ratio);
@@ -186,7 +185,6 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 		#endif
 		
 		btScalar angle_scale = projection.dot( this->plane_normal );
-		LOG("angle_scale: " << angle_scale, "temp");
 		force *= angle_scale;
 		if(force > 0)
 		{
