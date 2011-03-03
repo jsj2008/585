@@ -30,6 +30,9 @@ public:
 	Path path;
 
 	void step();
+	btVector3 getPathDirection(int lookAhead = 0);
+	btVector3 getVectorToTrack();
+	btVector3 getVectorToSeg(int lookAhead = 0);
 
 };
 #endif

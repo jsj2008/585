@@ -38,6 +38,17 @@ void LevelAI::step() {
 	}
 
 	path.debugDraw(playerPathPos);
+
+	/****/
+	/*btVector3 trackDirection = getPathDirection();
+	btVector3 actorHeading = quatRotate(playerActor->orientation, btVector3(1,0,0)).normalize();
+
+	float angleToTrack = trackDirection.dot(actorHeading);
+	float turnDir = trackDirection.cross(actorHeading).getY();
+	//std::cout << "--------------------" << std::endl;
+	//std::cout << trackDirection.getX() << " " << trackDirection.getY() << " " << trackDirection.getZ() << std::endl;
+	//std::cout << actorHeading.getX() << " " << actorHeading.getY() << " " << actorHeading.getZ() << std::endl;
+	std::cout << angleToTrack << " " << turnDir << std::endl;*/
 }
 
 Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end) {
@@ -58,4 +69,34 @@ Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point ac
 
 	Point closest = pathSegStart + (heading * t);
 	return closest;
+}
+
+btVector3 LevelAI::getPathDirection(int lookAhead) {
+	Point bp, ep;
+	if (currentPlayerSeg < path.length() - 1 - lookAhead) {
+		bp = path.at(currentPlayerSeg + lookAhead);
+		ep = path.at(currentPlayerSeg + 1 + lookAhead);
+	} else {
+		return getPathDirection(lookAhead-1); // Give a previous result
+	}
+	return btVector3(ep.x - bp.x, ep.y - bp.y, ep.z - bp.z).normalize();
+}
+
+btVector3 LevelAI::getVectorToTrack() {
+	btVector3 playerPos = playerActor->pos;
+	btVector3 playerWorldPos = btVector3(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
+	btVector3 playerPathPosv = btVector3(playerPathPos.x, playerPathPos.y, playerPathPos.z);
+	return playerWorldPos - playerPathPosv;
+}
+
+btVector3 LevelAI::getVectorToSeg(int lookAhead) {
+	Point nextSegPoint;
+	btVector3 playerPos = playerActor->pos;
+	btVector3 playerWorldPos = btVector3(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
+	if (currentPlayerSeg < path.length() - lookAhead) {
+		nextSegPoint = path.at(currentPlayerSeg+lookAhead);
+	} else
+		return getVectorToSeg(lookAhead-1);
+	btVector3 nextSegV = btVector3(nextSegPoint.x, nextSegPoint.y, nextSegPoint.z);
+	return playerWorldPos - nextSegV;
 }

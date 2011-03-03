@@ -31,11 +31,13 @@ protected:
 	GLDebugDrawer debugger;
 	Renderer * renderer;
 	LevelAI * levelAI;
+	AIInput* aiInput;
 	Physics * const physics;
 	Window window;
 	
 	/*more game-oriented stuff*/
 	JeepActor * jeep;
+	JeepActor * jeepA;
 	
 	/*objShapes*/
 	const libCube mCube;

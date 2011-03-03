@@ -3,7 +3,7 @@
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
 
-JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics,  Input const * input, btVector3 const & pos, btVector3 const & vel) : 
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btVector3 const & vel) : 
 Actor(physObj, renderObj, pos, vel),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
@@ -79,11 +79,13 @@ void JeepActor::tick(seconds timeStep)
 	btScalar engine_force = 0;
 	if(input->AcceleratePressed)
 	{
+		//std::cout << "Accel" << std::endl;
 		engine_force = 2;
 		torque += engine_torque;
 	}
 	
 	btScalar XAxis = -1*input->XAxis;
+	//std::cout << "Steer: " << XAxis << std::endl;
 
 	if(input->BrakePressed)
 	{
