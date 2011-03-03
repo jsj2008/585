@@ -330,8 +330,8 @@ void Renderer::drawGround() {
 }
 
 void Renderer::initGround() {
-	loadTexture("sand_wrap.bmp", &groundTex);
-	loadTexture("sand_wrap_NRM.bmp", &groundBump);
+	loadTexture("ground_wrap.bmp", &groundTex);
+	loadTexture("ground_wrap_NRM.bmp", &groundBump);
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));
 

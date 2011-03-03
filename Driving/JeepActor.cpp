@@ -3,7 +3,7 @@
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
 
-// #define DEBUG_DRAW
+#define DEBUG_DRAW
 
 float JeepActor::gravity = 1;
 float JeepActor::mass = 1;

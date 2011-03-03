@@ -9,7 +9,7 @@
 <param type="0" name="comx" value="0.0" />
 <param type="0" name="comy" value="2.4" />
 <param type="0" name="comz" value="0" />
-<param type="0" name="mass" value="15.0" />
+<param type="0" name="mass" value="35.0" />
 <param type="0" name="torque_k" value="0.0" />
 <param type="0" name="weight_shift" value="0.15" />
 <param type="0" name="c_drag" value="0.02" />
@@ -20,9 +20,9 @@
 <param type="0" name="turn_time" value="20" />
 <param type="0" name="rotate_friction" value="300" />
 <param type="0" name="centrifugal" value="-200" />
-<param type="0" name="turn_k" value="12" />
+<param type="0" name="turn_k" value="10" />
 <param type="0" name="auto_correct" value="700" />
 <param type="0" name="max_torque" value="350" />
-<param type="0" name="min_torque" value="-100" />
+<param type="0" name="min_torque" value="-200" />
 <param type="0" name="engine_torque" value="150" />
 <param type="0" name="torque_decay" value="1.1" />
