@@ -34,6 +34,7 @@ protected:
 	GLDebugDrawer debugger;
 	Renderer * renderer;
 	LevelAI * levelAI;
+	AIInput* aiInput;
 	Physics * const physics;
 	
 	/*more game-oriented stuff*/
@@ -43,7 +44,7 @@ protected:
 	JeepActor * jeep4;
 	JeepActor * jeep5;
 	JeepActor * jeep6;
-					
+
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;

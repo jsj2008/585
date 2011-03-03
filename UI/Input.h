@@ -1,18 +1,17 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-
+#include "IInput.h"
 #include "Main/IController.h"
 #include <SDL.h>
-class Input
-{
+class Input : public IInput {
 public:
 
-	float XAxis;    
+/*	float XAxis;    
 	float YAxis;
 	bool AcceleratePressed;  
 	bool BrakePressed;  
-	bool EBrakePressed;
+	bool EBrakePressed;*/
 	char ACCELKEY;
 	char BRAKEKEY;
 	char EBRAKEKEY;

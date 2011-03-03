@@ -47,7 +47,8 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	 // temp.push_back(act);
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	jeep = new JeepActor(mChasis, jeepModel, physics, window.aInput , btVector3(jeepX, jeepY, jeepZ));
+	aiInput = new AIInput();
+	jeep = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ));
 	/*jeep2 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+20));
 	jeep3 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+40));
 	jeep4 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+60));
@@ -69,12 +70,13 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	actorList.push_back(jeep4);	
 	actorList.push_back(jeep5);	
 	actorList.push_back(jeep6);	*/
-
 		
 	/*setup subcomponents*/
 	physics->newActors(temp);
 	renderer = new Renderer(window, actorList);
 	levelAI = new LevelAI(jeep);
+	aiInput->setLevelAI(levelAI);
+
 	window.run(this);	//launch window
 
 }
@@ -89,6 +91,7 @@ void MainController::tick(unsigned long interval)
 	//std::cout << interval << std::endl;
 	renderer->step();
 	levelAI->step();
+	aiInput->step();
 	physics->step( interval / 1000.0);
 	jeep->render();
 	/*jeep2->render();
