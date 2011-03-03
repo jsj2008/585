@@ -93,7 +93,7 @@ btVector3 JeepActor::long_friction()
 }
 
 /*lateral friction*/
-btVector3 JeepActor::lateral_friction()
+btVector3 JeepActor::lateral_friction(btScalar delta)
 {
 	/*btVector3 total(0,0,0);
 	for(int i=0; i<4; i++)
@@ -107,7 +107,7 @@ btVector3 JeepActor::lateral_friction()
 	if(!onGround)
 		return btVector3(0,0,0);
 		
-	return lateral*(-velocity.dot(lateral) * c_roll2) / (velocity.length() + 0.001);
+	return lateral*(-velocity.dot(lateral) * c_roll2);// * pow(1-fabs(delta), 3);
 }
 
 /*air resistance*/
@@ -211,7 +211,7 @@ void JeepActor::tick(seconds timeStep)
 	
 	//friction
 	central_forces += long_friction();
-	central_forces += lateral_friction();
+	central_forces += lateral_friction(delta);
 	
 		
 	//air resistance

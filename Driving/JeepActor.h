@@ -25,7 +25,7 @@ public:
 private:
 	
 	inline btVector3 long_friction();
-	inline btVector3 lateral_friction();
+	inline btVector3 lateral_friction(btScalar);
 	inline btVector3 air_resistance(); 
 	inline btVector3 update_tires();
 	inline void isOnGround();
