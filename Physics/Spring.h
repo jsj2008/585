@@ -17,7 +17,7 @@ public:
 	btScalar getWeight();
 	btVector3 getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);
-	btVector3 const & getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
+	btVector3 getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
 	btVector3 plane_normal;
 	void render();
 	
@@ -38,7 +38,7 @@ private:
 	RenderObject wheelModel;
 	Actor * wheel_actor;
 	btQuaternion current_direction;
-	btVector3 const & planeProjection(btVector3 const & tire_direction) const;
+	btVector3 planeProjection(btVector3 const & tire_direction) const;
 	btVector3 hitPoint;
 };
 

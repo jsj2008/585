@@ -8,6 +8,7 @@ int main(int , char **) {
 	SettingsFactory settings_singleton;
 	START_LOG();
 	MainController m;
+	m.window.run(&m);
 	END_LOG();
 	return 0;
 }

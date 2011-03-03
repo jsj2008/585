@@ -21,6 +21,7 @@ public:
 	int ScreenHeight() const {return SDL_GetVideoSurface()->h;}
 	int ScreenDepth() const {return SCREEN_DEPTH;}
 	Input *aInput;
+	Input *bInput;
 
 private:
 	

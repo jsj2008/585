@@ -18,7 +18,9 @@ Window::Window()
 	SDL_Surface * drawContext;
 	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
+	bInput = new Input();
 	aInput=new Input();
+	
 }
 
 Uint32 Window::Timer(Uint32 interval, void* )

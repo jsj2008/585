@@ -5,7 +5,7 @@
 #include "HeightMap.h"
 
 // #define DEBUG_RENDERING
-//#define DEBUG_RENDERING2
+// #define DEBUG_RENDERING2
 
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), 

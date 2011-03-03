@@ -9,6 +9,7 @@
 #include "UI/Input.h"
 #include "Renderer/RenderObject.h"
 #include <LinearMath/btIDebugDraw.h>
+#include "JeepEngine.h"
 
 class JeepActor : public Actor
 {
@@ -22,6 +23,13 @@ public:
 	void render();
 		
 private:
+	
+	inline btVector3 long_friction();
+	inline btVector3 lateral_friction(btScalar);
+	inline btVector3 air_resistance(); 
+	inline btVector3 update_tires();
+	inline void isOnGround();
+	
 	Physics * const physics;
 	btVector3 from[4];
 	btVector3 origin_from[4];
@@ -32,16 +40,31 @@ private:
 	btRigidBody * chasis;
 	Input const * input;
 	
-	btIDebugDraw * debugger;
+	JeepEngine engine;	
 	
-	
-	bool isForward;
-	bool isBackward;
 	float const & offset_x;
 	float const & offset_z;
 	float const & spring_top;
 	float const & spring_bottom;
-	float const & mass;
+	static float mass;
+	float const & c_drag;
+	float const & c_roll;
+	float const & c_roll2;
+	static float gravity;
+	float const & max_rotate;
+	float const & turn_time;
+	
+	/*useful vectors*/
+	btVector3 u;	//jeep is facing this way
+	btVector3 up_axis;	//up of jeep
+	btVector3 lateral;	//lateral of jeep
+	btVector3 velocity;
+	btScalar speed;
+	btVector3 long_velocity;
+	btScalar long_speed;
+	
+	//other states
+	bool onGround;
 	
 };
 
