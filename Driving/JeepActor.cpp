@@ -107,7 +107,7 @@ btVector3 JeepActor::lateral_friction()
 	if(!onGround)
 		return btVector3(0,0,0);
 		
-	return lateral*(-velocity.dot(lateral) * c_roll2);
+	return lateral*(-velocity.dot(lateral) * c_roll2) / (velocity.length() + 0.001);
 }
 
 /*air resistance*/
