@@ -54,6 +54,7 @@ private:
 	static float gravity;
 	float const & max_rotate;
 	float const & turn_time;
+	btScalar delta;
 	
 	/*useful vectors*/
 	btVector3 u;	//jeep is facing this way

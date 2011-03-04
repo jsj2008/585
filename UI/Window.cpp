@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <iostream>
 #include "Common/SettingsFactory.h"
+#include "Common/Debug.h"
 
 Window::Window()
 {
@@ -49,11 +50,14 @@ void Window::run(IController * controller)
 {     
 	static int const & delay = LoadInt("config/window.xml", "delay");
 	bool quit = false;
+	int deltaT;
 	Uint32 before = SDL_GetTicks();
 	while(!quit) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
 		controller->tick(after - before);
+		deltaT = delay - (after-before);
+		//LOG("\t" << after - before, "temp");
 		before = after;
 
 		SDL_Event event;
@@ -69,6 +73,6 @@ void Window::run(IController * controller)
 		}
 		updateGL();
 		controller->yield();	//gives control to main loop
-		SDL_Delay( delay );
+		if (deltaT > 0) SDL_Delay( deltaT );
 	}
 }

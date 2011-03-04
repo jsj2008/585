@@ -68,7 +68,8 @@ turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
 		
 	mass = LoadFloat("config/jeep_springs.xml", "mass");	
 	gravity = LoadFloat("config/world.xml", "gravity");
-	
+
+	delta = 0;
 }
 
 void JeepActor::render()
@@ -87,7 +88,7 @@ void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 /*rolling resistance*/
 btVector3 JeepActor::long_friction()
 {
-	static btScalar c_rolling = c_roll * c_drag;
+	btScalar c_rolling = c_roll * c_drag;
 	btVector3 f_rolling = -c_rolling * this->long_velocity;
 	return f_rolling;
 	
@@ -171,7 +172,6 @@ void JeepActor::tick(seconds timeStep)
 {
 	
 	/*get steering info*/
-	static btScalar delta = 0;
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
 	for(int i=0; i<4; i++)
 	{
@@ -204,7 +204,7 @@ void JeepActor::tick(seconds timeStep)
 		central_forces += update_tires();
 	}
 	
-	
+	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");
 	
 	//calculate environment forces on jeep	
 	//gravity

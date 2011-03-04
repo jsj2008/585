@@ -48,33 +48,33 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 		
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
 	aiInput = new AIInput();
-	jeep = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ));
-	//jeep2 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+20));
-	/*jeep3 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+40));
-	jeep4 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+60));
-	jeep5 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+80));
-	jeep6 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+100));*/
+	jeep = new JeepActor(mChasis, jeepModel, physics, window.aInput, btVector3(jeepX, jeepY, jeepZ));
+	jeep2 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+20));
+	jeep3 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+40));
+	jeep4 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+60));
+	jeep5 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+80));
+	jeep6 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+100));
 	
 	jeeps.push_back(jeep);
-	//jeeps.push_back(jeep2);
-	/*jeeps.push_back(jeep3);
+	jeeps.push_back(jeep2);
+	jeeps.push_back(jeep3);
 	jeeps.push_back(jeep4);
 	jeeps.push_back(jeep5);
-	jeeps.push_back(jeep6);*/
+	jeeps.push_back(jeep6);
 	
 	jeepManager = new JeepManager(&jeeps, physics);
 
 	actorList.push_back(jeep);
-	//actorList.push_back(jeep2);	
-	/*actorList.push_back(jeep3);	
+	actorList.push_back(jeep2);	
+	actorList.push_back(jeep3);	
 	actorList.push_back(jeep4);	
 	actorList.push_back(jeep5);	
-	actorList.push_back(jeep6);	*/
+	actorList.push_back(jeep6);	
 		
 	/*setup subcomponents*/
 	physics->newActors(temp);
 	renderer = new Renderer(window, actorList);
-	levelAI = new LevelAI(jeep);
+	levelAI = new LevelAI(jeep2);
 	aiInput->setLevelAI(levelAI);
 
 	window.run(this);	//launch window
@@ -94,11 +94,11 @@ void MainController::tick(unsigned long interval)
 	aiInput->step();
 	physics->step( interval / 1000.0);
 	jeep->render();
-	//jeep2->render();
-	/*jeep3->render();
+	jeep2->render();
+	jeep3->render();
 	jeep4->render();
 	jeep5->render();
-	jeep6->render();*/
+	jeep6->render();
 	
 	/*giant hack for camera*/
 
