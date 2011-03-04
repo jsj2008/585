@@ -11,6 +11,9 @@ using namespace std;
 
 class LevelAI {
 
+typedef vector<int> jeepSegments;
+typedef vector<Point> jeepPositions;
+
 private:
 	float xscale;
 	float yscale;

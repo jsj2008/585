@@ -39,7 +39,7 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	} else {
 		engine->play2D("sound/TribalGroove.mp3", true);
 		engine->play2D("sound/ExoticBirds.mp3", true);
-		//engine->play3D("sound/FX/test.wav", vec3df(0,0,3));
+		//engine->play3D("sound/FX/test.wav", vec3df(0,0,2));
 	}
 	/***********Sound test********/ 
 	
@@ -49,15 +49,15 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
 	aiInput = new AIInput();
 	jeep = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ));
-	/*jeep2 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+20));
-	jeep3 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+40));
+	//jeep2 = new JeepActor(mChasis, jeepModel, physics, aiInput, btVector3(jeepX, jeepY, jeepZ+20));
+	/*jeep3 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+40));
 	jeep4 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+60));
 	jeep5 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+80));
 	jeep6 = new JeepActor(mChasis, jeepModel, physics, window.bInput , btVector3(jeepX, jeepY, jeepZ+100));*/
 	
 	jeeps.push_back(jeep);
-	/*jeeps.push_back(jeep2);
-	jeeps.push_back(jeep3);
+	//jeeps.push_back(jeep2);
+	/*jeeps.push_back(jeep3);
 	jeeps.push_back(jeep4);
 	jeeps.push_back(jeep5);
 	jeeps.push_back(jeep6);*/
@@ -65,8 +65,8 @@ planeModel("RAADicleXtreme.bmp", "", "models/quad.obj")
 	jeepManager = new JeepManager(&jeeps, physics);
 
 	actorList.push_back(jeep);
-	/*actorList.push_back(jeep2);	
-	actorList.push_back(jeep3);	
+	//actorList.push_back(jeep2);	
+	/*actorList.push_back(jeep3);	
 	actorList.push_back(jeep4);	
 	actorList.push_back(jeep5);	
 	actorList.push_back(jeep6);	*/
@@ -94,8 +94,8 @@ void MainController::tick(unsigned long interval)
 	aiInput->step();
 	physics->step( interval / 1000.0);
 	jeep->render();
-	/*jeep2->render();
-	jeep3->render();
+	//jeep2->render();
+	/*jeep3->render();
 	jeep4->render();
 	jeep5->render();
 	jeep6->render();*/

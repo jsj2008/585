@@ -336,7 +336,7 @@ void Renderer::drawGround() {
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
 	//loadTexture("testc_c.png", &groundTex);
-	loadTexture("sand_wrap.png", &groundTex);		// Load the ground texture
+	loadTexture("bigTex.png", &groundTex);		// Load the ground texture
 	//loadTexture("sand_wrap_NRM.png", &groundBump);	// Load the ground bump map
 
 	hm = new HeightMap(LoadString2("config/world.xml","height_map"));	// Load the heightmap from the image
@@ -449,12 +449,12 @@ void Renderer::initGround() {
 // Defines the texture coordinate of the ground at the given location
 // xend and zend define which edge of the polygon this is, and therefore whether the texture coordinate should be 1 or 0 for propper wrapping
 void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
-	float xc = ((float)(x%10))/10.0;
+/*	float xc = ((float)(x%10))/10.0;
 	float zc = ((float)(z%10))/10.0;
 	if (xend && xc == 0) xc = 1;
-	if (zend && zc == 0) zc = 1;
-/*	float xc = (float)(x)/(float)(hm->width);
-	float zc = (float)(z)/(float)(hm->height);*/
+	if (zend && zc == 0) zc = 1;*/
+	float xc = (float)(x)/(float)(hm->width);
+	float zc = (float)(z)/(float)(hm->height);
 	glTexCoord2f(zc, xc);
 }
 

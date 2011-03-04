@@ -11,7 +11,7 @@ Path::Path() {
 	addPoint(318, 8);
 	addPoint(320, 38);
 	addPoint(308, 62);
-	addPoint(297, 82);
+	addPoint(297, 77);
 	addPoint(305, 93);
 	addPoint(322, 94);
 	addPoint(351, 90);

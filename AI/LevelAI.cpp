@@ -17,14 +17,20 @@ LevelAI::~LevelAI() { }
 void LevelAI::step() {
 	// 256 is hm width / 2 <- make it less hacky
 	btVector3 playerPos = playerActor->pos;
+	Point lookAhead;
 	Point playerWorldPos = Point(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
 	//std::cout << "(" << playerWorldPos.x << ", " << playerWorldPos.y << ", " << playerWorldPos.z << ")" << std::endl;
 
 	int result = 0;
+	int resultl = 0;
 	if (currentPlayerSeg < path.length() - 1) {
 		playerPathPos = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
+		lookAhead = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &resultl);
 
-		if (result < 0) {
+		if (lookAhead.distanceTo(playerWorldPos) < playerPathPos.distanceTo(playerWorldPos)) {
+			playerPathPos = lookAhead;
+			currentPlayerSeg++;
+		} else if (result < 0) {
 			if (currentPlayerSeg != 0) currentPlayerSeg--;
 			else std::cout << "Whoa!" << std::endl;
 			playerPathPos = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
@@ -38,17 +44,6 @@ void LevelAI::step() {
 	}
 
 	path.debugDraw(playerPathPos);
-
-	/****/
-	/*btVector3 trackDirection = getPathDirection();
-	btVector3 actorHeading = quatRotate(playerActor->orientation, btVector3(1,0,0)).normalize();
-
-	float angleToTrack = trackDirection.dot(actorHeading);
-	float turnDir = trackDirection.cross(actorHeading).getY();
-	//std::cout << "--------------------" << std::endl;
-	//std::cout << trackDirection.getX() << " " << trackDirection.getY() << " " << trackDirection.getZ() << std::endl;
-	//std::cout << actorHeading.getX() << " " << actorHeading.getY() << " " << actorHeading.getZ() << std::endl;
-	std::cout << angleToTrack << " " << turnDir << std::endl;*/
 }
 
 Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end) {

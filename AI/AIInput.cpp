@@ -45,9 +45,9 @@ void AIInput::step() {
 	else turnDir = 0;
 
 	//if (distFromTrack > 150 && turnDir > 0)  onTrack = 2;
-	if (distFromTrack > 75 && turnDir > 0) onTrack = 1;
+	if (distFromTrack > 50 && turnDir > 0) onTrack = 1;
 	//else if (distFromTrack > 150 && turnDir < 0)  onTrack = -2;
-	else if (distFromTrack > 75 && turnDir < 0) onTrack = -1;
+	else if (distFromTrack > 50 && turnDir < 0) onTrack = -1;
 	//std::cout << distFromTrack << std::endl;
 
 	float distToNextSeg = levelAI->getVectorToSeg(1).length();
@@ -78,18 +78,12 @@ void AIInput::step() {
 		if ((1.0 - angleToTrack) * turnDir > 0.2) turnAnticipation2 = 1;
 		else if ((1.0 - angleToTrack) * turnDir < -0.2) turnAnticipation2 = -1;
 	}
-	std::cout << parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << std::endl;
+	//std::cout << parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << std::endl;
 
 	XAxis = parallelize + onTrack + turnAnticipation1 + turnAnticipation2;
 	if (XAxis > 0) XAxis = 1;
 	else if (XAxis < 0) XAxis = -1;
 	else XAxis = 0;
-
-	
-	/*std::cout << "--------------------" << std::endl;
-	std::cout << trackDirection.getX() << " " << trackDirection.getY() << " " << trackDirection.getZ() << std::endl;
-	std::cout << actorHeading.getX() << " " << actorHeading.getY() << " " << actorHeading.getZ() << std::endl;
-	std::cout << angleToTrack << " " << turnDir << std::endl;*/
 }
 
 void AIInput::setLevelAI(LevelAI* levelAI) {
