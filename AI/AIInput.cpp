@@ -44,7 +44,7 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 	if (distFromTrack > distanceThreshold && turnDir > 0) onTrack = 1;
 	else if (distFromTrack > farDistanceThreshold && turnDir < 0)  onTrack = -2;
 	else if (distFromTrack > distanceThreshold && turnDir < 0) onTrack = -1;
-	std::cout << distFromTrack << std::endl;
+	//std::cout << distFromTrack << std::endl;
 
 	float distToNextSeg = segmentVec1.length();
 	float distToNextSeg2 = segmentVec2.length();
