@@ -2,12 +2,10 @@
 #define AIINPUT_H
 
 #include "UI/IInput.h"
-#include "LevelAI.h"
+#include "Driving/JeepActor.h"
 
 class AIInput : public IInput {
 public:
-
-	LevelAI* levelAI;
 
 	/*float XAxis;    
 	float YAxis;
@@ -16,10 +14,8 @@ public:
 	bool EBrakePressed;*/
 
 	AIInput();
-	AIInput(LevelAI* levelAI);
 	~AIInput();
-	void step();
-	void setLevelAI(LevelAI* levelAI);
+	void step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2);
 };
 
 #endif

@@ -254,9 +254,10 @@ void JeepActor::tick(seconds timeStep)
 	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
 	if(turning_weight > 1e-6) {
-		btScalar turn_factor = this->long_speed;
-		if(turn_factor > 60)
-			turn_factor = 60;
+		btVector3 angular_vel = chasis->getAngularVelocity();
+		btScalar turn_factor = this->long_speed + LoadFloat("config/jeep_springs.xml", "turn_boost")/(0.1+chasis->getAngularVelocity().length() );
+		
+		
 		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * plane_up * turn_factor);
 		
 		btScalar delta_sign = delta < 0 ? -1 : +1;

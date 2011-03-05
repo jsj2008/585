@@ -62,7 +62,7 @@ void Window::run(IController * controller)
 
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
-
+			LOG("Raw input: " << event.jaxis.value, "input");
 			switch(event.type) {
 			case SDL_QUIT:
 				quit = true;

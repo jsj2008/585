@@ -81,7 +81,7 @@ void Path::debugDraw(Point playerPos) {
 			glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
 			glTranslated(point.x, point.y, point.z);
 
-			testCube.draw();
+			//testCube.draw();
 			if (i < points.size()-1) {
 				nextPoint = points.at(i+1);
 				glColor3f(1,1,1);

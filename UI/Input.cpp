@@ -13,6 +13,7 @@ Todo: Scale Joystick properly according to axis value
 
 */
 #include "Input.h"
+#include "Common/Debug.h"
 Input::Input(){
 	SDL_Joystick *joystick;
     SDL_JoystickEventState(SDL_ENABLE);
@@ -86,7 +87,6 @@ bool Input::UpdateInput(SDL_Event& event){
 						XAxis=-0.2;
 						else 
 						XAxis=-0.1;
-
 					}
 					else if(event.jaxis.value>0)
 					{
@@ -136,8 +136,7 @@ bool Input::UpdateInput(SDL_Event& event){
 		if(event.jbutton.button==EBRAKEBUTTON) EBrakePressed=false;
 	}//end else if type button
 
-
-	
+	LOG("\t" << XAxis, "input");
 	return false;//tell quit to quit
 }//end startInput() function
 

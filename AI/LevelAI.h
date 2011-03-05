@@ -2,40 +2,42 @@
 #define LEVELAI_H
 
 #include "Common/prelude.h"
-#include "Common/Actor.h"
 #include "Path.h"
 #include <SDL.h>
 #include <string>
 #include <iostream>
-using namespace std;
+#include <vector>
 
+class JeepActor;
 class LevelAI {
 
-typedef vector<int> jeepSegments;
-typedef vector<Point> jeepPositions;
+typedef std::vector<JeepActor *> Jeeps;
+typedef std::vector<int> jeepSegments;
+typedef std::vector<Point> jeepPositions;
 
 private:
 	float xscale;
 	float yscale;
 	float zscale;
 
-	int currentPlayerSeg;
-	Point playerPathPos;
+	jeepSegments segments;
+	jeepPositions pathPositions;
 
 	Point closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end);
 
 public:	
 	LevelAI();
-	LevelAI(Actor* playerActor);
+	LevelAI(Jeeps jeeps, JeepActor* human);
 	virtual ~LevelAI();
 
-	Actor* playerActor;
+	Jeeps jeeps;
+	JeepActor* human;
 	Path path;
 
 	void step();
-	btVector3 getPathDirection(int lookAhead = 0);
-	btVector3 getVectorToTrack();
-	btVector3 getVectorToSeg(int lookAhead = 0);
+	btVector3 getPathDirection(int lookAhead, int c);
+	btVector3 getVectorToTrack(int c);
+	btVector3 getVectorToSeg(int lookAhead, int c);
 
 };
 #endif
