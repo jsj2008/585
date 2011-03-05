@@ -1,4 +1,5 @@
 #include "AIInput.h"
+#include "Common/Debug.h"
 
 AIInput::AIInput(){
 	XAxis = 0;  
@@ -21,10 +22,12 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 	else turnDir = 0;
 
 	int parallelize = 0;
-	//if ((1.0 - angleToTrack) * turnDir > 0.2) parallelize = 2;
-	 if ((1.0 - angleToTrack) * turnDir > 0.02) parallelize = 1;
-	//else if ((1.0 - angleToTrack) * turnDir < -0.2) parallelize = -2;
-	else if ((1.0 - angleToTrack) * turnDir < -0.02) parallelize = -1;
+	float parallelizationThreshold = LoadFloat("config/ai.xml","parallelization_threshold");
+	float hardParallelizationThreshold = LoadFloat("config/ai.xml","hard_parallelization_threshold");
+	if ((1.0 - angleToTrack) * turnDir > hardParallelizationThreshold) parallelize = 2;
+	if ((1.0 - angleToTrack) * turnDir > parallelizationThreshold) parallelize = 1;
+	else if ((1.0 - angleToTrack) * turnDir < -hardParallelizationThreshold) parallelize = -2;
+	else if ((1.0 - angleToTrack) * turnDir < -parallelizationThreshold) parallelize = -1;
 
 	int onTrack = 0;
 	btVector3 pathVec = trackVector;
@@ -35,10 +38,12 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 	else if (turnDir < 0) turnDir = -1;
 	else turnDir = 0;
 
-	//if (distFromTrack > 150 && turnDir > 0)  onTrack = 2;
-	if (distFromTrack > 40 && turnDir > 0) onTrack = 1;
-	//else if (distFromTrack > 150 && turnDir < 0)  onTrack = -2;
-	else if (distFromTrack > 40 && turnDir < 0) onTrack = -1;
+	float distanceThreshold = LoadFloat("config/ai.xml","distance_threshold");
+	float farDistanceThreshold = LoadFloat("config/ai.xml","far_distance_threshold");
+	if (distFromTrack > farDistanceThreshold && turnDir > 0)  onTrack = 2;
+	if (distFromTrack > distanceThreshold && turnDir > 0) onTrack = 1;
+	else if (distFromTrack > farDistanceThreshold && turnDir < 0)  onTrack = -2;
+	else if (distFromTrack > distanceThreshold && turnDir < 0) onTrack = -1;
 	//std::cout << distFromTrack << std::endl;
 
 	float distToNextSeg = segmentVec1.length();
@@ -47,7 +52,9 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 	int turnAnticipation2 = 0;
 	//std::cout << distToNextSeg << "\t" << distToNextSeg2 << std::endl;
 
-	if (distToNextSeg < 100) {
+	float turnAnticipationThreshold = LoadFloat("config/ai.xml","turn_anticipation_threshold");
+	float farTurnAnticipationThreshold = LoadFloat("config/ai.xml","far_turn_anticipation_threshold");
+	if (distToNextSeg < turnAnticipationThreshold) {
 		trackDirection = pathDir1;
 		angleToTrack = trackDirection.dot(actorHeading);
 		turnDir = trackDirection.cross(actorHeading).getY();
@@ -58,7 +65,7 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 		if ((1.0 - angleToTrack) * turnDir > 0.2) turnAnticipation1 = 2;
 		else if ((1.0 - angleToTrack) * turnDir < -0.2) turnAnticipation1 = -2;
 	}
-	if (distToNextSeg2 < 200) {
+	if (distToNextSeg2 < farTurnAnticipationThreshold) {
 		trackDirection = pathDir2;
 		angleToTrack = trackDirection.dot(actorHeading);
 		turnDir = trackDirection.cross(actorHeading).getY();

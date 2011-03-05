@@ -19,6 +19,8 @@ private:
 	float xscale;
 	float yscale;
 	float zscale;
+	float width;
+	float height;
 
 	jeepSegments segments;
 	jeepPositions pathPositions;

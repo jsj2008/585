@@ -4,3 +4,5 @@
 <param type="0" name="height_map_scale_x" value="7" />
 <param type="0" name="height_map_scale_y" value="1" />
 <param type="0" name="height_map_scale_z" value="7" />
+<param type="0" name="height_map_width" value="512" />
+<param type="0" name="height_map_height" value="512" />

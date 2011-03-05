@@ -14,6 +14,8 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
+	width = LoadFloat("config/world.xml","height_map_width");
+	height = LoadFloat("config/world.xml","height_map_height");
 }
 
 LevelAI::~LevelAI() { }
@@ -21,11 +23,9 @@ LevelAI::~LevelAI() { }
 void LevelAI::step() {
 	int c = 0;
 	for (Jeeps::iterator itr = jeeps.begin(); itr != jeeps.end(); ++itr, c++) {
-		//LOG( segments[c], "temp");
-		// 256 is hm width / 2 <- make it less hacky
 		btVector3 playerPos = jeeps[c]->pos;
 		Point lookAhead;
-		Point playerWorldPos = Point(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
+		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY() * yscale, playerPos.getZ() + (height/2.0) * zscale);
 		//std::cout << "(" << playerWorldPos.x << ", " << playerWorldPos.y << ", " << playerWorldPos.z << ")" << std::endl;
 
 		int result = 0;
@@ -44,7 +44,10 @@ void LevelAI::step() {
 				pathPositions[c] = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
 			} else if (result > 0) {
 				if (currentPlayerSeg < path.length() - 2) currentPlayerSeg++;
-				//else std::cout << "Your teh Winnre!!!11one" << std::endl;
+				else {
+					currentPlayerSeg = 0;
+					LOG("Player " << c << " has finished the race", "ai");
+				}
 				pathPositions[c] = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
 			}
 		} else {
