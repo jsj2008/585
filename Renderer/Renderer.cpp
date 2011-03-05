@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
+#include "Physics/HeightMapManager.h"
 
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
@@ -336,10 +337,11 @@ void Renderer::drawGround() {
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
 	//loadTexture("testc_c.png", &groundTex);
-	loadTexture("bigTex.png", &groundTex);		// Load the ground texture
+	loadTexture("ground_wrap.bmp", &groundTex);		// Load the ground texture
 	//loadTexture("sand_wrap_NRM.png", &groundBump);	// Load the ground bump map
 
-	hm = new HeightMap(LoadString2("config/world.xml","height_map"));	// Load the heightmap from the image
+	hm = HeightMapManager::GetHeightMap();
+	
 
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");

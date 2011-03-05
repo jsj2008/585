@@ -3,6 +3,7 @@
 #include "Common/SettingsFactory.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "HeightMap.h"
+#include "HeightMapManager.h"
 
 // #define DEBUG_RENDERING
 // #define DEBUG_RENDERING2
@@ -24,11 +25,12 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	dynamicsWorld.setDebugDrawer(&debugger);
 	#endif
 	
-	HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
+	// HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
+	HeightMap const * m = HeightMapManager::GetHeightMap();
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
 					  m->map,
 					  LoadFloat("config/world.xml","height_map_scale_y"),
-					  -300.0, 300.0,
+					  -300, 300,
 					  1, PHY_UCHAR, false);
 
 	btTransform tr;

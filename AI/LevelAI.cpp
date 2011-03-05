@@ -54,7 +54,7 @@ void LevelAI::step() {
 			//std::cout << "Your teh Winnre!!!11one " << c << std::endl;
 		}
 
-		//path.debugDraw(pathPositions[c]);
+		path.debugDraw(pathPositions[c]);
 	}
 }
 

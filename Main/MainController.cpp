@@ -3,9 +3,9 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 
-#include <irrKlang.h>
-#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
-using namespace irrklang;
+// #include <irrKlang.h>
+// #pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
+// using namespace irrklang;
 
 MainController * MainController::ptr = NULL;
 
@@ -23,7 +23,7 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	 // actorList.push_back(act);	
 
 	/***********Sound test********/ 
-	ISoundEngine* engine = createIrrKlangDevice();
+	/*ISoundEngine* engine = createIrrKlangDevice();
 
 	if (!engine) {
 		std::cout << "Could not startup sound engine\n" << std::endl;
