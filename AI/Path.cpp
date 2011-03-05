@@ -66,7 +66,9 @@ Path::Path() {
 Path::~Path() { }
 
 void Path::addPoint(int x, int z) {
-	points.push_back(Point((x) * xscale, (float)(hm->map[(z*hm->width)+x]) * yscale + 3, (z) * zscale));
+	double xd = (double)x/2.0; // hack
+	double zd = (double)z/2.0;
+	points.push_back(Point((xd) * xscale, (float)(hm->map[((int)zd*hm->width)+(int)xd]) * yscale + 3, (zd) * zscale));
 }
 
 void Path::debugDraw(Point playerPos) {
@@ -83,7 +85,7 @@ void Path::debugDraw(Point playerPos) {
 			glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
 			glTranslated(point.x, point.y, point.z);
 
-			//testCube.draw();
+			testCube.draw();
 			if (i < points.size()-1) {
 				nextPoint = points.at(i+1);
 				glColor3f(1,1,1);
