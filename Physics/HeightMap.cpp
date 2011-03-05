@@ -13,6 +13,7 @@ HeightMap::HeightMap(std::string const & filename)
 		return;
 	}
 	
+	int stride = surface->format->BytesPerPixel;
 
 	width = surface->w;
 	height = surface->h;
@@ -21,7 +22,7 @@ HeightMap::HeightMap(std::string const & filename)
 	std::cout << (int) surface->format->BytesPerPixel << std::endl;// exit(1);
 	for(int i=0; i<width * height; i++)
 	{
-		map[i] = tmap[i*4];
+		map[i] = tmap[i*stride];
 	}
 	
 	SDL_FreeSurface(surface);

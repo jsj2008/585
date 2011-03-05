@@ -6,6 +6,7 @@ class HeightMap;
 class HeightMapManager
 {
 public:
+
 	HeightMapManager();
 	static HeightMap * GetHeightMap();	
 	static HeightMapManager * ptr;

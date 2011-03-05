@@ -71,7 +71,7 @@ include_directories(${BULLET_INCLUDE_DIR})
 find_package(SDL REQUIRED)
 find_package(SDL)
 find_package(SDL_IMAGE)
-include_directories(${SDL_INCLUDE_DIR})
+include_directories(${SDL_INCLUDE_DIR} ${SDLIMAGE_INCLUDE_DIR})
 
 
 ADD_EXECUTABLE(game ${SOURCES} ${HEADERS})
