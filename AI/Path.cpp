@@ -1,8 +1,10 @@
 #include "Path.h"
+#include "Physics/HeightMapManager.h"
 
 Path::Path() {
 	testCube = RenderObject("", "", "models/cube.obj");
-	hm = new HeightMap(LoadString2("config/world.xml","height_map"));	// Load the heightmap from the image
+	hm = HeightMapManager::GetHeightMap();
+	
 
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");

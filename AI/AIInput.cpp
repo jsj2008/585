@@ -76,7 +76,7 @@ void AIInput::step(JeepActor* jeep, btVector3 const & pathDir1, btVector3 const 
 		if ((1.0 - angleToTrack) * turnDir > 0.2) turnAnticipation2 = 1;
 		else if ((1.0 - angleToTrack) * turnDir < -0.2) turnAnticipation2 = -1;
 	}
-	//std::cout << parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << std::endl;
+	// std::cout << parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << std::endl;
 
 	XAxis = parallelize + onTrack + turnAnticipation1 + turnAnticipation2;
 	if (XAxis > 0) XAxis = 1;

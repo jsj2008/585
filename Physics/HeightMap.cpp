@@ -1,6 +1,8 @@
 #include "HeightMap.h"
 #include <iostream>
 
+typedef unsigned char uchar;
+
 HeightMap::HeightMap(std::string const & filename)
 {
 	surface = IMG_Load(filename.c_str() );
@@ -11,14 +13,19 @@ HeightMap::HeightMap(std::string const & filename)
 		return;
 	}
 	
+
 	width = surface->w;
 	height = surface->h;
-	map = static_cast<unsigned char *>(surface->pixels);	
+	map = new uchar [width * height];
+	unsigned char * tmap = static_cast<unsigned char *>(surface->pixels);	
+	for(int i=0; i<width * height; i++)
+	{
+		map[i] = tmap[i*4];
+	}
 	
+	SDL_FreeSurface(surface);
 }
 
 HeightMap::~HeightMap()
 {
-	if (surface) 
-		SDL_FreeSurface(surface);
 }
