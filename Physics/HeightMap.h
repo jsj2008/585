@@ -13,6 +13,8 @@ public:
 	unsigned char * map;
 	int width;
 	int height;
+	int fakeWidth;
+	int fakeHeight;
 private:
 	SDL_Surface * surface;
 };

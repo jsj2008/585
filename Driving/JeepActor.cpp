@@ -88,7 +88,9 @@ void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
 /*rolling resistance*/
 btVector3 JeepActor::long_friction()
 {
-	btScalar c_rolling = c_roll * c_drag;
+	btScalar extra_friction = 1;//+ u.dot(btVector3(0,1,0));
+	// LOG("extra " << extra_friction, "temp");
+	btScalar c_rolling = c_roll * c_drag*extra_friction;
 	btVector3 f_rolling = -c_rolling * this->long_velocity;
 	return f_rolling;
 	
