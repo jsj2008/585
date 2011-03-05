@@ -12,12 +12,13 @@ MainController * MainController::ptr = NULL;
 
 MainController::MainController() : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-rockModel("ground_wrap.bmp", "", "models/jeep2_flipx.obj", 10)
+rockModel("map1.png", "blank.bmp", "models/groundRock1.obj", 8)
 {
 	if(ptr == NULL)
 		ptr = this;
 	
 	Actor * c = new Actor(mCube, rockModel, btVector3(0, 0, 10));
+	c->setOrientation(btQuaternion(0,0,0,1)); // LOOK HERE!!! THIS IS THE LINE THAT FIXES IT!!!
 	obstacles.push_back(c);
 
 	jeepManager = new JeepManager(physics, &actorList, window.aInput);

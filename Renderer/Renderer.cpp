@@ -65,6 +65,9 @@ void Renderer::renderObjects() {
 		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
 		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
 		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+		h.normalize();
+		b.normalize();
+		n.normalize();
 
 		// This matrix is defined columnwise
 		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
