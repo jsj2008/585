@@ -14,6 +14,7 @@
 #include "Common/SettingsFactory.h"
 #include "Driving/JeepActor.h"
 #include "Driving/JeepManager.h"
+#include "Renderer/RenderObject.h"
 
 
 class MainController : public IController{
@@ -29,6 +30,7 @@ public:
 	
 protected:
 	static MainController * ptr;
+	ActorList obstacles;
 	ActorList actorList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
@@ -37,6 +39,9 @@ protected:
 	/*objShapes*/
 	const libCube mCube;
 	const libPlane mPlane;
+	
+	/*render objects*/
+	RenderObject rockModel;
 	
 	JeepManager * jeepManager;
 	

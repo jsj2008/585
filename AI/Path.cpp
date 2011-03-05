@@ -6,9 +6,9 @@ Path::Path() {
 	hm = HeightMapManager::GetHeightMap();
 	
 
-	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
+	xscale = LoadFloat("config/world.xml","height_map_scale_x")/2.0;		// Load the scaling information
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");
-	zscale = LoadFloat("config/world.xml","height_map_scale_z");
+	zscale = LoadFloat("config/world.xml","height_map_scale_z")/2.0;
 
 	addPoint(318, 8);
 	addPoint(320, 38);
@@ -66,7 +66,7 @@ Path::Path() {
 Path::~Path() { }
 
 void Path::addPoint(int x, int z) {
-	points.push_back(Point((x) * xscale, (float)(hm->map[(z*hm->width)+x]) * yscale + 3, (z) * zscale));
+	points.push_back(Point((x) * xscale , (float)(hm->map[(z*hm->width)+x]) * yscale + 3, (z) * zscale));
 }
 
 void Path::debugDraw(Point playerPos) {

@@ -11,36 +11,21 @@ MainController * MainController::ptr = NULL;
 
 
 MainController::MainController() : 
-physics(PhysicsFactory::newPhysics(actorList, debugger) )
+physics(PhysicsFactory::newPhysics(actorList, debugger) ),
+rockModel("ground_wrap.bmp", "", "models/jeep2_flipx.obj", 10)
 {
 	if(ptr == NULL)
 		ptr = this;
-
-
-		//renderTest = RenderObject("testBox.bmp", "ducky.obj");
-
-	 // Actor * act = new Actor(mPlane, planeModel, btVector3(0,-5,0));
-	 // actorList.push_back(act);	
-
-	/***********Sound test********/ 
-	/*ISoundEngine* engine = createIrrKlangDevice();
-
-	if (!engine) {
-		std::cout << "Could not startup sound engine\n" << std::endl;
-	} else {
-		engine->play2D("sound/TribalGroove.mp3", true);
-		engine->play2D("sound/ExoticBirds.mp3", true);
-		//engine->play3D("sound/FX/test.wav", vec3df(0,0,2));
-	}
-	/***********Sound test********/ 
 	
+	Actor * c = new Actor(mCube, rockModel, btVector3(0, 0, 0));
+	obstacles.push_back(c);
 
 	jeepManager = new JeepManager(physics, &actorList, window.aInput);
-		
+
+	actorList.push_back(c);	
+	physics->newActors(obstacles);
 	/*setup subcomponents*/
 	renderer = new Renderer(window, actorList);
-
-	window.run(this);	//launch window
 
 }
 

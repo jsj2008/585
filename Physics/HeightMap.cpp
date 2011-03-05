@@ -1,5 +1,6 @@
 #include "HeightMap.h"
 #include <iostream>
+#include "Common/SettingsFactory.h"
 
 typedef unsigned char uchar;
 
@@ -23,6 +24,10 @@ HeightMap::HeightMap(std::string const & filename)
 	{
 		map[i] = tmap[i*stride];
 	}
+	
+	//fake the width and height
+	fakeWidth = LoadFloat("config/world.xml", "height_map_width");
+	fakeHeight = LoadFloat("config/world.xml", "height_map_height");
 	
 	SDL_FreeSurface(surface);
 }
