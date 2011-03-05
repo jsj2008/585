@@ -18,6 +18,7 @@ HeightMap::HeightMap(std::string const & filename)
 	height = surface->h;
 	map = new uchar [width * height];
 	unsigned char * tmap = static_cast<unsigned char *>(surface->pixels);	
+	std::cout << (int) surface->format->BytesPerPixel << std::endl;// exit(1);
 	for(int i=0; i<width * height; i++)
 	{
 		map[i] = tmap[i*4];
