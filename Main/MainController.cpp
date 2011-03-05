@@ -17,7 +17,7 @@ rockModel("ground_wrap.bmp", "", "models/jeep2_flipx.obj", 10)
 	if(ptr == NULL)
 		ptr = this;
 	
-	Actor * c = new Actor(mCube, rockModel, btVector3(0, 0, 0));
+	Actor * c = new Actor(mCube, rockModel, btVector3(0, 0, 10));
 	obstacles.push_back(c);
 
 	jeepManager = new JeepManager(physics, &actorList, window.aInput);
