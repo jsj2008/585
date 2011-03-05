@@ -25,8 +25,9 @@ void LevelAI::step() {
 	for (Jeeps::iterator itr = jeeps.begin(); itr != jeeps.end(); ++itr, c++) {
 		btVector3 playerPos = jeeps[c]->pos;
 		Point lookAhead;
-		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY() * yscale, playerPos.getZ() + (height/2.0) * zscale);
-		//std::cout << "(" << playerWorldPos.x << ", " << playerWorldPos.y << ", " << playerWorldPos.z << ")" << std::endl;
+		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
+		//std::cout << "(" << playerWorldPos.x << ", " << playerWorldPos.y << ", " << playerWorldPos.z << ") ";
+		//std::cout << "(" << pathPositions[c].x << ", " << pathPositions[c].y << ", " << pathPositions[c].z << ")" << std::endl;
 
 		int result = 0;
 		int resultl = 0;
@@ -94,7 +95,7 @@ btVector3 LevelAI::getPathDirection(int lookAhead, int c) {
 btVector3 LevelAI::getVectorToTrack(int c) {
 	Point playerPathPos = pathPositions[c];
 	btVector3 playerPos = jeeps[c]->pos;
-	btVector3 playerWorldPos = btVector3(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
+	btVector3 playerWorldPos = btVector3(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
 	btVector3 playerPathPosv = btVector3(playerPathPos.x, playerPathPos.y, playerPathPos.z);
 	return playerWorldPos - playerPathPosv;
 }
@@ -103,7 +104,7 @@ btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 	int currentPlayerSeg = segments[c];
 	Point nextSegPoint;
 	btVector3 playerPos = jeeps[c]->pos;
-	btVector3 playerWorldPos = btVector3(playerPos.getX() + 256*xscale, playerPos.getY() * yscale, playerPos.getZ() + 256 * zscale);
+	btVector3 playerWorldPos = btVector3(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
 	if (currentPlayerSeg < path.length() - lookAhead) {
 		nextSegPoint = path.at(currentPlayerSeg+lookAhead);
 	} else

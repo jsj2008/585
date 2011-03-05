@@ -15,7 +15,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	lightPos = btVector3(500,-15000,240);
+	lightPos = btVector3(5000,-15000,2400);
 
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
@@ -336,9 +336,8 @@ void Renderer::drawGround() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
-	//loadTexture("testc_c.png", &groundTex);
-	loadTexture("ground_wrap.bmp", &groundTex);		// Load the ground texture
-	//loadTexture("sand_wrap_NRM.png", &groundBump);	// Load the ground bump map
+	loadTexture("bigTex.png", &groundTex);		// Load the ground texture
+	loadTexture("bigTex_NRM.png", &groundBump);	// Load the ground bump map
 
 	hm = HeightMapManager::GetHeightMap();
 	

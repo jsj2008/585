@@ -19,7 +19,7 @@ HeightMap::HeightMap(std::string const & filename)
 	width = surface->w;
 	height = surface->h;
 	map = new uchar [width * height];
-	unsigned char * tmap = static_cast<unsigned char *>(surface->pixels);	
+	unsigned char * tmap = static_cast<unsigned char *>(surface->pixels);
 	for(int i=0; i<width * height; i++)
 	{
 		map[i] = tmap[i*stride];
