@@ -13,13 +13,13 @@ class IInput;
 class JeepActor : public Actor
 {
 public:
-	JeepActor(PhysObject const &, RenderObject const &, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btVector3 const & vel = btVector3(0,0,0));
+	JeepActor(PhysObject const &, RenderObject const &, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
 	~JeepActor();
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);
 	void tick(btScalar);
-	static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 	void render();
+	void reset(btQuaternion const &, btVector3 const &);
 		
 private:
 	
@@ -65,6 +65,7 @@ private:
 	
 	//other states
 	bool onGround;
+	btScalar die_time;
 	
 };
 

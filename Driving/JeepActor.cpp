@@ -7,14 +7,15 @@
 #include <LinearMath/btIDebugDraw.h>
 #include <btBulletDynamicsCommon.h>
 #include "UI/IInput.h"
+#include "Main/MainController.h"
 
 #define DEBUG_DRAW
 
 float JeepActor::gravity = 1;
 float JeepActor::mass = 1;
 
-JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btVector3 const & vel) : 
-Actor(physObj, renderObj, pos, vel),
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btQuaternion const & rot) : 
+Actor(physObj, renderObj, pos),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
 spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), 
@@ -29,6 +30,9 @@ c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
 max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
 turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
 {
+	
+	orientation = rot;
+	
 	/*set up the springs
 	
 	3.0 x 0.3 x 2.0
@@ -75,19 +79,22 @@ turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
 	gravity = LoadFloat("config/world.xml", "gravity");
 
 	delta = 0;
+	die_time = 0;
+}
+
+void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
+{
+	btTransform tr(rot, pos);
+	chasis->setWorldTransform(tr);
+	chasis->clearForces();
+	chasis->setLinearVelocity(btVector3(0,0,0));
+	chasis->setAngularVelocity(btVector3(0,0,0));
 }
 
 void JeepActor::render()
 {
 	for(int i=0; i<4; i++)
 		springs[i]->render();
-}
-
-void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
-{
-	JeepActor * jeep = static_cast<JeepActor *>(world->getWorldUserInfo());
-		LOG("pos " << jeep->pos, "temp");
-	jeep->tick(timeStep);
 }
 
 /*rolling resistance*/
@@ -180,13 +187,32 @@ void JeepActor::tick(seconds timeStep)
 	
 	/*get steering info*/
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
+	bool dying = true;
 	for(int i=0; i<4; i++)
 	{
 		if(i == 2 || i == 3)
 			springs[i]->tick(timeStep, pos, delta);	/*apply springs*/
 		else
 			springs[i]->tick(timeStep, pos, 0);	/*apply springs*/
+			
+		dying &= (springs[i]->plane_normal.length() == 0);	//check if all tires are off ground
 	}
+	
+	/*check if still able to drive*/
+	if(dying)
+	{
+		die_time += timeStep;
+	}else
+	{
+		die_time = 0;
+	}
+	
+	if(die_time > 3)	//not driving for few seconds
+	{
+		die_time = 0;
+		MainController::restart();
+	}
+	
 		
 	/*various velocities*/
 	this->velocity = chasis->getLinearVelocity();
@@ -233,6 +259,7 @@ void JeepActor::tick(seconds timeStep)
 	if(input ->EBrakePressed)
 	{
 		chasis->applyImpulse( btVector3(0,40,0), btVector3(0,0,0));
+		// MainController::restart();
 	}
 
 

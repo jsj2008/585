@@ -16,6 +16,7 @@ public:
 	typedef std::vector<JeepActor *> Jeeps;
 	typedef std::vector<AIInput *> AIs;
 	JeepManager();
+	void restart();
 	void initialize(Physics *, Input *);
 	static void tickCallback(btDynamicsWorld *world, btScalar timeStep);
 	void renderTick();

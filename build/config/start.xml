@@ -2,4 +2,4 @@
 <param type="0" name="jeepX" value="434" />
 <param type="0" name="jeepY" value="150" />
 <param type="0" name="jeepZ" value="-1736" />
-<param type="0" name="planeY" value="-7.5" />
+<param type="0" name="jeepRotation" value="-1.5" />

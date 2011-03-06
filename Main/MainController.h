@@ -16,7 +16,7 @@ public:
 	MainController();
 	virtual ~MainController();
 	void tick(unsigned long);
-	
+	static void restart();
 	static void addActor(Actor *);
 	Window window;
 	

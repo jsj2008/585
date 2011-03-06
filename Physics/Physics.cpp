@@ -100,7 +100,7 @@ btRigidBody * const Physics::newActor(Actor * const actor)
 {
 
 		btVector3 vel = actor->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), actor->pos ), actor);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( actor->orientation, actor->pos ), actor);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = actor->physObject;	//grabs physical info about the actor

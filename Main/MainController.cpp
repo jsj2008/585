@@ -46,6 +46,11 @@ void MainController::addActor(Actor * actor)
 	ptr->actorList.push_back(actor);
 }
 
+void MainController::restart()
+{
+	ptr->jeepManager.restart();
+}
+
 MainController::~MainController()
 {
 	for(ActorList::iterator itr = actorList.begin(); itr != actorList.end(); ++itr)

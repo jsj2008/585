@@ -12,16 +12,20 @@ jeepModel("models/map1.png", "textures/blank.bmp", "models/jeep2_flipx.obj")
 
 void JeepManager::initialize(Physics * physics, Input * playerInput)
 {
-	float const & jeepX = LoadFloat("config/start.xml", "jeepX");
-	float const & jeepY = LoadFloat("config/start.xml", "jeepY");
-	float const & jeepZ = LoadFloat("config/start.xml", "jeepZ");
+	float jeepX			= LoadFloat("config/start.xml", "jeepX");
+	float jeepY			= LoadFloat("config/start.xml", "jeepY");
+	float jeepZ 		= LoadFloat("config/start.xml", "jeepZ");
+	float jeepRotation	= LoadFloat("config/start.xml", "jeepRotation");
+
+	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
-	/*pass jeep into physics/renderer but don't add to dynamicWorld (this is done by jeep internally)*/
-	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ));
+	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
 	MainController::addActor(human);
-	for (int i = 0; i < LoadInt("config/ai.xml","num_players"); ++i) {
+	int num_players = LoadInt("config/ai.xml","num_players");
+	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
-		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX, jeepY, jeepZ+(20*i+20)));
+		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX, jeepY, jeepZ+(20*i+20)), rotation );
+		jeep->setOrientation( rotation );
 		
 		aiJeeps.push_back(jeep);
 		MainController::addActor(jeep);
@@ -30,6 +34,24 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	levelAI = new LevelAI(aiJeeps, human);
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
+}
+
+void JeepManager::restart()
+{
+	/*TODO: reset AI segments*/
+	float jeepX			= LoadFloat("config/start.xml", "jeepX");
+	float jeepY			= LoadFloat("config/start.xml", "jeepY");
+	float jeepZ 		= LoadFloat("config/start.xml", "jeepZ");
+	float jeepRotation	= LoadFloat("config/start.xml", "jeepRotation");
+
+	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
+	
+	human->reset(rotation, btVector3(jeepX, jeepY, jeepZ));
+	int num_players = LoadInt("config/ai.xml","num_players");
+	for (int i = 0; i < num_players; ++i) {
+		aiJeeps[i]->reset(rotation, btVector3(jeepX, jeepY, jeepZ+(20*i+20)) );
+	}
+	
 }
 
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)
