@@ -65,15 +65,15 @@ ALboolean Sound::LoadALData()
 	if(alGetError() != AL_NO_ERROR)
 		return AL_FALSE;
 
-	loadAudio("../media/TribalGroove.wav", MUSIC);	
-	loadAudio("../media/ExoticBirds.wav", BIRDS);
-	loadAudio("../media/engine idle.wav", ENGINE);
-	loadAudio("../media/cars031.wav",START);
-	loadAudio("../media/crash2.wav", CRASH);
-	loadAudio("../media/TribalDrums2.wav", PANIC);
-	loadAudio("../media/crashBig_die.wav", DIE);
-	loadAudio("../media/heart.wav", HEART);
-	loadAudio("../media/Roar.wav", ROAR);
+	loadAudio("media/TribalGroove.wav", MUSIC);	
+	loadAudio("media/ExoticBirds.wav", BIRDS);
+	loadAudio("media/engine idle.wav", ENGINE);
+	loadAudio("media/cars031.wav",START);
+	loadAudio("media/crash2.wav", CRASH);
+	loadAudio("media/TribalDrums2.wav", PANIC);
+	loadAudio("media/crashBig_die.wav", DIE);
+	loadAudio("media/heart.wav", HEART);
+	loadAudio("media/Roar.wav", ROAR);
 	//bind buffers into audio sources
 	alGenSources(NUM_SOURCES, Sources);
 
