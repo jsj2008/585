@@ -6,11 +6,18 @@
 #include "Driving/JeepManager.h"
 #include "Driving/JeepActor.h"
 #include "Physics/PhysicsFactory.h"
+#include "Audio/Sound.h"
+#include <iostream>
 
 MainController * MainController::ptr = NULL;
 
+void cleanup(){
+	MainController::Audio()->KillALData();
+}
+
 MainController::MainController() : 
-physics(PhysicsFactory::newPhysics(actorList, debugger) )
+physics(PhysicsFactory::newPhysics(actorList, debugger) ),
+audio(new Sound() )
 {
 
 	if(ptr == NULL)
@@ -20,6 +27,18 @@ physics(PhysicsFactory::newPhysics(actorList, debugger) )
 	physics->newActors(obstacleList);	//adds the obstacles
 	jeepManager.initialize(physics, window.aInput);
 	renderer = new Renderer(window, actorList);
+	
+	/*audio code*/
+	alutInit(NULL, 0);
+	alGetError();
+	if(audio->LoadALData() == AL_FALSE)
+		std::cout << "could not load audio" << std::endl;
+
+	atexit(cleanup);
+
+	audio->SetListenerValues();
+	audio->playMusic();
+	// audio->increasePitch(0.1);
 
 }
 
@@ -49,6 +68,11 @@ void MainController::addActor(Actor * actor)
 void MainController::restart()
 {
 	ptr->jeepManager.restart();
+}
+
+Sound * MainController::Audio()
+{
+	return ptr->audio;
 }
 
 MainController::~MainController()
