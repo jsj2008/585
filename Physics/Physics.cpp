@@ -27,7 +27,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	dynamicsWorld.setDebugDrawer(&debugger);
 	#endif
 	
-	// HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
+	// HeightMap * m = new HeightMap("esDc1.png");
 	HeightMap const * m = HeightMapManager::GetHeightMap();
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
 					  m->map,
@@ -37,6 +37,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 
 	btTransform tr;
 	tr.setIdentity();
+	// tr.setOrigin(btVector3(-32*14, 0, -32*14));
 	btVector3 localInertia(0,0,0);	
 	
 	heightfieldShape->setLocalScaling(btVector3(LoadFloat("config/world.xml","height_map_scale_x"), 1, LoadFloat("config/world.xml","height_map_scale_z")));
