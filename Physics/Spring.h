@@ -1,13 +1,11 @@
 #ifndef SPRING_H
 #define SPRING_H
 
-#include <btBulletDynamicsCommon.h>
-#include <LinearMath/btIDebugDraw.h>
-
-#include "Physics.h"
-#include "Common/prelude.h"
 #include "Renderer/RenderObject.h"
-#include "Common/Actor.h"
+
+class Actor;
+class btIDebugDraw;
+class Physics;
 
 class Spring
 {

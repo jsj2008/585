@@ -2,15 +2,13 @@
 #define JEEPACTOR_H
 
 #include "Common/Actor.h"
-#include "Physics/PhysObject.h"
-#include "Common/prelude.h"
-#include <vector>
-#include "Physics/Spring.h"
-#include "UI/Input.h"
-#include "AI/AIInput.h"
-#include "Renderer/RenderObject.h"
-#include <LinearMath/btIDebugDraw.h>
 #include "JeepEngine.h"
+
+class PhysObject;
+class RenderObject;
+class Physics;
+class Spring;
+class IInput;
 
 class JeepActor : public Actor
 {
@@ -19,7 +17,7 @@ public:
 	~JeepActor();
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);
-	void tick(seconds);
+	void tick(btScalar);
 	static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
 	void render();
 		

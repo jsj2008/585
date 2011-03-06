@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
+#include "Main/MainController.h"
+#include "UI/Input.h"
 
 Window::Window()
 {
@@ -19,10 +21,14 @@ Window::Window()
 	SDL_Surface * drawContext;
 	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
 	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
+	
 	bInput = new Input();
 	aInput=new Input();
 	
 }
+
+void Window::stopLoading()
+{}
 
 Uint32 Window::Timer(Uint32 interval, void* )
 {
@@ -46,7 +52,7 @@ void Window::updateGL()
 	SDL_GL_SwapBuffers();
 }
 
-void Window::run(IController * controller)
+void Window::run(MainController * controller)
 {     
 	static int const & delay = LoadInt("config/window.xml", "delay");
 	bool quit = false;
@@ -57,7 +63,6 @@ void Window::run(IController * controller)
 		Uint32 after = SDL_GetTicks();
 		controller->tick(after - before);
 		deltaT = delay - (after-before);
-		//LOG("\t" << after - before, "temp");
 		before = after;
 
 		SDL_Event event;
@@ -72,7 +77,6 @@ void Window::run(IController * controller)
 			}
 		}
 		updateGL();
-		controller->yield();	//gives control to main loop
 		if (deltaT > 0) SDL_Delay( deltaT );
 	}
 }

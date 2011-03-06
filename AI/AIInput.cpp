@@ -1,5 +1,7 @@
 #include "AIInput.h"
 #include "Common/Debug.h"
+#include "Driving/JeepActor.h"
+#include <btBulletDynamicsCommon.h>
 
 AIInput::AIInput(){
 	XAxis = 0;  

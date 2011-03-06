@@ -2,7 +2,9 @@
 #define AIINPUT_H
 
 #include "UI/IInput.h"
-#include "Driving/JeepActor.h"
+
+class btVector3;
+class JeepActor;
 
 class AIInput : public IInput {
 public:

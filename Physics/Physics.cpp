@@ -1,9 +1,11 @@
 #include "Physics.h"
-#include <iostream>
 #include "Common/SettingsFactory.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#include <LinearMath/btIDebugDraw.h>
 #include "HeightMap.h"
 #include "HeightMapManager.h"
+#include "Renderer/GLDebugDrawer.h"
+#include "Common/Actor.h"
 
 // #define DEBUG_RENDERING
 // #define DEBUG_RENDERING2

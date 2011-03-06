@@ -1,19 +1,22 @@
 #ifndef JEEPMANAGER_H
 #define JEEPMANAGER_H
 
-#include "Physics/Physics.h"
 #include "Physics/libChasis.h"
-#include "AI/AIInput.h"
-#include "AI/LevelAI.h"
 #include "Renderer/RenderObject.h"
 
+class Physics;
 class JeepActor;
+class Input;
+class LevelAI;
+class AIInput;
+
 class JeepManager
 {
 public:
 	typedef std::vector<JeepActor *> Jeeps;
 	typedef std::vector<AIInput *> AIs;
-	JeepManager(Physics *, ActorList *, Input *);
+	JeepManager();
+	void initialize(Physics *, Input *);
 	static void tickCallback(btDynamicsWorld *world, btScalar timeStep);
 	void renderTick();
 	JeepActor* getHuman();

@@ -1,7 +1,12 @@
 #include "JeepActor.h"
-#include <iostream>
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
+#include "Physics/Physics.h"
+#include "Physics/PhysObject.h"
+#include "Physics/Spring.h"
+#include <LinearMath/btIDebugDraw.h>
+#include <btBulletDynamicsCommon.h>
+#include "UI/IInput.h"
 
 #define DEBUG_DRAW
 
@@ -260,10 +265,11 @@ void JeepActor::tick(seconds timeStep)
 		btScalar turn_factor = this->long_speed + LoadFloat("config/jeep_springs.xml", "turn_boost")/(0.1+chasis->getAngularVelocity().length() );
 		
 		
-		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * plane_up * turn_factor);
-		
+		btScalar long_sign = long_speed < 0 ? -1 : +1;
 		btScalar delta_sign = delta < 0 ? -1 : +1;
-		chasis->applyCentralForce( lateral*delta_sign *
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * long_sign * plane_up * turn_factor);
+		
+		chasis->applyCentralForce( lateral*delta_sign * long_sign*
 			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
 	}
 }

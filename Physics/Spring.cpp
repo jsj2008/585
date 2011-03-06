@@ -4,6 +4,9 @@
 #include <math.h>
 #include "Main/MainController.h"
 #include "Common/Debug.h"
+#include "Physics.h"
+#include "Common/Actor.h"
+#include <btBulletDynamicsCommon.h>
 
 // RenderObject Spring::wheelModel;
 
