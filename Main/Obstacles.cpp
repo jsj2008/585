@@ -4,11 +4,11 @@
 #include "Common/prelude.h"
 
 Obstacles::Obstacles():
-rockModel("ground_wrap.bmp", "", "models/obstacles/groundRock1.obj", 50),
+rockModel("map1.png", "", "models/obstacles/groundRock1.obj", 50),
 large_rock(rockModel.model, 50),
-logModel("ground_wrap.bmp", "", "models/obstacles/logBranch.obj", 30),
+logModel("map1.png", "", "models/obstacles/logBranch.obj", 30),
 log(logModel.model, 30),
-smallRockModel("models/obstacles/map1.png", "", "models/obstacles/groundRock2.obj", 50),
+smallRockModel("map1.png", "", "models/obstacles/groundRock2.obj", 50),
 smallRock(smallRockModel.model, 50)
 {}
 

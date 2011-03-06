@@ -71,7 +71,7 @@ void Path::addPoint(int x, int z) {
 	points.push_back(Point((xd) * xscale, (float)(hm->map[((int)zd*hm->width)+(int)xd]) * yscale + 3, (zd) * zscale));
 }
 
-void Path::debugDraw(Point playerPos) {
+void Path::debugDraw(Point playerPathPos, Point playerPos) {
 	Point point, nextPoint;
 	for (int i = 0; i < points.size(); i++) {
 		glColor3f(1,1,0);
@@ -102,9 +102,14 @@ void Path::debugDraw(Point playerPos) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPushMatrix();
 		glTranslated(-((float)(hm->width*xscale))/2.0, 0, -((float)(hm->height*zscale))/2.0); // centering of map
-		glTranslated(playerPos.x, playerPos.y, playerPos.z);
+		glTranslated(playerPathPos.x, playerPathPos.y, playerPathPos.z);
 		testCube.draw();
 	glPopMatrix();
+	glColor3f(0.2,1,0.5);
+	glBegin(GL_LINES);
+		glVertex3f(playerPos.x, playerPos.y, playerPos.z);
+		glVertex3f(playerPathPos.x-((float)(hm->width*xscale))/2.0, playerPathPos.y, playerPathPos.z-((float)(hm->height*zscale))/2.0);
+	glEnd();
 	glLineWidth(1);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_COLOR_MATERIAL);

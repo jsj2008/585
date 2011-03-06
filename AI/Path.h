@@ -27,7 +27,7 @@ public:
 	float yscale;
 	float zscale;
 
-	void debugDraw(Point playerPos);
+	void debugDraw(Point playerPathPos, Point playerPos);
 	Point at(int i);
 	int length();
 

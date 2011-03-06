@@ -22,7 +22,8 @@ void RenderObject::create() {
 		for (int i = 0; i < model.faces.size(); i++) {
 			currentFace = model.faces.at(i);
 			if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
-			if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+			else if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+			else glBegin(GL_POLYGON);
 
 			for (int j = 0; j < currentFace.vertices.size(); j++) {
 
