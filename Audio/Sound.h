@@ -4,6 +4,7 @@
 #include <sound_dependencies/alc.h>
 #include <sound_dependencies/al.h>
 #include <sound_dependencies/alut.h>
+#include <btBulletDynamicsCommon.h>
 
 
 #define NUM_BUFFERS 9
@@ -39,7 +40,7 @@ class Sound
 	void stopTrack(ALuint track);
 	void playTrack(ALuint track);
 
-	void SetListenerValues();
+	void SetListenerValues(btScalar const *, btScalar const *, float const *);
 
 	void beginLevel();
 	void playHeart();

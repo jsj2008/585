@@ -9,6 +9,7 @@ class RenderObject;
 class Physics;
 class Spring;
 class IInput;
+class Sound;
 
 class JeepActor : public Actor
 {
@@ -20,6 +21,7 @@ public:
 	void tick(btScalar);
 	void render();
 	void reset(btQuaternion const &, btVector3 const &);
+	void registerAudio(Sound *);
 		
 private:
 	
@@ -62,6 +64,7 @@ private:
 	btScalar speed;
 	btVector3 long_velocity;
 	btScalar long_speed;
+	float * audio_frame;
 	
 	//other states
 	bool onGround;

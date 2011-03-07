@@ -7,7 +7,7 @@
 #include "UI/Input.h"
 
 JeepManager::JeepManager() :
-jeepModel("models/map1.png", "textures/blank.bmp", "models/jeep2_flipx.obj")
+jeepModel("textures/jeep_uv2.png", "", "models/Jeep/jeep7.obj")
 {}
 
 void JeepManager::initialize(Physics * physics, Input * playerInput)
@@ -34,6 +34,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	levelAI = new LevelAI(aiJeeps, human);
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
+	
 }
 
 void JeepManager::restart()

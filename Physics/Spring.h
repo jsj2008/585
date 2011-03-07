@@ -18,6 +18,7 @@ public:
 	btVector3 getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
 	btVector3 plane_normal;
 	void render();
+	void spinTire(btVector3 const &, btScalar);
 	
 private:
 	
@@ -38,6 +39,8 @@ private:
 	btQuaternion current_direction;
 	btVector3 planeProjection(btVector3 const & tire_direction) const;
 	btVector3 hitPoint;
+	
+	btScalar tire_rot;
 };
 
 #endif

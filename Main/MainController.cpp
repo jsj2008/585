@@ -36,9 +36,10 @@ audio(new Sound() )
 
 	atexit(cleanup);
 
-	audio->SetListenerValues();
+	JeepActor * human = jeepManager.getHuman();
+	human->registerAudio(audio);
+	audio->beginLevel();
 	audio->playMusic();
-	// audio->increasePitch(0.1);
 
 }
 
@@ -54,7 +55,7 @@ void MainController::tick(unsigned long interval)
 	static btVector3 pos = btVector3(9,11,15);
 	btVector3 look = player->pos;
 	btVector3 behind = quatRotate(player->orientation, btVector3(-1,0.4,0) );
-	pos += (look + 30*behind - pos ) / 30.0;
+	pos += (look + 20*behind - pos ) / 30.0;
 	
 	renderer->setCamera(pos,look);
 	

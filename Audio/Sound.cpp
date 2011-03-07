@@ -13,6 +13,7 @@ ALfloat ListenerVel[] = {0.0f, 0.0f, 0.0f};
 ALfloat ListenerOrient[] = {0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f};
 
 
+
 Sound::Sound()
 {
 	heartPitch = 1.0;
@@ -156,7 +157,7 @@ ALboolean Sound::LoadALData()
 //pitch change is strictly hardcoded for the jeep engine at this point
 void Sound::increasePitch(float pitchFactor)
 {
-	if(enginePitch < 5.0)
+	if(enginePitch + pitchFactor < 5.0)
 	{
 		alSourcef (Sources[ENGINE], AL_PITCH, enginePitch+=pitchFactor);
 		alSourcePlay(Sources[ENGINE]);
@@ -165,7 +166,7 @@ void Sound::increasePitch(float pitchFactor)
 
 void Sound::decreasePitch(float pitchFactor)
 {
-	if(enginePitch > 1.0)
+	if(enginePitch - pitchFactor > 1.0)
 	{
 		alSourcef (Sources[ENGINE], AL_PITCH, enginePitch-=pitchFactor);
 		alSourcePlay(Sources[ENGINE]);
@@ -296,7 +297,7 @@ void Sound::playRespawn()
 	playMusic();
 }
 
-void Sound::SetListenerValues()
+void Sound::SetListenerValues(btScalar const * pos, btScalar const * vel, float const * orient)
 {
 	alListenerfv(AL_POSITION, ListenerPos);
 	alListenerfv(AL_VELOCITY, ListenerVel);

@@ -61,9 +61,25 @@ btVector3 Spring::planeProjection(btVector3 const & tire_direction) const
 	return direction;
 }
 
+void Spring::spinTire(btVector3 const & lateral, btScalar linear_velocity)
+{
+	btScalar speed = 0;
+	speed = -linear_velocity/100.0;
+	tire_rot += speed;
+	while(tire_rot > 2*3.14159)
+		tire_rot -= 2*3.14159;
+	while(tire_rot < -2*3.14159)
+		tire_rot += 2*3.14159;
+	
+	btQuaternion roll = btQuaternion( btVector3(0,0,1), tire_rot);
+	wheel_actor->orientation *= roll;
+	
+}
+
 
 btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction)
-{
+{	
+	
 	wheel_speed = torque;		//set engine on
 	
 	if(current_weight < 1e-6)	//off the ground
@@ -115,7 +131,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("blank.bmp", "blank.bmp", "models/wheel_final.obj"),
+wheelModel("textures/jeep_uv2.png", "textures/blank.bmp", "models/Jeep/wheel2.obj"),
 current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
@@ -130,6 +146,7 @@ current_direction(0,0,0)
 	
 	MainController::addActor(wheel_actor);
 	old_x = 0;
+	tire_rot = 0;
 }
 
 btScalar Spring::getWeight()
