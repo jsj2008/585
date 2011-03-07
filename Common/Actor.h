@@ -20,9 +20,6 @@ public:
    	const libPlane temp;	//hack so that we can have NULL physics actors
     btVector3 pos;
 	btQuaternion orientation;
-    Real width;
-    Real height;
-	Real depth;
 	btVector3 initialVel;
 	PhysObject const & physObject;		//physical information (mass, shape, etc...)
 	RenderObject const & renderObject;	//renderer information (texture, model, etc...)

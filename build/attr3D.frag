@@ -413,7 +413,7 @@ void main() {
 	}
 
 	vec4 texValue = texture2D(colourMap,gl_TexCoord[0].st);
-	texValue = vec4(0.5, 0.5, 0.5, 1);
+	//texValue = vec4(0.5, 0.5, 0.5, 1);
 	/*float balance;
 	if (xAttr == 5) balance = 1.0+xAttrVal;
 	if (yAttr == 5) balance = 1.0+yAttrVal;

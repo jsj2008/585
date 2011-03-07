@@ -259,7 +259,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0f, ratio, 0.01f, 2000.0f); // 90 degree field of view
+	gluPerspective(90.0f, ratio, 0.1f, 2000.0f); // 90 degree field of view
 	glMatrixMode(GL_MODELVIEW);
 }
 
