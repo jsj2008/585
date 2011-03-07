@@ -1,37 +1,29 @@
 #include "JeepEngine.h"
 #include <iostream>
-#include "Common/SettingsFactory.h"
 
-JeepEngine::JeepEngine() :
-engine_torque( LoadFloat("config/jeep_springs.xml", "engine_torque") ),
-max_torque( LoadFloat("config/jeep_springs.xml", "max_torque") ),
-min_torque( LoadFloat("config/jeep_springs.xml", "min_torque") ),
-torque_decay( LoadFloat("config/jeep_springs.xml", "torque_decay") )
+JeepEngine::JeepEngine()
 {
-	torque = 0;
+	m_torque = 1000;
 }
 
-void JeepEngine::accelerate()
+void JeepEngine::step(seconds const timeStep, btScalar const accelerate)
 {
-	if(torque < 0)
-		torque = 0;
+	m_torque += accelerate * 400;	//for now assume linear torque
+	m_torque -= timeStep * 1200;	
 	
-	torque += engine_torque;
-	if(torque > max_torque)
-		torque = max_torque;
-}
-
-void JeepEngine::decelerate()
-{
-	if(torque > 0)
-		torque = 0;
+	if(m_torque < MIN_TORQUE)
+	{
+		m_torque = MIN_TORQUE;
+	}
 	
-	torque -= engine_torque;
-	if(torque < min_torque)
-		torque = min_torque;
+	if(m_torque > MAX_TORQUE)
+	{
+		m_torque = MAX_TORQUE;
+	}
+	
 }
 
-void JeepEngine::step(float timeStep, float accelerate)
+btScalar JeepEngine::getRPM() const
 {
-	torque /= torque_decay;		
+	return m_torque / 100;// / 250.0;	//giant hack (do real rpm/torque at some point)
 }

@@ -12,17 +12,17 @@ public:
 	
 	static const int numAttributes = 12;
 
-	attributeType xAttr;	// The attribute type in the x axis of the 3D texture shader
-	float xMod;				// Attribute modifier
-	float xZmin;			// Another modifier, it's effect depends on the attribute type (e.g. distance of fog start in Depth)
-	bool xFlip;				// Whether or not to flip this axis
+	attributeType xAttr;
+	float xMod;
+	float xZmin;
+	bool xFlip;
 
-	attributeType yAttr;	// The attribute type in the y axis of the 3D texture shader
+	attributeType yAttr;
 	float yMod;
 	float yZmin;
 	bool yFlip;
 
-	attributeType zAttr;	// The attribute type in the z axis of the 3D texture shader
+	attributeType zAttr;
 	float zMod;
 	float zZmin;
 	bool zFlip;

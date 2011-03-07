@@ -6,12 +6,6 @@ Point::Point() {
 	z = 0;
 }
 
-Point::Point(btVector3* vec) {
-	x = vec->getX();
-	y = vec->getY();
-	z = vec->getZ();
-}
-
 // 2D constructor
 Point::Point(double x, double y) {
 	this->x = x;

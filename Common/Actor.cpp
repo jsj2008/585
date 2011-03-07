@@ -4,14 +4,21 @@ Actor::Actor(PhysObject const & phys, RenderObject const & render, btVector3 con
 {
 	this->pos = pos;
 	this->initialVel = vel;
-	orientation = btQuaternion(0,0,0,1);
+
+	this->height = 03.3; // TESTING
+	this->width = 03.3;
+	this->depth = 03.3;
+	
 }
 
 Actor::Actor(RenderObject const & render, btVector3 const & pos, btVector3 const & vel) : physObject(temp), renderObject(render)
 {
 	this->pos = pos;
 	this->initialVel = vel;
-	orientation = btQuaternion(0,0,0,1);
+
+	this->height = 03.3; // TESTING
+	this->width = 03.3;
+	this->depth = 03.3;
 	
 }
 

@@ -2,7 +2,6 @@
 #define HEIGHTMAP_H
 
 #include <SDL.h>
-#include <SDL_image.h>
 #include <string>
 
 class HeightMap
@@ -13,8 +12,6 @@ public:
 	unsigned char * map;
 	int width;
 	int height;
-	int fakeWidth;
-	int fakeHeight;
 private:
 	SDL_Surface * surface;
 };

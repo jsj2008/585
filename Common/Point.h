@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer/depend.h"
-#include <btBulletDynamicsCommon.h>
 #include "Renderer/Vector3.h"
 #include <math.h>
 
@@ -10,7 +9,6 @@ class Point {
 		double x, y, z;
 
 		Point();
-		Point(btVector3* vec);
 		Point(double x, double y);
 		Point(double x, double y, double z);
 		double distanceTo(Point a);

@@ -34,9 +34,9 @@ public:
 
 private:
 	
-	int maxTextures;			// The max textures allowed in this shader
-	int numTextures;			// The number of textures actually in use
-	vector<Texture*> texture;	// The list of actual textures
+	int maxTextures;
+	int numTextures;
+	vector<Texture*> texture;
 
 	bool validTexturePos(int index, float pos, float h_skew, float v_skew);
 	bool intersects(int index, float pos, float h_skew, float v_skew, int index2);

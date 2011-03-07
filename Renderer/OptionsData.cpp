@@ -13,7 +13,6 @@ void OptionsData::resetValues() {
 	ambientColor = bgColor;
 }
 
-// Loads the options data saved in a .tx3 file
 void OptionsData::load(string filename) {
 	resetValues();
 

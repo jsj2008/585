@@ -19,7 +19,7 @@ class Model {
 		vector<btVector3*> vertices;
 		vector<btVector3*> texCoords;
 		vector<btVector3*> normals;
-		vector<Face> faces;				// List of faces in the model, with references to the above vertices, texture coordinates and normals
+		vector<Face> faces;
 
 	private:
 		vector<string> splitString(string str, char delim = ' ', bool leaveBlanks = false);
