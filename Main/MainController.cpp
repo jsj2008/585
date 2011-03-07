@@ -52,10 +52,13 @@ void MainController::tick(unsigned long interval)
 	/*giant hack for camera*/
 
 	JeepActor* player = jeepManager.getHuman();
-	static btVector3 pos = btVector3(9,11,15);
+	static btVector3 pos = btVector3(0,0,0);
 	btVector3 look = player->pos;
-	btVector3 behind = quatRotate(player->orientation, btVector3(-1,0.4,0) );
-	pos += (look + 20*behind - pos ) / 30.0;
+	btVector3 behind = quatRotate(player->orientation, btVector3(-1,0.8,0) );
+	btVector3 lat = behind.cross(btVector3(0,1,0));
+	btScalar turning = lat.dot(player->velocity );
+	look += (look - turning*lat - look) / 10.0;
+	pos += (look + 12*behind - pos ) / 25.0;
 	
 	renderer->setCamera(pos,look);
 	
