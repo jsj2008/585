@@ -2,7 +2,7 @@
 <param type="0" name="gravity" value="-20" />
 <param type="3" name="height_map" value="esCcS.bmp" />
 <param type="0" name="height_map_scale_x" value="14" />
-<param type="0" name="height_map_scale_y" value="2" />
+<param type="0" name="height_map_scale_y" value="1.8" />
 <param type="0" name="height_map_scale_z" value="14" />
 <param type="0" name="height_map_width" value="256" />
 <param type="0" name="height_map_height" value="256" />

@@ -234,7 +234,7 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.accelerate();
 		central_forces += update_tires();
-		MainController::Audio()->increasePitch(0.1);
+		//MainController::Audio()->increasePitch(0.1);
 		
 		
 	}
@@ -243,7 +243,7 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.decelerate();
 		central_forces += update_tires();
-		MainController::Audio()->decreasePitch(0.3);
+		//MainController::Audio()->decreasePitch(0.3);
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");

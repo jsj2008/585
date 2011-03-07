@@ -13,7 +13,7 @@ public:
 		void initialize(ActorList &);
 private:
 	btVector3 convertToWorldPos(btVector3 const & mapPosition);
-	void addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors);
+	void addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors, btQuaternion const & orientation = btQuaternion(0,0,0,1));
 
 	/*render objects*/
 	const RenderObject rockModel;

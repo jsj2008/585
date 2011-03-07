@@ -40,7 +40,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 void JeepManager::restart()
 {
 	/*TODO: reset AI segments*/
-	float jeepX			= LoadFloat("config/start.xml", "jeepX");
+/*	float jeepX			= LoadFloat("config/start.xml", "jeepX");
 	float jeepY			= LoadFloat("config/start.xml", "jeepY");
 	float jeepZ 		= LoadFloat("config/start.xml", "jeepZ");
 	float jeepRotation	= LoadFloat("config/start.xml", "jeepRotation");
@@ -52,7 +52,7 @@ void JeepManager::restart()
 	for (int i = 0; i < num_players; ++i) {
 		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
 	}
-	
+	*/
 }
 
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)

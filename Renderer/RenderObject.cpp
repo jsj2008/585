@@ -28,7 +28,7 @@ void RenderObject::create() {
 			for (int j = 0; j < currentFace.vertices.size(); j++) {
 
 				currentVector = model.normals.at(currentFace.normals.at(j)-1);
-				glNormal3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
+				glNormal3d(-currentVector->getX(), -currentVector->getY(), -currentVector->getZ());
 
 				if (currentFace.texCoords.at(j) != 0) {
 					currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
