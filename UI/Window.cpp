@@ -76,6 +76,7 @@ void Window::run(MainController * controller)
 				quit=aInput->UpdateInput(event);
 			}
 		}
+		aInput->checkState();
 		updateGL();
 		if (deltaT > 0) SDL_Delay( deltaT );
 	}
