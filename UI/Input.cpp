@@ -13,8 +13,9 @@ Todo: Scale Joystick properly according to axis value
 
 */
 #include "Input.h"
+#include <iostream>
 Input::Input(){
-	SDL_Joystick *joystick;
+
     SDL_JoystickEventState(SDL_ENABLE);
     joystick = SDL_JoystickOpen(0);
 	XAxis=0;  
@@ -170,5 +171,50 @@ void Input::changeBrakeButton(Uint8 aButton)
 void Input::changeEBrakeButton(Uint8 aButton)
 {
 	EBRAKEBUTTON=aButton;
+}
+void Input::checkState(){
+
+	int axisVal=SDL_JoystickGetAxis(joystick, 0);
+
+	if ( ( axisVal < -5000 ) || (axisVal > 5000 ) ) //if analog is moved far enough
+			{
+					//TODO: Have a scale value to make controls move faster depending on axis
+					if(axisVal<0)
+					{
+						if(axisVal<-4000*5)
+						XAxis=-1.0;//LEFT
+						else if(axisVal<-3250*5)
+						XAxis=-0.8;
+						else if(axisVal<-2500*5)
+						XAxis=-0.6;
+						else if(axisVal<-1750*5)
+						XAxis=-0.4;
+						else if(axisVal<-1000*5)
+						XAxis=-0.2;
+						else 
+						XAxis=-0.1;
+
+					}
+					else if(axisVal>0)
+					{
+						if(axisVal>4000*5)
+						XAxis=1.0;//Right
+						else if(axisVal>3250*5)
+						XAxis=0.8;
+						else if(axisVal>2500*5)
+						XAxis=0.6;
+						else if(axisVal>1750*5)
+						XAxis=0.4;
+						else if(axisVal>1000*5)
+						XAxis=0.2;
+						else 
+						XAxis=0.1;
+
+					}
+	}else{
+	XAxis=0;	
+		
+	}//end left/right joystick control
+
 }
 

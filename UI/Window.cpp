@@ -65,6 +65,7 @@ void Window::run(IController * controller)
 				quit=aInput->UpdateInput(event);
 			}
 		}
+		aInput->checkState();
 		updateGL();
 		controller->yield();	//gives control to main loop
 		SDL_Delay( delay );
