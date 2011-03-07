@@ -24,7 +24,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
-		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX, jeepY, jeepZ+(20*i+20)), rotation );
+		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX + (10*i + 10), jeepY, jeepZ), rotation );
 		jeep->setOrientation( rotation );
 		
 		aiJeeps.push_back(jeep);
@@ -34,6 +34,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	levelAI = new LevelAI(aiJeeps, human);
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
+	
 }
 
 void JeepManager::restart()
@@ -49,7 +50,7 @@ void JeepManager::restart()
 	human->reset(rotation, btVector3(jeepX, jeepY, jeepZ));
 	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
-		aiJeeps[i]->reset(rotation, btVector3(jeepX, jeepY, jeepZ+(20*i+20)) );
+		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
 	}
 	
 }

@@ -9,6 +9,7 @@ class RenderObject;
 class Physics;
 class Spring;
 class IInput;
+class Sound;
 
 class JeepActor : public Actor
 {
@@ -20,6 +21,17 @@ public:
 	void tick(btScalar);
 	void render();
 	void reset(btQuaternion const &, btVector3 const &);
+	void registerAudio(Sound *);
+	
+	/*useful vectors*/
+	btVector3 u;	//jeep is facing this way
+	btVector3 up_axis;	//up of jeep
+	btVector3 lateral;	//lateral of jeep
+	btVector3 velocity;
+	btScalar speed;
+	btVector3 long_velocity;
+	btScalar long_speed;
+	float * audio_frame;
 		
 private:
 	
@@ -54,14 +66,6 @@ private:
 	float const & turn_time;
 	btScalar delta;
 	
-	/*useful vectors*/
-	btVector3 u;	//jeep is facing this way
-	btVector3 up_axis;	//up of jeep
-	btVector3 lateral;	//lateral of jeep
-	btVector3 velocity;
-	btScalar speed;
-	btVector3 long_velocity;
-	btScalar long_speed;
 	
 	//other states
 	bool onGround;

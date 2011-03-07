@@ -8,6 +8,7 @@
 #include <btBulletDynamicsCommon.h>
 #include "UI/IInput.h"
 #include "Main/MainController.h"
+#include "Audio/Sound.h"
 
 #define DEBUG_DRAW
 
@@ -28,9 +29,9 @@ c_drag( LoadFloat("config/jeep_springs.xml", "c_drag") ),
 c_roll( LoadFloat("config/jeep_springs.xml", "c_roll") ),
 c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
 max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
-turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
+turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
+audio_frame(new float [6])
 {
-	
 	orientation = rot;
 	
 	/*set up the springs
@@ -186,6 +187,7 @@ void JeepActor::tick(seconds timeStep)
 {
 	
 	/*get steering info*/
+	MainController::Audio()->decreasePitch(0.05);
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
 	bool dying = true;
 	for(int i=0; i<4; i++)
@@ -195,6 +197,7 @@ void JeepActor::tick(seconds timeStep)
 		else
 			springs[i]->tick(timeStep, pos, 0);	/*apply springs*/
 			
+		springs[i]->spinTire(lateral, long_speed);
 		dying &= (springs[i]->plane_normal.length() == 0);	//check if all tires are off ground
 	}
 	
@@ -204,6 +207,8 @@ void JeepActor::tick(seconds timeStep)
 		die_time += timeStep;
 	}else
 	{
+		if(die_time > 0.7)
+			MainController::Audio()->playJump();
 		die_time = 0;
 	}
 	
@@ -229,12 +234,16 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.accelerate();
 		central_forces += update_tires();
+		MainController::Audio()->increasePitch(0.1);
+		
+		
 	}
 
 	if(input->BrakePressed)
 	{
 		engine.decelerate();
 		central_forces += update_tires();
+		MainController::Audio()->decreasePitch(0.3);
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");
@@ -309,6 +318,11 @@ JeepActor::~JeepActor()
 	}
 }
 
+void JeepActor::registerAudio(Sound * audio)
+{
+	audio->SetListenerValues(&pos.x(), &velocity.y(), audio_frame);
+}
+
 void JeepActor::setOrientation(btQuaternion const & rot)
 {
 	Actor::setOrientation(rot);
@@ -325,6 +339,12 @@ void JeepActor::setOrientation(btQuaternion const & rot)
 	u = quatRotate(rot, btVector3(1,0,0) );
 	up_axis = quatRotate(rot, btVector3(0,1,0) );
 	lateral = quatRotate(rot, btVector3(0,0,1) );
+	audio_frame[0] = u.x();
+	audio_frame[1] = u.y();
+	audio_frame[2] = u.z();
+	audio_frame[3] = up_axis.x();
+	audio_frame[4] = up_axis.y();
+	audio_frame[5] = up_axis.z();
 }
 
 void JeepActor::setPosition(btVector3 const & pos)

@@ -8,6 +8,7 @@
 
 class Physics;
 class Renderer;
+class Sound;
 
 
 
@@ -18,6 +19,7 @@ public:
 	void tick(unsigned long);
 	static void restart();
 	static void addActor(Actor *);
+	static Sound * Audio();
 	Window window;
 	
 protected:
@@ -30,6 +32,8 @@ protected:
 		
 	JeepManager jeepManager;
 	Obstacles obstacles;
+	
+	Sound * const audio;
 	
 };
 #endif
