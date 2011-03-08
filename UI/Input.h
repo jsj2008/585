@@ -16,6 +16,7 @@ public:
 	char BRAKEKEY;
 	char EBRAKEKEY;
 	char MASTERQUITKEY;
+	char KEYBOARDKEY;  //to run keyboard controls (disables the joystick query every loop)
 	Uint8 ACCELBUTTON;
 	Uint8 BRAKEBUTTON;
 	Uint8 EBRAKEBUTTON;

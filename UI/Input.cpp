@@ -23,12 +23,14 @@ Input::Input(){
 	AcceleratePressed=false;  
 	BrakePressed=false;  
 	EBrakePressed=false;
+	keyboardOn=false;
 	
 	//user can change these key/button mappings via change button/key functions
 	ACCELKEY='w';
 	BRAKEKEY='s';
 	EBRAKEKEY='d';
 	MASTERQUITKEY='q';
+	KEYBOARDKEY='z';
 	ACCELBUTTON=0;
 	BRAKEBUTTON=1;
 	EBRAKEBUTTON=2;
@@ -49,6 +51,14 @@ bool Input::UpdateInput(SDL_Event& event){
 		if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=true;
 		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=true;
 		if(event.key.keysym.sym==MASTERQUITKEY) {SDL_JoystickClose(0);return true;}
+		if(event.key.keysym.sym==KEYBOARDKEY) {
+			if(keyboardOn)
+				keyboardOn=false;
+			else
+				keyboardOn=true;
+		
+
+		}
 
 	}//end if type
 	else if( event.type == SDL_KEYUP )//key released
@@ -173,7 +183,7 @@ void Input::changeEBrakeButton(Uint8 aButton)
 	EBRAKEBUTTON=aButton;
 }
 void Input::checkState(){
-
+	if(keyboardOn!=true){
 	int axisVal=SDL_JoystickGetAxis(joystick, 0);
 
 	if ( ( axisVal < -5000 ) || (axisVal > 5000 ) ) //if analog is moved far enough
@@ -215,6 +225,6 @@ void Input::checkState(){
 	XAxis=0;	
 		
 	}//end left/right joystick control
-
+	}//end if statement
 }
 
