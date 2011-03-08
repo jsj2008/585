@@ -4,6 +4,7 @@
 #include "Common/prelude.h"
 #include "Model.h"
 #include <SDL.h>
+#include <SDL_image.h>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -11,16 +12,20 @@ using namespace std;
 class RenderObject {
 
 private:
-	bool loadTexture(string textureName);
+	bool loadTexture(string textureName, GLuint *texID);
+	GLuint geometry;
 
 public:	
 	RenderObject();
-	RenderObject(string textureName, string modelName);
+	RenderObject(string textureName, string bumpMapName, string modelName, float scale = 1.0);
 	virtual ~RenderObject();
 
-	GLuint texture;
-	Model model;
+	GLuint texture;	// Texture to apply to this object when rendered
+	GLuint bumpMap;	// Bump map to apply to this object when rendered
+	Model model;	// The model that represents this object (rendering only, not collision)
+	float scale;	// Scale factor to resize
 
+	void create();
 	void draw() const;
 	void drawNormals() const;
 

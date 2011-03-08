@@ -1,12 +1,12 @@
 #tex
-/textures/glass.bmp
+/textures/glass.png
 0.592233
 0
 0
 1
 
 #tex
-/textures/glass2.bmp
+/textures/glass2.png
 0.806116
 0
 0
@@ -14,7 +14,7 @@
 
 #att
 Specular 1.76 0.6 0
-Orientation 3.36 0.45 0
+Orientation 3.36 0.45 1
 Refraction 7.42 0.62 0
 
 #bgcolor

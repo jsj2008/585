@@ -1,6 +1,12 @@
 <?xml version="1.0" ?>
 <param type="1" name="default" value="0" />
 <param type="1" name="springs" value="0" />
+<param type="1" name="springs2" value="0" />
+<param type="1" name="jeep" value="0" />
+<param type="1" name="temp" value="1" />
+<param type="1" name="input" value="0" />
+<param type="1" name="ai" value="1" />
 <param type="1" name="console" value="1" />
+<param type="1" name="slip" value="1" />
 <param type="1" name="file" value="1" />
 <param type="3" name="file_path" value="log.txt" />

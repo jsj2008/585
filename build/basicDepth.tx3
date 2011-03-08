@@ -1,12 +1,19 @@
 #tex
-/textures/mistedges.bmp
+/textures/blank.png
 0.9999
 0
 0
 1
 
 #tex
-/textures/plain.bmp
+/textures/mistedges.png
+0.4
+0
+0
+1
+
+#tex
+/textures/plainMult.png
 0.1
 0
 0
@@ -14,8 +21,8 @@
 
 #att
 Diffuse 1.2 0 0
-Orientation 2.82 0.5 1
-Depth 37.24 36.5 0
+Orientation 1.82 0.5 1
+Depth 47.24 56.5 0
 
 #bgcolor
 1 1 1

@@ -1,4 +1,4 @@
-varying vec3 normal;
+varying vec3 tNormal;
 varying vec3 lightDir;
 varying vec3 viewDir;
 varying vec3 trueNormal;
@@ -20,9 +20,9 @@ uniform float zZMin;
 uniform int zFlip;
 
 uniform int numTex;
-uniform float texPos[3];
-uniform float texHSkew[3];
-uniform float texVSkew[3];
+uniform float texPos[4];
+uniform float texHSkew[4];
+uniform float texVSkew[4];
 
 uniform int autoDiffuse;
 uniform int autoSpecular;
@@ -31,6 +31,7 @@ uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
 uniform sampler2D tex3;
+uniform sampler2D colourMap;
 uniform sampler2D normalMap;
 
 vec3 view;
@@ -51,15 +52,30 @@ const float PI = 3.1415926535;
 
 void main() {
 
-	view = viewDir; //???
+	view = normalize(viewDir); //???
 	light = normalize(lightDir);
 	
 	vec3 bump = normalize(texture2D(normalMap, gl_TexCoord[0].st).xyz * 2.0 - 1.0);
-	reflection = normalize(reflect(view, bump));
-
+	
 	float xAttrVal;
 	float yAttrVal;
 	float zAttrVal;
+	
+	if (xAttr == 5) { // Fade bump mapping intensity with distance
+		xAttrVal = (log((-position.z)/xZMin)/log(xMod));
+		bump = (1.0-xAttrVal)*bump + xAttrVal*tNormal;
+	}
+	if (yAttr == 5) {
+		yAttrVal = (log((-position.z)/yZMin)/log(yMod));
+		bump = (1.0-yAttrVal)*bump + yAttrVal*tNormal;
+	}
+	if (zAttr == 5) {
+		zAttrVal = (log((-position.z)/zZMin)/log(zMod));
+		bump = (1.0-zAttrVal)*bump + zAttrVal*tNormal;
+	}
+	
+	reflection = normalize(reflect(view, bump));
+
 	
 	// X Attribute
 	if (xAttr == 0) {
@@ -396,10 +412,23 @@ void main() {
 		gl_FragColor = gl_FragColor+kspec*gl_LightSource[0].specular;
 	}
 
-	vec4 texValue = texture2D(tex3,gl_TexCoord[0].st);
+	vec4 texValue = texture2D(colourMap,gl_TexCoord[0].st);
+	//texValue = vec4(0.5, 0.5, 0.5, 1);
+	/*float balance;
+	if (xAttr == 5) balance = 1.0+xAttrVal;
+	if (yAttr == 5) balance = 1.0+yAttrVal;
+	if (zAttr == 5) balance = 1.0+zAttrVal;
+	texValue.x = min(texValue.x * balance, 1.0);
+	texValue.x = max(texValue.x * balance, 0.0);
+	texValue.y = min(texValue.y * balance, 1.0);
+	texValue.y = max(texValue.y * balance, 0.0);
+	texValue.z = min(texValue.z * balance, 1.0);
+	texValue.z = max(texValue.z * balance, 0.0);*/
+	
 	float balance = 0.5;
 	if (xAttr == 5) balance = balance * (1.0-xAttrVal);
 	if (yAttr == 5) balance = balance * (1.0-yAttrVal);
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
-	gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	//gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	gl_FragColor = (balance * gl_FragColor * texValue) + (1.0 - balance)*((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 }

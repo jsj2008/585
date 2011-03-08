@@ -19,7 +19,9 @@ void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btV
 
 void	GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
 {
+	glLineWidth(10);
 	drawLine(from,to,color,color);
+	glLineWidth(1);
 }
 
 void GLDebugDrawer::drawSphere (const btVector3& p, btScalar radius, const btVector3& color)

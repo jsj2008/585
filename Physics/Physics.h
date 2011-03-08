@@ -1,21 +1,13 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-/*all the libObjects*/
-#include "PhysObject.h"
-#include "libCube.h"
-#include "libPlane.h"
-
-#include "Common/prelude.h"
-#include "Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
-#include <LinearMath/btIDebugDraw.h>
-#include <list>
-
-#include "Renderer/GLDebugDrawer.h"
 #include "IPhysics.h"
 
 class Spring;
+class JeepActor;
+class JeepManager;
+class Actor;
 
 class Physics : public IPhysics
 {
@@ -23,9 +15,11 @@ public:
 	Physics(ActorList const & actorList, btIDebugDraw & debugger);		//takes in list of actors (cars, falling objects etc...)
 	~Physics();
 	void newActors(ActorList const & newActors);	//physics needs to know if new objects have been added to actorList
-	void step(seconds timeStep);
+	void step(btScalar timeStep);
 	btRigidBody * const newActor(Actor * const);
 	friend class Spring;
+	friend class JeepActor;
+	friend class JeepManager;
 private:
 	
 	ActorList const & actorList;

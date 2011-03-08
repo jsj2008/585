@@ -1,18 +1,20 @@
 #ifndef JEEPENGINE_H
 #define JEEPENGINE_H
-#include "IEngine.h"
 
 class JeepEngine
 {
 public:
 	JeepEngine();
-	void step(seconds const, btScalar const acclerate );
-	btScalar getRPM() const;
+	void step(float const, float const acclerate );
+	void accelerate();
+	void decelerate();
+	float torque;
 
 private:
-	btScalar m_torque;
-	static const int MIN_TORQUE = 0;
-	static const int MAX_TORQUE = 60000;
+	float engine_torque;
+	const float min_torque;
+	const float max_torque;
+	const float torque_decay;
 	
 };
 

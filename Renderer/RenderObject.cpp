@@ -2,37 +2,55 @@
 
 RenderObject::RenderObject() { }
 
-RenderObject::RenderObject(string textureName, string modelName) {
-	loadTexture(textureName);
+RenderObject::RenderObject(string textureName, string bumpMapName, string modelName, float scale) {
+	loadTexture(textureName, &texture);
+	loadTexture(bumpMapName, &bumpMap);
 	model = Model(modelName);
+	this->scale = scale;
+	create();
 }
 
 RenderObject::~RenderObject() { }
 
-void RenderObject::draw() const {
-	Face currentFace;
-	btVector3* currentVector;
-	for (int i = 0; i < model.faces.size(); i++) {
-		currentFace = model.faces.at(i);
-		if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
-		if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+void RenderObject::create() {
+	geometry = glGenLists(1);
+	glNewList(geometry, GL_COMPILE);
+		Face currentFace;
+		btVector3* currentVector;
+		glPushMatrix();
+		glScalef(scale, scale, scale);
+		for (int i = 0; i < model.faces.size(); i++) {
+			currentFace = model.faces.at(i);
+			if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
+			else if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+			else glBegin(GL_POLYGON);
 
-		for (int j = 0; j < currentFace.vertices.size(); j++) {
+			for (int j = 0; j < currentFace.vertices.size(); j++) {
 
-			currentVector = model.normals.at(currentFace.normals.at(j)-1);
-			glNormal3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
-			if (currentFace.texCoords.at(j) != 0) {
-				currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
-				glTexCoord2f(currentVector->getX(), currentVector->getY());
+				currentVector = model.normals.at(currentFace.normals.at(j)-1);
+				glNormal3d(-currentVector->getX(), -currentVector->getY(), -currentVector->getZ());
+
+				if (currentFace.texCoords.at(j) != 0) {
+					currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
+					glTexCoord2f(currentVector->getX(), currentVector->getY());
+				}
+				currentVector = model.vertices.at(currentFace.vertices.at(j)-1);
+				glVertex3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
 			}
-			currentVector = model.vertices.at(currentFace.vertices.at(j)-1);
-			glVertex3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
+			glEnd();
 		}
-		glEnd();
-	}
+		glPopMatrix();
+	glEndList();
 }
 
+void RenderObject::draw() const {
+	glCallList(geometry);
+}
+
+// Draw model normals for debugging
 void RenderObject::drawNormals() const {
+	glPushMatrix();
+	glScalef(scale, scale, scale);
 	glBegin(GL_LINES);
 	Face currentFace;
 	btVector3 currentVertex;
@@ -59,14 +77,16 @@ void RenderObject::drawNormals() const {
 		glVertex3d(currentVertex.getX(), currentVertex.getY(), currentVertex.getZ());
 	}
 	glEnd();
+	glPopMatrix();
 }
 
-bool RenderObject::loadTexture(string textureName) {
+// Loads a texture into the specified GL texture location
+bool RenderObject::loadTexture(string name, GLuint *texID) {
 	SDL_Surface *surface;
 	GLenum textureFormat;
 	int numColors;
 	 
-	if ((surface = SDL_LoadBMP(textureName.c_str()))) { 
+	if ((surface = IMG_Load(name.c_str()))) { 
 	 
 		numColors = surface->format->BytesPerPixel;
 		if (numColors == 4) { // Has alpha
@@ -76,22 +96,23 @@ bool RenderObject::loadTexture(string textureName) {
 				if (surface->format->Rmask == 0x000000ff) textureFormat = GL_RGB;
 				else textureFormat = GL_BGR;
 		} else {
-			cout << "Invalid texture format (" << textureName << ")" << endl;
+			cout << "Invalid texture format (" << name << ")" << endl;
 			return false;
 		}
 	 
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glGenTextures(1, texID);
+		glBindTexture(GL_TEXTURE_2D, *texID);
 	 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	 
 		glTexImage2D(GL_TEXTURE_2D, 0, numColors, surface->w, surface->h, 0, textureFormat, GL_UNSIGNED_BYTE, surface->pixels);
 	} 
 	else {
-		cout << "Could not load texture \"" << textureName << "\" (" << SDL_GetError() << ")" << endl;
+		cout << "Could not load texture \"" << name << "\" (" << SDL_GetError() << ")" << endl;
 		return false;
 	}    
 	 

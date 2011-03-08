@@ -13,9 +13,9 @@ public:
 	int getUniLoc(const char *name);
 	int getAttrLoc(const char *name);
 
-	GLuint v, f, p;	//Handles for our vertex shader, fragment shader and the program object.
+	GLuint v, f, p;		// Handles for vertex shader, fragment shader and the program object
 private:
 
-	char *textFileRead(const char *fn);	//Methods that read and write shader files.
+	char *textFileRead(const char *fn);	// Methods that read and write shader files
 	int textFileWrite(char *fn, char *s);
 };

@@ -4,20 +4,20 @@
 Shader::Shader(GLchar *fs, GLchar *vs) {
 	char *vsf = NULL;
 	char *fsf = NULL;
-	vsf = textFileRead(vs);
-	fsf = textFileRead(fs);
+	vsf = textFileRead(vs); // Load the vertex shader
+	fsf = textFileRead(fs); // Load the fragment shader
 	const char *ff = fsf;
 	const char *vv = vsf;
 
-	if (vsf != NULL && fsf != NULL) {
+	if (vsf != NULL && fsf != NULL) { // If the files were loaded successfully, create the shader objects
 		v = glCreateShader(GL_VERTEX_SHADER);
 		f = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(v, 1, &vv, NULL);
 		glShaderSource(f, 1, &ff, NULL);
-		glCompileShader(v);
+		glCompileShader(v); // Compile the shader files
 		glCompileShader(f);
 		p = glCreateProgram();
-		glAttachShader(p, v);
+		glAttachShader(p, v); // Put everything together
 		glAttachShader(p, f);
 		glLinkProgram(p);
 		glUseProgram(p);
@@ -26,7 +26,7 @@ Shader::Shader(GLchar *fs, GLchar *vs) {
 		int charsWritten  = 0;
 		char *infoLog;
 
-		glGetProgramiv(p, GL_INFO_LOG_LENGTH,&infologLength);
+		glGetProgramiv(p, GL_INFO_LOG_LENGTH, &infologLength); // Print any errors reported by the shader during compilation 
 		if (infologLength > 0) {
 			infoLog = (char *)malloc(infologLength);
 			glGetProgramInfoLog(p, infologLength, &charsWritten, infoLog);
@@ -34,7 +34,7 @@ Shader::Shader(GLchar *fs, GLchar *vs) {
 			free(infoLog);
 		}
 	}
-	if (vsf == NULL) {
+	if (vsf == NULL) { // Errors if the shader files were not found
 		cout << "Cannot find shader file " << vs << endl;
 	}
 	if (fsf == NULL) {
@@ -96,14 +96,7 @@ int Shader::textFileWrite(char *fn, char *s) {
 	return(status);
 }
 
-/*
-* Function: getUniLoc
-* Purpose: gets the location of a uniform variable in a shader program
-* Paramaters: program -> shader program
-name -> the name of the variable to get
-return -> the location of the variable
-
-*/
+// Returns the location of the given shader uniform, or an error if it was not found
 int Shader::getUniLoc(const char *name) {
 	int loc;
 	loc = glGetUniformLocation(p, name);
@@ -114,15 +107,8 @@ int Shader::getUniLoc(const char *name) {
 	return loc;
 }
 
-/*
-* Function: getUniLoc
-* Purpose: gets the location of an attribute variable in a shader program
-* Paramaters: program -> shader program
-name -> the name of the variable to get
-return -> the location of the variable
-if location = -1 there was an error
 
-*/
+// Returns the location of the given shader attribute, or an error if it was not found
 int Shader::getAttrLoc(const char *name) {
 	int loc;
 	loc = glGetAttribLocation(p, name);

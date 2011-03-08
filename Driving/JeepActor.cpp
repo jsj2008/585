@@ -1,19 +1,38 @@
 #include "JeepActor.h"
-#include <iostream>
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
+#include "Physics/Physics.h"
+#include "Physics/PhysObject.h"
+#include "Physics/Spring.h"
+#include <LinearMath/btIDebugDraw.h>
+#include <btBulletDynamicsCommon.h>
+#include "UI/IInput.h"
+#include "Main/MainController.h"
+#include "Audio/Sound.h"
 
-JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics,  Input const * input, btVector3 const & pos, btVector3 const & vel) : 
-Actor(physObj, renderObj, pos, vel),
+#define DEBUG_DRAW
+
+float JeepActor::gravity = 1;
+float JeepActor::mass = 1;
+
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btQuaternion const & rot) : 
+Actor(physObj, renderObj, pos),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
 spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), 
 spring_bottom(LoadFloat("config/jeep_springs.xml", "spring_bottom")),
-mass(LoadFloat("config/jeep_springs.xml", "mass") ),
-input(input)
+input(input),
+u(1,0,0),
+up_axis(0,1,0),
+lateral(0,0,1),
+c_drag( LoadFloat("config/jeep_springs.xml", "c_drag") ),
+c_roll( LoadFloat("config/jeep_springs.xml", "c_roll") ),
+c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
+max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
+turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
+audio_frame(new float [6])
 {
-	isForward = false;
-	isBackward = false;
+	orientation = rot;
 	
 	/*set up the springs
 	
@@ -50,142 +69,245 @@ input(input)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
+	// physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
 	chasis->setGravity(btVector3(0,0,0));	//we do it manually
 	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
-		springs.push_back(new Spring(chasis, from[i], to[i], physics) );
+		springs.push_back(new Spring(chasis, from[i], to[i], physics) );	
+		
+	mass = LoadFloat("config/jeep_springs.xml", "mass");	
+	gravity = LoadFloat("config/world.xml", "gravity");
+
+	delta = 0;
+	die_time = 0;
 }
+
+void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
+{
+	btTransform tr(rot, pos);
+	chasis->setWorldTransform(tr);
+	chasis->clearForces();
+	chasis->setLinearVelocity(btVector3(0,0,0));
+	chasis->setAngularVelocity(btVector3(0,0,0));
+}
+
+void JeepActor::render()
+{
+	for(int i=0; i<4; i++)
+		springs[i]->render();
+}
+
+/*rolling resistance*/
+btVector3 JeepActor::long_friction()
+{
+	btScalar extra_friction = 1;//+ u.dot(btVector3(0,1,0));
+	// LOG("extra " << extra_friction, "temp");
+	btScalar c_rolling = c_roll * c_drag*extra_friction;
+	btVector3 f_rolling = -c_rolling * this->long_velocity;
+	return f_rolling;
+	
+}
+
+/*lateral friction*/
+btVector3 JeepActor::lateral_friction(btScalar delta)
+{
+	/*btVector3 total(0,0,0);
+	for(int i=0; i<4; i++)
+	{
+		total += springs[i]->getLateralForce( velocity, u) * c_roll2;
+	}
+	
+	return total;*/
+	
+	//no drifting but good enough for now
+	if(!onGround)
+		return btVector3(0,0,0);
+		
+	return lateral*(-velocity.dot(lateral) * c_roll2);// * pow(1-fabs(delta), 3);
+}
+
+/*air resistance*/
+btVector3 JeepActor::air_resistance()
+{
+	return c_drag * (-velocity) * speed;
+}
+
+btVector3 JeepActor::update_tires()
+{
+	btVector3 f0 = springs[0]->getForce(this->engine.torque, this->velocity , this->u );
+	btVector3 f1 = springs[1]->getForce(this->engine.torque, this->velocity, this->u );
+		
+	return f0 / 2.0 + f1 / 2.0;
+}
+
+
+void JeepActor::isOnGround()
+{
+	for(int i=0; i<4; i++)
+	{
+		if(this->springs[i]->plane_normal.length() > 0)
+		{
+			this->onGround = true;
+			return;
+		}
+	}
+	this->onGround = false;
+}
+
+
+/*weight shift
+void JeepActor::weight_shift()
+{
+/*find car acceleration*/
+/*
+//calculate state of the jeep
+btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
+btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
+
+btScalar long_acceleration = long_scalar_force / mass;
+
+//weight shift
+btScalar L = 2*offset_x;
+btScalar c = fabs(offset_x - comx);
+btScalar b = fabs(offset_x - comx);
+btScalar W = mass * fabs(gravity);
+btScalar h = fabs(spring_bottom - comz);
+weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
+weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
+
+chasis->applyCentralForce(btVector3(0,gravity*mass,0));
+chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
+chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
+
+}*/
+
 
 void JeepActor::tick(seconds timeStep)
 {
-	static float torque = 0;
-	static float const & torque_k = LoadFloat("config/jeep_springs.xml", "torque_k");
-	static float const & comx= LoadFloat("config/jeep_springs.xml", "comx");
-	static float const & comz = LoadFloat("config/jeep_springs.xml", "comz");
-	static float const & c_drag = LoadFloat("config/jeep_springs.xml", "c_drag");
-	static float const & c_roll = LoadFloat("config/jeep_springs.xml", "c_roll");
-	static float const & breaking = LoadFloat("config/jeep_springs.xml", "breaking");
-	static float const & engine_torque = LoadFloat("config/jeep_springs.xml", "engine_torque");
-	static float const & weight_shift = LoadFloat("config/jeep_springs.xml", "weight_shift");
-	static float const & max_rotate = LoadFloat("config/jeep_springs.xml", "max_rotate");
-	static float const & c_roll2 = LoadFloat("config/jeep_springs.xml", "c_roll2");
-	static btScalar	const & gravity = LoadFloat("config/world.xml", "gravity");
-	static btScalar weight_front = 0;
-	static btScalar weight_rear = 0;
-	static btScalar turn_time = LoadFloat("config/jeep_springs.xml", "turn_time");
+	
 	/*get steering info*/
-	
-	btScalar engine_force = 0;
-	if(input->AcceleratePressed)
-	{
-		engine_force = 2;
-		torque += engine_torque;
-	}
-	
-	btScalar XAxis = -1*input->XAxis;
-
-	if(input->BrakePressed)
-	{
-		engine_force = torque;	//for now just make it one or the other
-		// torque += engine_force;
-		torque /= 2;
-		//XAxis *= -1;
-		// u *= -1;
-		//f_breaking = -u * c_breaking;
-		
-	}
-
-	
-	static btScalar delta = 0;
-	delta += (XAxis * max_rotate - delta) / turn_time;
+	MainController::Audio()->decreasePitch(0.05);
+	delta += (-input->XAxis * max_rotate - delta) / turn_time;
+	bool dying = true;
 	for(int i=0; i<4; i++)
 	{
-		// std::cout << i << std::endl;
 		if(i == 2 || i == 3)
 			springs[i]->tick(timeStep, pos, delta);	/*apply springs*/
 		else
 			springs[i]->tick(timeStep, pos, 0);	/*apply springs*/
+			
+		springs[i]->spinTire(lateral, long_speed);
+		dying &= (springs[i]->plane_normal.length() == 0);	//check if all tires are off ground
 	}
 	
-	/*calculate constants*/
-	btVector3 u = quatRotate(chasis->getOrientation(), btVector3(1,0,0) );
-	btVector3 front_tire = quatRotate(chasis->getOrientation(), btVector3(offset_x,0,0));
-	btVector3 rear_tire = quatRotate(chasis->getOrientation(), btVector3(-offset_x,0,0));
-	btVector3 velocity = u*chasis->getLinearVelocity().dot(u);	//do a projection in direction we are travelling
+	/*check if still able to drive*/
+	if(dying)
+	{
+		die_time += timeStep;
+	}else
+	{
+		if(die_time > 0.7)
+			MainController::Audio()->playJump();
+		die_time = 0;
+	}
+	
+	if(die_time > 3)	//not driving for few seconds
+	{
+		die_time = 0;
+		MainController::restart();
+	}
+	
+		
+	/*various velocities*/
+	this->velocity = chasis->getLinearVelocity();
+	speed = this->velocity.length();
+	this->long_speed = this->velocity.dot(u);
+	this->long_velocity = u*this->long_speed;
+	
+	isOnGround();	//update the onGround status
+	
+	//accumulate forces acting on jeep
+	btVector3 central_forces = btVector3(0,0,0);
+	
+	if(input->AcceleratePressed)
+	{
+		engine.accelerate();
+		central_forces += update_tires();
+		//MainController::Audio()->increasePitch(0.1);
+		
+		
+	}
 
-	btScalar speed = velocity.length();
+	if(input->BrakePressed)
+	{
+		engine.decelerate();
+		central_forces += update_tires();
+		//MainController::Audio()->decreasePitch(0.3);
+	}
+	
+	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");
+	
+	//calculate environment forces on jeep	
+	//gravity
+	central_forces += btVector3(0, mass*gravity, 0);
+	
+	//friction
+	central_forces += long_friction();
+	central_forces += lateral_friction(delta);
+	
+		
+	//air resistance
+	central_forces += air_resistance();
+	
+	
+	chasis->applyCentralForce(central_forces);	
+			
+	
+	/*debugging jump*/
+	if(input ->EBrakePressed)
+	{
+		chasis->applyImpulse( btVector3(0,40,0), btVector3(0,0,0));
+		// MainController::restart();
+	}
+
+
+	btVector3 plane_up = btVector3(0,1,0);	//in air so just normal
+	float count = 0;
+	for(int i=0; i<4; i++)
+	{
+		if(springs[i]->plane_normal.length() >= 1)
+		{
+			plane_up += springs[i]->plane_normal;
+			count += 1;
+		}
+	}
+
+	if(count > 0)
+	{
+		plane_up *= (1/count);	//average of the plane normals
+	}
 
 	
+	//angular friction
+	btScalar angular = chasis->getAngularVelocity().length();
+	chasis->applyTorque( -chasis->getAngularVelocity() * LoadFloat("config/jeep_springs.xml", "rotate_friction"));
+		
+	//turning	
+	btScalar turning_weight = (springs[1]->getWeight() + springs[3]->getWeight() ) /2.0;
 	
-	//rear wheel driving
-	btVector3 long_force(0,0,0);
-	btVector3 forward(0,0,0);
-	if(engine_force >= 0.02)	//only call if wheels are doing something fancy
-	{
-		btVector3 f0 = springs[0]->getForce(torque, chasis->getLinearVelocity(), u );
-		btVector3 f1 = springs[1]->getForce(torque, chasis->getLinearVelocity(), u );
-		chasis->applyCentralForce(f0);
-		chasis->applyCentralForce(f1);
+	if(turning_weight > 1e-6) {
+		btVector3 angular_vel = chasis->getAngularVelocity();
+		btScalar turn_factor = this->long_speed + LoadFloat("config/jeep_springs.xml", "turn_boost")/(0.1+chasis->getAngularVelocity().length() );
 		
-		forward = f0 / 2.0 + f1 / 2.0;
 		
-		long_force += (f0 + f1);
+		btScalar long_sign = long_speed < 0 ? -1 : +1;
+		btScalar delta_sign = delta < 0 ? -1 : +1;
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * long_sign * plane_up * turn_factor);
+		
+		chasis->applyCentralForce( lateral*delta_sign * long_sign*
+			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
 	}
-	
-	btVector3 lat0 = springs[0]->getLateralForce(chasis->getLinearVelocity(), u );
-	btVector3 lat1 = springs[1]->getLateralForce(chasis->getLinearVelocity(), u );
-	
-	if(lat0.length() > 0)
-	{
-		chasis->applyCentralForce((lat0 + lat1) * c_roll2);
-	}
-		
-	/*air resistance*/
-	 btVector3 f_drag = -c_drag * velocity * speed;
-	
-	/*rolling resistance*/
-	btScalar c_rolling = c_roll * c_drag;
-	btVector3 f_rolling = -c_rolling * velocity;
-	chasis->applyCentralForce( f_drag + f_rolling );
-		
-	/*find car acceleration*/
-	long_force += (f_drag + f_rolling);
-	btScalar long_scalar_force = long_force.dot(u);
-	btScalar long_acceleration = long_scalar_force / mass;
-	//std::cout << "acceleration:" << long_acceleration << std::endl;
-	
-	/*weight shift*/
-	btScalar L = 2*offset_x;
-	btScalar c = fabs(offset_x - comx);
-	btScalar b = fabs(offset_x - comx);
-	btScalar W = mass * fabs(gravity);
-	btScalar h = fabs(spring_bottom - comz);
-	weight_front = ((c/L)*W - (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_front * (1-weight_shift) ;
-	weight_rear = ((b/L)*W + (h/L)*mass*long_acceleration*torque_k) * weight_shift + weight_rear * (1-weight_shift);
-	
-	// std::cout << "weight_front:" << weight_front << std::endl;
-	// std::cout << "weight_rear :" << weight_rear << std::endl;
-	LOG("A" << "B" << btVector3(1,2,3), "default");
-	chasis->applyCentralForce(btVector3(0,gravity*mass,0));
-	chasis->applyForce(btVector3(0,-1.0,0) * weight_front, front_tire);
-	chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
-	
-	torque /= 1.1;
-	
-	/*moving sideways*/
-	btScalar omega = 0;
-	btScalar s = sin(delta);
-	if(s != 0)	//if actually turning
-	{
-		btScalar R = L/s;
-		omega = speed / R;
-	}
-	
-		//chasis->applyForce( btVector3(0,0,omega*100), front_tire);
-		// chasis->applyTorque( btVector3(0,omega*3,0));
-	chasis->setAngularVelocity(btVector3(0,omega*0.75,0));
-	
 }
 
 JeepActor::~JeepActor()
@@ -194,6 +316,11 @@ JeepActor::~JeepActor()
 	{
 		delete springs[i];
 	}
+}
+
+void JeepActor::registerAudio(Sound * audio)
+{
+	audio->SetListenerValues(&pos.x(), &velocity.y(), audio_frame);
 }
 
 void JeepActor::setOrientation(btQuaternion const & rot)
@@ -207,6 +334,17 @@ void JeepActor::setOrientation(btQuaternion const & rot)
 		from[i] += pos;
 		to[i] += pos;
 	}
+	
+	/*update frame of jeep*/
+	u = quatRotate(rot, btVector3(1,0,0) );
+	up_axis = quatRotate(rot, btVector3(0,1,0) );
+	lateral = quatRotate(rot, btVector3(0,0,1) );
+	audio_frame[0] = u.x();
+	audio_frame[1] = u.y();
+	audio_frame[2] = u.z();
+	audio_frame[3] = up_axis.x();
+	audio_frame[4] = up_axis.y();
+	audio_frame[5] = up_axis.z();
 }
 
 void JeepActor::setPosition(btVector3 const & pos)

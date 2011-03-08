@@ -14,7 +14,7 @@
 #include "Physics/Heightmap.h"
 #include "Common/Point.h" //I don't want this here but btVector3 is not cooperating
 
-#define MAX_TEXTURES 3
+#define MAX_TEXTURES 4
 
 using namespace std;
 
@@ -38,6 +38,8 @@ private:
 	IWindow * window;
 	
 	void renderObjects();
+	void drawSky();
+	void initSky();
 	void drawGround();
 	void initGround();
 	void drawGroundNormals();
@@ -45,7 +47,6 @@ private:
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	btVector3* getScreenPosition(int x, int y);
 
 	void load3DTexture(string filename);
 	void loadTextures();
@@ -55,63 +56,66 @@ private:
 
 	btVector3 camPos;				// Position of the camera
 	btVector3 camLook;				// Point that the camera is looking at
-	btVector3 camUp;				// Up vector for the camera
+	btVector3 camUp;				// Up vector for the camera TODO: are these in use? Will they be later?
 
-	btVector3 lightPos;
+	btVector3 lightPos;				// The current position of the light
 
-	double ratio;
-	int width;
-	int height;	
+	double ratio;					// Aspect ratio of the window
+	int width;						// Width of the window
+	int height;						// Height of the window
 
 	ActorList const & actorList;
 	Shader* shader;
 	vector<GLuint*> shaderTextures;
 
-	AttributeData* attrData;
-	OptionsData* optData;
-	TextureData* texData;
+	AttributeData* attrData;		// Contains attribute information about the shader
+	OptionsData* optData;			// Contains optional details about the shader
+	TextureData* texData;			// Holds information about the textures used by the shader
 
-	/*Uniform Locations*/
-	int xAttrLoc;
+	/*Uniform Locations for the shader*/
+	int xAttrLoc;		// X attribute info from attrData
 	int xModLoc;
 	int xZminLoc;
 	int xFlipLoc;
 
-	int yAttrLoc;
+	int yAttrLoc;		// Y attribute info from attrData
 	int yModLoc;
 	int yZminLoc;
 	int yFlipLoc;
 
-	int zAttrLoc;
+	int zAttrLoc;		// Z attribute info from attrData
 	int zModLoc;
 	int zZminLoc;
 	int zFlipLoc;
 
-	int numTexLoc;
-	int texPosLoc;
-	int texHskewLoc;
-	int texVskewLoc;
+	int numTexLoc;		// Number of textures actually in use
+	int texPosLoc;		// Positions of the 2D textures in the 3D texture (an array)
+	int texHskewLoc;	// Horizontal skews of the 2D textures (an array)
+	int texVskewLoc;	// Vertical skews of the 2D textures (an array)
 
-	int tex0Loc;
+	int tex0Loc;		// Up to four 2D textures to be used in the 3D texture
 	int tex1Loc;
 	int tex2Loc;
 	int tex3Loc;
-	int normalMapLoc;
+	int colourMapLoc;	// Colourmap to apply in the shader
+	int normalMapLoc;	// Bump map texture
 
-	int tangentLoc;
+	int tangentLoc;		// Tangent for used in bump mapping
 
-	int autoDiffuseLoc;
-	int autoSpecularLoc;
+	int autoDiffuseLoc;		// Specifies whether or not to apply automatic diffuse lighting
+	int autoSpecularLoc;	// Specifies whether or not to apply automatic specular lighting
 
 	// Heightmap rendering
 	HeightMap* hm;
-	vector<vector<Point> > mapVertexNormals;
-	vector<vector<Point> > mapVertexTangents;
+	vector<vector<Point> > mapVertexNormals;	// Normals of the heightmap for smooth shading
+	vector<vector<Point> > mapVertexTangents;	// Tangents of the heightmap for bump mapping
 
-	float xscale;
-	float yscale;
-	float zscale;
-	GLuint groundGeometry;
-	GLuint groundTex;
-	GLuint groundBump;
+	float xscale;			// X scale factor for the heightmap
+	float yscale;			// Vertical scale factor for the heightmap
+	float zscale;			// Z scale factor for the heightmap
+	GLuint groundGeometry;	// Display list containing the ground information
+	GLuint groundTex;		// The texture applied to the ground
+	GLuint groundBump;		// The bump map for the ground
+	
+	RenderObject sky;		// The sky dome model
 };

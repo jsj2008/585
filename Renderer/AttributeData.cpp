@@ -61,6 +61,7 @@ attributeType AttributeData::parseAttribute(string name) {
 	return DIFFUSE;
 }
 
+// Loads the attribute data saved in a .tx3 file
 void AttributeData::load(string filename) {
 
 	ifstream inFile;
