@@ -19,6 +19,7 @@ public:
 	Uint8 ACCELBUTTON;
 	Uint8 BRAKEBUTTON;
 	Uint8 EBRAKEBUTTON;
+	SDL_Joystick *joystick;
 
 	Input();
 	~Input();
@@ -30,7 +31,7 @@ public:
 	void changeAccelButton(Uint8 aButton);
 	void changeBrakeButton(Uint8 aButton);
 	void changeEBrakeButton(Uint8 aButton);
-	
+	void checkState();
 	
 };
 
