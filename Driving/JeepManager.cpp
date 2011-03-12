@@ -75,7 +75,9 @@ void JeepManager::renderTick() {
 		btVector3 trackVector = levelAI->getVectorToTrack(c);
 		btVector3 segmentVec1 = levelAI->getVectorToSeg(1, c);
 		btVector3 segmentVec2 = levelAI->getVectorToSeg(2, c);
-		aiInputs[c]->step((*itr), pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2);
+		Jeeps allJeeps = aiJeeps;
+		allJeeps.push_back(human);
+		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2);
 	}
 }
 
