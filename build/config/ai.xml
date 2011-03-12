@@ -7,3 +7,5 @@
 <param type="0" name="turn_anticipation_threshold" value="100" />
 <param type="0" name="far_turn_anticipation_threshold" value="200" />
 <param type="0" name="jeep_distance_threshold" value="30" />
+<param type="0" name="ease_threshold" value="45" />
+<param type="0" name="brake_threshold" value="45" />

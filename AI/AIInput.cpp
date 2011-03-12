@@ -16,6 +16,7 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	btVector3 actorHeading = quatRotate(jeep->orientation, btVector3(1,0,0)).normalize();
 
 	AcceleratePressed = true;
+	BrakePressed = false;
 
 	float angleToTrack = trackDirection.dot(actorHeading);
 	float turnDir = trackDirection.cross(actorHeading).getY();
@@ -24,8 +25,8 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	else turnDir = 0;
 
 	int parallelize = 0; // Try to stay parallel with the path
-	float parallelizationThreshold = LoadFloat("config/ai.xml","parallelization_threshold");
-	float hardParallelizationThreshold = LoadFloat("config/ai.xml","hard_parallelization_threshold");
+	float parallelizationThreshold = LoadFloat("config/ai.xml","parallelization_threshold"); // Try to align with the track if off by this angle
+	float hardParallelizationThreshold = LoadFloat("config/ai.xml","hard_parallelization_threshold"); // Try hard to align with the track if off by this angle
 	if ((1.0 - angleToTrack) * turnDir > hardParallelizationThreshold) parallelize = 2;
 	if ((1.0 - angleToTrack) * turnDir > parallelizationThreshold) parallelize = 1;
 	else if ((1.0 - angleToTrack) * turnDir < -hardParallelizationThreshold) parallelize = -2;
@@ -40,8 +41,8 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	else if (turnDir < 0) turnDir = -1;
 	else turnDir = 0;
 
-	float distanceThreshold = LoadFloat("config/ai.xml","distance_threshold");
-	float farDistanceThreshold = LoadFloat("config/ai.xml","far_distance_threshold");
+	float distanceThreshold = LoadFloat("config/ai.xml","distance_threshold"); // Get back on track if farther than this distance from the path
+	float farDistanceThreshold = LoadFloat("config/ai.xml","far_distance_threshold"); // Turn harder if this far from the path
 	if (distFromTrack > farDistanceThreshold && turnDir > 0)  onTrack = 2;
 	else if (distFromTrack > distanceThreshold && turnDir > 0) onTrack = 1;
 	else if (distFromTrack > farDistanceThreshold && turnDir < 0)  onTrack = -2;
@@ -54,7 +55,7 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	int turnAnticipation2 = 0; // Anticipate curves that are two track segments away
 	//std::cout << distToNextSeg << "\t" << distToNextSeg2 << std::endl;
 
-	float turnAnticipationThreshold = LoadFloat("config/ai.xml","turn_anticipation_threshold");
+	float turnAnticipationThreshold = LoadFloat("config/ai.xml","turn_anticipation_threshold"); // Don't anticipate if the next curve is farther than this
 	float farTurnAnticipationThreshold = LoadFloat("config/ai.xml","far_turn_anticipation_threshold");
 	if (distToNextSeg < turnAnticipationThreshold) {
 		trackDirection = pathDir1;
@@ -93,15 +94,20 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 		else if (turnDir < 0) turnDir = -1;
 		else turnDir = 0;
 
-		float jeepDistanceThreshold = LoadFloat("config/ai.xml","jeep_distance_threshold");
+		float jeepDistanceThreshold = LoadFloat("config/ai.xml","jeep_distance_threshold"); // Turn of closer than this to other jeeps
 		if (distFromJeep < jeepDistanceThreshold && turnDir > 0) jeepAvoidance += 1;
 		else if (distFromJeep < jeepDistanceThreshold && turnDir < 0) jeepAvoidance -= 1;
 	}
 
-	LOG(parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << " " << jeepAvoidance, "ai");
+	float easeThreshold = LoadFloat("config/ai.xml","ease_threshold"); // Ease off the gas if going faster than this (on a sharp turn)
+	float brakeThreshold = LoadFloat("config/ai.xml","brake_threshold"); // Brake if going faster than this (on a very sharp turn)
 
 	XAxis = parallelize + onTrack + turnAnticipation1 + turnAnticipation2 + jeepAvoidance;
+	if ((XAxis > 2 || XAxis < -2) && jeep->speed > easeThreshold) AcceleratePressed = false; // Slow down if a sharp turn needs to be made
+	if ((XAxis > 4 || XAxis < -4) && jeep->speed > easeThreshold) BrakePressed = true; // Brake if a very sharp turn needs to be made
 	if (XAxis > 0) XAxis = 1;
 	else if (XAxis < 0) XAxis = -1;
 	else XAxis = 0;
+	//LOG(jeep->speed, "ai");
+	//LOG(parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << " " << jeepAvoidance << "\t" << AcceleratePressed, "ai");
 }
