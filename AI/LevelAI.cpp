@@ -23,6 +23,7 @@ LevelAI::~LevelAI() { }
 void LevelAI::step() {
 	int c = 0;
 	for (Jeeps::iterator itr = jeeps.begin(); itr != jeeps.end(); ++itr, c++) {
+		if (c == 10) LOG(segments[c], "ai");
 		btVector3 playerPos = jeeps[c]->pos;
 		Point lookAhead;
 		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);

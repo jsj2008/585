@@ -8,12 +8,14 @@
 #include <SDL.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 class Path {
 
 private:
 	void addPoint(int x, int z);
+	void load(string filename);
 
 public:	
 	Path();

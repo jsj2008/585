@@ -10,7 +10,8 @@ Path::Path() {
 	yscale = LoadFloat("config/world.xml","height_map_scale_y");
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
-	addPoint(318, 8);
+	load("mainPath+.pth");
+	/*addPoint(318, 8);
 	addPoint(320, 38);
 	addPoint(308, 62);
 	addPoint(297, 77);
@@ -60,7 +61,7 @@ Path::Path() {
 	addPoint(209, 389);
 	addPoint(225, 412);
 	addPoint(234, 468);
-	addPoint(212, 496);
+	addPoint(212, 496);*/
 }
 
 Path::~Path() { }
@@ -122,4 +123,15 @@ Point Path::at(int i) {
 
 int Path::length() {
 	return points.size();
+}
+
+void Path::load(string filename) {
+	points.clear();
+
+	ifstream in;
+	in.open(filename.c_str());
+
+	double x, y;
+	while (in >> x >> y)
+		addPoint(x,y);
 }
