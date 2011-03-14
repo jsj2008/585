@@ -19,6 +19,7 @@ private:
 
 public:	
 	Path();
+	Path(string filename);
 	virtual ~Path();
 
 	RenderObject testCube;

@@ -9,6 +9,7 @@ AIInput::AIInput(){
 	AcceleratePressed = false;  
 	BrakePressed = false;  
 	EBrakePressed = false;
+	recovering = LoadFloat("config/ai.xml","recovery_cooldown");
 }
 
 void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2) {
@@ -95,19 +96,31 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 		else turnDir = 0;
 
 		float jeepDistanceThreshold = LoadFloat("config/ai.xml","jeep_distance_threshold"); // Turn of closer than this to other jeeps
-		if (distFromJeep < jeepDistanceThreshold && turnDir > 0) jeepAvoidance += 1;
-		else if (distFromJeep < jeepDistanceThreshold && turnDir < 0) jeepAvoidance -= 1;
+		if (distFromJeep < jeepDistanceThreshold && turnDir > 0) jeepAvoidance += 2;
+		else if (distFromJeep < jeepDistanceThreshold && turnDir < 0) jeepAvoidance -= 2;
 	}
 
 	float easeThreshold = LoadFloat("config/ai.xml","ease_threshold"); // Ease off the gas if going faster than this (on a sharp turn)
 	float brakeThreshold = LoadFloat("config/ai.xml","brake_threshold"); // Brake if going faster than this (on a very sharp turn)
+	float stuckThreshold = LoadFloat("config/ai.xml","stuck_threshold"); // If slower than this, try backing up
+	float recoveryTime = LoadFloat("config/ai.xml","recovery_time"); // How long to reverse when stuck
+	float recoveryCooldown = LoadFloat("config/ai.xml","recovery_cooldown"); // How long to wait before trying to recover again
 
 	XAxis = parallelize + onTrack + turnAnticipation1 + turnAnticipation2 + jeepAvoidance;
 	if ((XAxis > 2 || XAxis < -2) && jeep->speed > easeThreshold) AcceleratePressed = false; // Slow down if a sharp turn needs to be made
-	if ((XAxis > 4 || XAxis < -4) && jeep->speed > easeThreshold) BrakePressed = true; // Brake if a very sharp turn needs to be made
+	if ((XAxis > 4 || XAxis < -4) && jeep->speed > brakeThreshold) BrakePressed = true; // Brake if a very sharp turn needs to be made
 	if (XAxis > 0) XAxis = 1;
 	else if (XAxis < 0) XAxis = -1;
 	else XAxis = 0;
+	//if (recovering != 0) LOG(recovering, "ai");
+	if (recovering < 0) recovering++; // Burn through the recovery cooldown period
+	if (recovering == recoveryTime) recovering = -recoveryCooldown; // If recovery time has elapsed, start the cooldown period
+	else if ((jeep->speed < stuckThreshold && recovering == 0) || recovering > 0) { // If stuck...
+		recovering++; // Increment the recovery time
+		AcceleratePressed = false; // Stop accelerating
+		BrakePressed = true; // Back up
+		XAxis *= -1; // Turn the other way
+	}
 	//LOG(jeep->speed, "ai");
 	//LOG(parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << " " << jeepAvoidance << "\t" << AcceleratePressed, "ai");
 }

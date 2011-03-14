@@ -8,7 +8,10 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 	this->jeeps = jeeps;
 	this->human = human;
 	this->jeeps.push_back(human);
-	path = Path();
+	paths = Paths();
+	paths.push_back(Path("mainPath+.pth"));
+	paths.push_back(Path("path2+.pth"));
+	//path = Path("crashCourse.pth");
 
 	// redundant!!! Improve?
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
@@ -22,8 +25,9 @@ LevelAI::~LevelAI() { }
 
 void LevelAI::step() {
 	int c = 0;
+	Path path;
 	for (Jeeps::iterator itr = jeeps.begin(); itr != jeeps.end(); ++itr, c++) {
-		if (c == 10) LOG(segments[c], "ai");
+		path = paths[c % paths.size()]; // The path AI player 'c' is following
 		btVector3 playerPos = jeeps[c]->pos;
 		Point lookAhead;
 		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
@@ -52,11 +56,9 @@ void LevelAI::step() {
 				}
 				pathPositions[c] = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
 			}
-		} else {
-			//std::cout << "Your teh Winnre!!!11one " << c << std::endl;
 		}
 
-		path.debugDraw(pathPositions[c], Point(&playerPos));
+		//path.debugDraw(pathPositions[c], Point(&playerPos));
 	}
 }
 
@@ -83,6 +85,7 @@ Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point ac
 btVector3 LevelAI::getPathDirection(int lookAhead, int c) {
 	Point bp, ep;
 	int currentPlayerSeg = segments[c];
+	Path path = paths[c % paths.size()]; // The path AI player 'c' is following
 	if (currentPlayerSeg < path.length() - 1 - lookAhead) {
 		bp = path.at(currentPlayerSeg + lookAhead);
 		ep = path.at(currentPlayerSeg + 1 + lookAhead);
@@ -103,6 +106,7 @@ btVector3 LevelAI::getVectorToTrack(int c) {
 
 btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 	int currentPlayerSeg = segments[c];
+	Path path = paths[c % paths.size()]; // The path AI player 'c' is following
 	Point nextSegPoint;
 	btVector3 playerPos = jeeps[c]->pos;
 	btVector3 playerWorldPos = btVector3(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
