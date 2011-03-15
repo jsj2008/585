@@ -4,7 +4,7 @@
 Path::Path() { }
 
 Path::Path(string filename) {
-	testCube = RenderObject("blank.bmp", "blank.bmp", "models/cube.obj");
+	testCube = RenderObject("data/textures/blank.bmp", "data/textures/blank.bmp", "models/cube.obj");
 	hm = HeightMapManager::GetHeightMap();
 	
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information

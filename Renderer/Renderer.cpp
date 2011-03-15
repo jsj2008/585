@@ -345,7 +345,7 @@ void Renderer::drawSky() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initSky() {
-	sky = RenderObject("textures/skyDome_2.png", "", "models/dome.obj", 1000);
+	sky = RenderObject("data/textures/skyDome_2.png", "", "models/dome.obj", 1000);
 }
 
 void Renderer::drawGround() {
@@ -363,8 +363,8 @@ void Renderer::drawGround() {
 void Renderer::initGround() {
 	//loadTexture("textures/bigTex.png", &groundTex);		// Load the ground texture
 	//loadTexture("textures/bigTex_NRM.png", &groundBump);	// Load the ground bump map
-	loadTexture("textures/map2.png", &groundTex);		// Load the ground texture
-	loadTexture("textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
+	loadTexture("data/textures/map2.png", &groundTex);		// Load the ground texture
+	loadTexture("data/textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
 
 	hm = HeightMapManager::GetHeightMap();
 	
