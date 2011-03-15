@@ -14,6 +14,7 @@ class LevelAI {
 typedef std::vector<JeepActor *> Jeeps;
 typedef std::vector<int> jeepSegments;
 typedef std::vector<Point> jeepPositions;
+typedef std::vector<Path> Paths;
 
 private:
 	float xscale;
@@ -24,6 +25,8 @@ private:
 
 	jeepSegments segments;
 	jeepPositions pathPositions;
+	Paths paths;
+
 
 	Point closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end);
 
@@ -34,7 +37,6 @@ public:
 
 	Jeeps jeeps;
 	JeepActor* human;
-	Path path;
 
 	void step();
 	btVector3 getPathDirection(int lookAhead, int c);

@@ -13,6 +13,7 @@ class RenderObject {
 
 private:
 	bool loadTexture(string textureName, GLuint *texID);
+	GLuint geometry;
 
 public:	
 	RenderObject();
@@ -24,6 +25,7 @@ public:
 	Model model;	// The model that represents this object (rendering only, not collision)
 	float scale;	// Scale factor to resize
 
+	void create();
 	void draw() const;
 	void drawNormals() const;
 

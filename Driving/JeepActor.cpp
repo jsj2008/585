@@ -1,15 +1,22 @@
 #include "JeepActor.h"
-#include <iostream>
 #include "Common/SettingsFactory.h"
 #include "Common/Debug.h"
+#include "Physics/Physics.h"
+#include "Physics/PhysObject.h"
+#include "Physics/Spring.h"
+#include <LinearMath/btIDebugDraw.h>
+#include <btBulletDynamicsCommon.h>
+#include "UI/IInput.h"
+#include "Main/MainController.h"
+#include "Audio/Sound.h"
 
 #define DEBUG_DRAW
 
 float JeepActor::gravity = 1;
 float JeepActor::mass = 1;
 
-JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btVector3 const & vel) : 
-Actor(physObj, renderObj, pos, vel),
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const & renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btQuaternion const & rot) : 
+Actor(physObj, renderObj, pos),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
 spring_top(LoadFloat("config/jeep_springs.xml", "spring_top")), 
@@ -22,8 +29,11 @@ c_drag( LoadFloat("config/jeep_springs.xml", "c_drag") ),
 c_roll( LoadFloat("config/jeep_springs.xml", "c_roll") ),
 c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
 max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
-turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
+turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
+audio_frame(new float [6])
 {
+	orientation = rot;
+	
 	/*set up the springs
 	
 	3.0 x 0.3 x 2.0
@@ -70,6 +80,16 @@ turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") )
 	gravity = LoadFloat("config/world.xml", "gravity");
 
 	delta = 0;
+	die_time = 0;
+}
+
+void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
+{
+	btTransform tr(rot, pos);
+	chasis->setWorldTransform(tr);
+	chasis->clearForces();
+	chasis->setLinearVelocity(btVector3(0,0,0));
+	chasis->setAngularVelocity(btVector3(0,0,0));
 }
 
 void JeepActor::render()
@@ -78,17 +98,12 @@ void JeepActor::render()
 		springs[i]->render();
 }
 
-void JeepActor::myTickCallback(btDynamicsWorld *world, btScalar timeStep)
-{
-	JeepActor * jeep = static_cast<JeepActor *>(world->getWorldUserInfo());
-		LOG("pos " << jeep->pos, "temp");
-	jeep->tick(timeStep);
-}
-
 /*rolling resistance*/
 btVector3 JeepActor::long_friction()
 {
-	btScalar c_rolling = c_roll * c_drag;
+	btScalar extra_friction = 1;//+ u.dot(btVector3(0,1,0));
+	// LOG("extra " << extra_friction, "temp");
+	btScalar c_rolling = c_roll * c_drag*extra_friction;
 	btVector3 f_rolling = -c_rolling * this->long_velocity;
 	return f_rolling;
 	
@@ -172,14 +187,37 @@ void JeepActor::tick(seconds timeStep)
 {
 	
 	/*get steering info*/
+	MainController::Audio()->decreasePitch(0.05);
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
+	bool dying = true;
 	for(int i=0; i<4; i++)
 	{
 		if(i == 2 || i == 3)
 			springs[i]->tick(timeStep, pos, delta);	/*apply springs*/
 		else
 			springs[i]->tick(timeStep, pos, 0);	/*apply springs*/
+			
+		springs[i]->spinTire(lateral, long_speed);
+		dying &= (springs[i]->plane_normal.length() == 0);	//check if all tires are off ground
 	}
+	
+	/*check if still able to drive*/
+	if(dying)
+	{
+		die_time += timeStep;
+	}else
+	{
+		if(die_time > 0.7)
+			MainController::Audio()->playJump();
+		die_time = 0;
+	}
+	
+	if(die_time > 3)	//not driving for few seconds
+	{
+		die_time = 0;
+		MainController::restart();
+	}
+	
 		
 	/*various velocities*/
 	this->velocity = chasis->getLinearVelocity();
@@ -196,12 +234,16 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.accelerate();
 		central_forces += update_tires();
+		//MainController::Audio()->increasePitch(0.1);
+		
+		
 	}
 
 	if(input->BrakePressed)
 	{
 		engine.decelerate();
 		central_forces += update_tires();
+		//MainController::Audio()->decreasePitch(0.3);
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");
@@ -226,6 +268,7 @@ void JeepActor::tick(seconds timeStep)
 	if(input ->EBrakePressed)
 	{
 		chasis->applyImpulse( btVector3(0,40,0), btVector3(0,0,0));
+		// MainController::restart();
 	}
 
 
@@ -258,10 +301,11 @@ void JeepActor::tick(seconds timeStep)
 		btScalar turn_factor = this->long_speed + LoadFloat("config/jeep_springs.xml", "turn_boost")/(0.1+chasis->getAngularVelocity().length() );
 		
 		
-		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * plane_up * turn_factor);
-		
+		btScalar long_sign = long_speed < 0 ? -1 : +1;
 		btScalar delta_sign = delta < 0 ? -1 : +1;
-		chasis->applyCentralForce( lateral*delta_sign *
+		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * long_sign * plane_up * turn_factor);
+		
+		chasis->applyCentralForce( lateral*delta_sign * long_sign*
 			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
 	}
 }
@@ -272,6 +316,11 @@ JeepActor::~JeepActor()
 	{
 		delete springs[i];
 	}
+}
+
+void JeepActor::registerAudio(Sound * audio)
+{
+	audio->SetListenerValues(&pos.x(), &velocity.y(), audio_frame);
 }
 
 void JeepActor::setOrientation(btQuaternion const & rot)
@@ -290,6 +339,12 @@ void JeepActor::setOrientation(btQuaternion const & rot)
 	u = quatRotate(rot, btVector3(1,0,0) );
 	up_axis = quatRotate(rot, btVector3(0,1,0) );
 	lateral = quatRotate(rot, btVector3(0,0,1) );
+	audio_frame[0] = u.x();
+	audio_frame[1] = u.y();
+	audio_frame[2] = u.z();
+	audio_frame[3] = up_axis.x();
+	audio_frame[4] = up_axis.y();
+	audio_frame[5] = up_axis.z();
 }
 
 void JeepActor::setPosition(btVector3 const & pos)

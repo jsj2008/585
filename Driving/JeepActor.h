@@ -2,26 +2,36 @@
 #define JEEPACTOR_H
 
 #include "Common/Actor.h"
-#include "Physics/PhysObject.h"
-#include "Common/prelude.h"
-#include <vector>
-#include "Physics/Spring.h"
-#include "UI/Input.h"
-#include "AI/AIInput.h"
-#include "Renderer/RenderObject.h"
-#include <LinearMath/btIDebugDraw.h>
 #include "JeepEngine.h"
+
+class PhysObject;
+class RenderObject;
+class Physics;
+class Spring;
+class IInput;
+class Sound;
 
 class JeepActor : public Actor
 {
 public:
-	JeepActor(PhysObject const &, RenderObject const &, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btVector3 const & vel = btVector3(0,0,0));
+	JeepActor(PhysObject const &, RenderObject const &, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
 	~JeepActor();
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);
-	void tick(seconds);
-	static void myTickCallback(btDynamicsWorld *world, btScalar timeStep);
+	void tick(btScalar);
 	void render();
+	void reset(btQuaternion const &, btVector3 const &);
+	void registerAudio(Sound *);
+	
+	/*useful vectors*/
+	btVector3 u;	//jeep is facing this way
+	btVector3 up_axis;	//up of jeep
+	btVector3 lateral;	//lateral of jeep
+	btVector3 velocity;
+	btScalar speed;
+	btVector3 long_velocity;
+	btScalar long_speed;
+	float * audio_frame;
 		
 private:
 	
@@ -56,17 +66,10 @@ private:
 	float const & turn_time;
 	btScalar delta;
 	
-	/*useful vectors*/
-	btVector3 u;	//jeep is facing this way
-	btVector3 up_axis;	//up of jeep
-	btVector3 lateral;	//lateral of jeep
-	btVector3 velocity;
-	btScalar speed;
-	btVector3 long_velocity;
-	btScalar long_speed;
 	
 	//other states
 	bool onGround;
+	btScalar die_time;
 	
 };
 

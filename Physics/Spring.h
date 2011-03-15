@@ -1,13 +1,11 @@
 #ifndef SPRING_H
 #define SPRING_H
 
-#include <btBulletDynamicsCommon.h>
-#include <LinearMath/btIDebugDraw.h>
-
-#include "Physics.h"
-#include "Common/prelude.h"
 #include "Renderer/RenderObject.h"
-#include "Common/Actor.h"
+
+class Actor;
+class btIDebugDraw;
+class Physics;
 
 class Spring
 {
@@ -20,6 +18,7 @@ public:
 	btVector3 getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
 	btVector3 plane_normal;
 	void render();
+	void spinTire(btVector3 const &, btScalar);
 	
 private:
 	
@@ -40,6 +39,9 @@ private:
 	btQuaternion current_direction;
 	btVector3 planeProjection(btVector3 const & tire_direction) const;
 	btVector3 hitPoint;
+	btScalar physical_length;
+
+	btScalar tire_rot;
 };
 
 #endif

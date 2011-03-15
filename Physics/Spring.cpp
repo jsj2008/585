@@ -4,6 +4,9 @@
 #include <math.h>
 #include "Main/MainController.h"
 #include "Common/Debug.h"
+#include "Physics.h"
+#include "Common/Actor.h"
+#include <btBulletDynamicsCommon.h>
 
 // RenderObject Spring::wheelModel;
 
@@ -58,9 +61,25 @@ btVector3 Spring::planeProjection(btVector3 const & tire_direction) const
 	return direction;
 }
 
+void Spring::spinTire(btVector3 const & lateral, btScalar linear_velocity)
+{
+	btScalar speed = 0;
+	speed = -linear_velocity/100.0;
+	tire_rot += speed;
+	while(tire_rot > 2*3.14159)
+		tire_rot -= 2*3.14159;
+	while(tire_rot < -2*3.14159)
+		tire_rot += 2*3.14159;
+	
+	btQuaternion roll = btQuaternion( btVector3(0,0,1), tire_rot);
+	wheel_actor->orientation *= roll;
+	
+}
+
 
 btVector3 Spring::getForce(btScalar torque, btVector3 const & linear_velocity, btVector3 const & tire_direction)
-{
+{	
+	
 	wheel_speed = torque;		//set engine on
 	
 	if(current_weight < 1e-6)	//off the ground
@@ -112,7 +131,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("blank.bmp", "", "models/jeep/wheel_final.obj"),
+wheelModel("textures/jeep_uv2.png", "blank.bmp", "models/Jeep/wheel2.obj"),
 current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
@@ -127,6 +146,7 @@ current_direction(0,0,0)
 	
 	MainController::addActor(wheel_actor);
 	old_x = 0;
+	tire_rot = 0;
 }
 
 btScalar Spring::getWeight()
@@ -136,10 +156,13 @@ btScalar Spring::getWeight()
 
 void Spring::render()
 {
-	if(plane_normal.length() == 0)	//in the air
+	//wheel_actor->pos = to + (from-to)*( (from-to).length() -physical_length) + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+	wheel_actor->pos = from + (to-from).normalized()*physical_length + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+
+	/*if(plane_normal.length() == 0)	//in the air
 		wheel_actor->pos = to + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
 	else
-		wheel_actor->pos = hitPoint + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+		wheel_actor->pos = hitPoint + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );*/
 	
 }
 
@@ -165,7 +188,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	physics->dynamicsWorld.rayTest( from, to, result);	
 
 	btVector3 physical_spring = (result.m_hitPointWorld - from);	//the spring as it is compressed
-	btScalar physical_length = physical_spring.length();
+	this->physical_length = physical_spring.length();
 	
 	if(result.hasHit() &&  physical_length <= ( (to-from) ).length() )
 	{		
@@ -196,7 +219,8 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
-		
+		physical_length = (to - from).length();
+
 		#ifdef DEBUG_RENDERER
 		debugger->drawLine(from, to, btVector3(0,0,0));
 		LOG("DEBUG_RENDERER is ON", "springs");

@@ -7,35 +7,44 @@ RenderObject::RenderObject(string textureName, string bumpMapName, string modelN
 	loadTexture(bumpMapName, &bumpMap);
 	model = Model(modelName);
 	this->scale = scale;
+	create();
 }
 
 RenderObject::~RenderObject() { }
 
-void RenderObject::draw() const {
-	Face currentFace;
-	btVector3* currentVector;
-	glPushMatrix();
-	glScalef(scale, scale, scale);
-	for (int i = 0; i < model.faces.size(); i++) {
-		currentFace = model.faces.at(i);
-		if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
-		if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+void RenderObject::create() {
+	geometry = glGenLists(1);
+	glNewList(geometry, GL_COMPILE);
+		Face currentFace;
+		btVector3* currentVector;
+		glPushMatrix();
+		glScalef(scale, scale, scale);
+		for (int i = 0; i < model.faces.size(); i++) {
+			currentFace = model.faces.at(i);
+			if (currentFace.vertices.size() == 3) glBegin(GL_TRIANGLES);
+			else if (currentFace.vertices.size() == 4) glBegin(GL_QUADS);
+			else glBegin(GL_POLYGON);
 
-		for (int j = 0; j < currentFace.vertices.size(); j++) {
+			for (int j = 0; j < currentFace.vertices.size(); j++) {
 
-			currentVector = model.normals.at(currentFace.normals.at(j)-1);
-			glNormal3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
+				currentVector = model.normals.at(currentFace.normals.at(j)-1);
+				glNormal3d(-currentVector->getX(), -currentVector->getY(), -currentVector->getZ());
 
-			if (currentFace.texCoords.at(j) != 0) {
-				currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
-				glTexCoord2f(currentVector->getX(), currentVector->getY());
+				if (currentFace.texCoords.at(j) != 0) {
+					currentVector = model.texCoords.at(currentFace.texCoords.at(j)-1);
+					glTexCoord2f(currentVector->getX(), currentVector->getY());
+				}
+				currentVector = model.vertices.at(currentFace.vertices.at(j)-1);
+				glVertex3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
 			}
-			currentVector = model.vertices.at(currentFace.vertices.at(j)-1);
-			glVertex3d(currentVector->getX(), currentVector->getY(), currentVector->getZ());
+			glEnd();
 		}
-		glEnd();
-	}
-	glPopMatrix();
+		glPopMatrix();
+	glEndList();
+}
+
+void RenderObject::draw() const {
+	glCallList(geometry);
 }
 
 // Draw model normals for debugging

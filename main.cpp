@@ -10,6 +10,7 @@ int main(int , char **) {
 	START_LOG();
 	HeightMapManager hm;
 	MainController m;
+	m.window.stopLoading();
 	m.window.run(&m);
 	END_LOG();
 	return 0;

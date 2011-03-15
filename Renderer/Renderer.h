@@ -38,6 +38,8 @@ private:
 	IWindow * window;
 	
 	void renderObjects();
+	void drawSky();
+	void initSky();
 	void drawGround();
 	void initGround();
 	void drawGroundNormals();
@@ -114,4 +116,6 @@ private:
 	GLuint groundGeometry;	// Display list containing the ground information
 	GLuint groundTex;		// The texture applied to the ground
 	GLuint groundBump;		// The bump map for the ground
+	
+	RenderObject sky;		// The sky dome model
 };

@@ -8,15 +8,18 @@
 #include <SDL.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 class Path {
 
 private:
 	void addPoint(int x, int z);
+	void load(string filename);
 
 public:	
 	Path();
+	Path(string filename);
 	virtual ~Path();
 
 	RenderObject testCube;
@@ -27,7 +30,7 @@ public:
 	float yscale;
 	float zscale;
 
-	void debugDraw(Point playerPos);
+	void debugDraw(Point playerPathPos, Point playerPos);
 	Point at(int i);
 	int length();
 

@@ -15,7 +15,7 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	lightPos = btVector3(5000,-15000,2400);
+	lightPos = btVector3(5000,15000,2400);
 
 	shaderTextures.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++) {
@@ -46,6 +46,7 @@ void Renderer::paintGL() {
 	updateCamera();
 	
 	drawGround();
+	drawSky();
 	renderObjects();
 }
 
@@ -65,6 +66,9 @@ void Renderer::renderObjects() {
 		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
 		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
 		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+		h.normalize();
+		b.normalize();
+		n.normalize();
 
 		// This matrix is defined columnwise
 		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
@@ -165,7 +169,8 @@ void Renderer::applyShader() {
 
 void Renderer::initializeGL() {
 	//glClearColor(0.63, 0.77, 0.77, 0);
-	glClearColor(1, 1, 1, 0);
+	//glClearColor(1, 1, 1, 0);
+	glClearColor(0.94, 0.97, 0.97, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
@@ -240,6 +245,7 @@ void Renderer::initializeGL() {
 	shader->off();
 
 	resizeGL(width, height); // Make the world not suck
+	initSky();
 	initGround();
 }
 
@@ -256,7 +262,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0f, ratio, 0.01f, 2000.0f); // 90 degree field of view
+	gluPerspective(90.0f, ratio, 0.1f, 2000.0f); // 90 degree field of view
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -323,6 +329,25 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 	return true;
 }
 
+void Renderer::drawSky() {
+/*	//shader->on();
+	//	applyShader();
+	glColor3f(1,1,1);
+	glActiveTexture(GL_TEXTURE4); // Apply the aky texture
+	glBindTexture(GL_TEXTURE_2D, sky.texture);
+	glPushMatrix();
+	//glTranslated(434, 290, -1736);
+	sky.draw();
+	sky.drawNormals();
+	glPopMatrix();
+	//shader->off();*/
+}
+
+// Does all the initial calculations for rendering the ground efficiently
+void Renderer::initSky() {
+	sky = RenderObject("textures/skyDome_2.png", "", "models/dome.obj", 1000);
+}
+
 void Renderer::drawGround() {
 	//drawGroundNormals();
 	shader->on();
@@ -336,8 +361,10 @@ void Renderer::drawGround() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
+	//loadTexture("textures/bigTex.png", &groundTex);		// Load the ground texture
+	//loadTexture("textures/bigTex_NRM.png", &groundBump);	// Load the ground bump map
 	loadTexture("textures/map2.png", &groundTex);		// Load the ground texture
-	loadTexture("bigTex_NRM.png", &groundBump);	// Load the ground bump map
+	loadTexture("textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
 
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -389,7 +416,7 @@ void Renderer::initGround() {
 							faceTangents.at( x ).at(z-1)+
 							faceTangents.at(x-1).at( z )+
 							faceTangents.at( x ).at( z );
-				row.push_back(pn);
+				row.push_back(pn*-1);
 				rowt.push_back(pt);
 			}
 		}

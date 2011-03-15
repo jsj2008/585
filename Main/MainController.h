@@ -1,43 +1,39 @@
-#pragma once
-#include "IController.h"
+#ifndef MAINCONTROLLER_H
+#define MAINCONTROLLER_H
 #include "UI/Window.h"
-#include <AI/LevelAI.h>
-#include <Renderer/Renderer.h>
 #include <Renderer/GLDebugDrawer.h>
-#include <Physics/IPhysics.h>
-#include <Physics/libCube.h>
-#include <Physics/libPlane.h>
-#include <Common/prelude.h>
-#include <Common/Actor.h>
-#include <Common/Point.h>
-#include "Renderer/depend.h"
-#include "Common/SettingsFactory.h"
-#include "Driving/JeepActor.h"
+#include "Renderer/RenderObject.h"
 #include "Driving/JeepManager.h"
+#include "Obstacles.h"
+
+class Physics;
+class Renderer;
+class Sound;
 
 
-class MainController : public IController{
+
+class MainController{
 public:
 	MainController();
 	virtual ~MainController();
-	void explode();
-	void yield();
 	void tick(unsigned long);
-	
+	static void restart();
 	static void addActor(Actor *);
+	static Sound * Audio();
 	Window window;
 	
 protected:
 	static MainController * ptr;
 	ActorList actorList;
+	ActorList obstacleList;
 	GLDebugDrawer debugger;
 	Renderer * renderer;
 	Physics * const physics;
-
-	/*objShapes*/
-	const libCube mCube;
-	const libPlane mPlane;
+		
+	JeepManager jeepManager;
+	Obstacles obstacles;
 	
-	JeepManager * jeepManager;
+	Sound * const audio;
 	
 };
+#endif

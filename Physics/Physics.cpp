@@ -1,9 +1,11 @@
 #include "Physics.h"
-#include <iostream>
 #include "Common/SettingsFactory.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
+#include <LinearMath/btIDebugDraw.h>
 #include "HeightMap.h"
 #include "HeightMapManager.h"
+#include "Renderer/GLDebugDrawer.h"
+#include "Common/Actor.h"
 
 // #define DEBUG_RENDERING
 // #define DEBUG_RENDERING2
@@ -25,7 +27,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	dynamicsWorld.setDebugDrawer(&debugger);
 	#endif
 	
-	// HeightMap * m = new HeightMap(LoadString2("config/world.xml","height_map"));
+	// HeightMap * m = new HeightMap("esDc1.png");
 	HeightMap const * m = HeightMapManager::GetHeightMap();
     btHeightfieldTerrainShape * heightfieldShape = new btHeightfieldTerrainShape(m->width, m->height,
 					  m->map,
@@ -35,6 +37,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 
 	btTransform tr;
 	tr.setIdentity();
+	// tr.setOrigin(btVector3(-32*14, 0, -32*14));
 	btVector3 localInertia(0,0,0);	
 	
 	heightfieldShape->setLocalScaling(btVector3(LoadFloat("config/world.xml","height_map_scale_x"), 1, LoadFloat("config/world.xml","height_map_scale_z")));
@@ -72,7 +75,7 @@ void Physics::newActors(ActorList const & newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld.stepSimulation(timeStep,1);
+	dynamicsWorld.stepSimulation(timeStep,30);
 	#ifdef DEBUG_RENDERING2
 	dynamicsWorld.debugDrawWorld();
 	#endif
@@ -98,7 +101,7 @@ btRigidBody * const Physics::newActor(Actor * const actor)
 {
 
 		btVector3 vel = actor->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), actor->pos ), actor);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( actor->orientation, actor->pos ), actor);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = actor->physObject;	//grabs physical info about the actor
