@@ -2,7 +2,7 @@
 #include "JeepActor.h"
 
 JeepManager::JeepManager(Physics * physics, ActorList * actorList, Input * playerInput) :
-jeepModel("", "", "models/jeep2_flipx.obj")
+jeepModel("", "", "models/jeep/jeep2_flipx.obj")
 {
 	float const & planeY = LoadFloat("config/start.xml", "planeY");
 	float const & jeepX = LoadFloat("config/start.xml", "jeepX");

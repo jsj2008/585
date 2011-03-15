@@ -336,7 +336,7 @@ void Renderer::drawGround() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
-	loadTexture("bigTex.png", &groundTex);		// Load the ground texture
+	loadTexture("textures/map2.png", &groundTex);		// Load the ground texture
 	loadTexture("bigTex_NRM.png", &groundBump);	// Load the ground bump map
 
 	hm = HeightMapManager::GetHeightMap();

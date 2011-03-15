@@ -112,7 +112,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("blank.bmp", "", "models/wheel_final.obj"),
+wheelModel("blank.bmp", "", "models/jeep/wheel_final.obj"),
 current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
