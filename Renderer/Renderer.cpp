@@ -1,7 +1,9 @@
 #include "Renderer.h"
 #include <iostream>
 #include "Physics/HeightMapManager.h"
+#include "Common/SettingsFactory.h"
 
+#define LOW_RES
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
 
@@ -363,9 +365,13 @@ void Renderer::drawGround() {
 void Renderer::initGround() {
 	//loadTexture("textures/bigTex.png", &groundTex);		// Load the ground texture
 	//loadTexture("textures/bigTex_NRM.png", &groundBump);	// Load the ground bump map
-	loadTexture("data/textures/map2.png", &groundTex);		// Load the ground texture
-	loadTexture("data/textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
-
+	#ifndef LOW_RES
+	loadTexture(LoadString2("config/renderer.xml", "ground_texture"), &groundTex);		// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_bump"), &groundBump);	// Load the ground bump map
+	#else
+	loadTexture(LoadString2("config/renderer.xml", "ground_texture_small"), &groundTex);		// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_bump_small"), &groundBump);	// Load the ground bump map
+	#endif
 	hm = HeightMapManager::GetHeightMap();
 	
 
