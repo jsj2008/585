@@ -12,7 +12,7 @@
 <param type="0" name="mass" value="35.0" />
 <param type="0" name="torque_k" value="0.0" />
 <param type="0" name="weight_shift" value="0.15" />
-<param type="0" name="c_drag" value="0.1" />
+<param type="0" name="c_drag" value="0.08" />
 <param type="0" name="c_roll" value="10" />
 <param type="0" name="c_roll2" value="30" />
 <param type="0" name="c_roll3" value="10" />

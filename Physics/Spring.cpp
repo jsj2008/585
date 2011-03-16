@@ -131,7 +131,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("jeep_uv2.png", "blank.bmp", "models/wheel2.obj"),
+wheelModel("data/textures/jeep_uv2.png", "data/textures/blank.bmp", "models/Jeep/wheel2.obj"),
 current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
@@ -156,10 +156,13 @@ btScalar Spring::getWeight()
 
 void Spring::render()
 {
-	if(plane_normal.length() == 0)	//in the air
+	//wheel_actor->pos = to + (from-to)*( (from-to).length() -physical_length) + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+	wheel_actor->pos = from + (to-from).normalized()*physical_length + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+
+	/*if(plane_normal.length() == 0)	//in the air
 		wheel_actor->pos = to + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
 	else
-		wheel_actor->pos = hitPoint + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );
+		wheel_actor->pos = hitPoint + quatRotate(chasis->getOrientation(), btVector3(0,wheel_radius,0) );*/
 	
 }
 
@@ -185,7 +188,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	physics->dynamicsWorld.rayTest( from, to, result);	
 
 	btVector3 physical_spring = (result.m_hitPointWorld - from);	//the spring as it is compressed
-	btScalar physical_length = physical_spring.length();
+	this->physical_length = physical_spring.length();
 	
 	if(result.hasHit() &&  physical_length <= ( (to-from) ).length() )
 	{		
@@ -216,7 +219,8 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 	}else
 	{
 		plane_normal = btVector3(0,0,0);
-		
+		physical_length = (to - from).length();
+
 		#ifdef DEBUG_RENDERER
 		debugger->drawLine(from, to, btVector3(0,0,0));
 		LOG("DEBUG_RENDERER is ON", "springs");

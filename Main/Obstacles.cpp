@@ -5,21 +5,20 @@
 #include "Physics/HeightMapManager.h"
 
 Obstacles::Obstacles():
-rockModel("map1.png", "", "models/obstacles/groundRock1.obj", 40),
+rockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock1.obj", 40),
 largeRock(rockModel.model, 40),
-rockModel2("map1.png", "", "models/obstacles/groundRock2.obj", 40),
+rockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock2.obj", 40),
 largeRock2(rockModel2.model, 40),
-rockModel3("map1.png", "", "models/obstacles/groundRock3.obj", 40),
+rockModel3("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock3.obj", 40),
 largeRock3(rockModel3.model, 40),
-logModel("map1.png", "", "models/obstacles/logBranch.obj", 30),
+logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
 log(logModel.model, 30),
-smallRockModel("map1.png", "", "models/obstacles/fallingRock1.obj", 50),
+smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50),
-smallRockModel2("map1.png", "", "models/obstacles/fallingRock2.obj", 50),
-smallRock2(smallRockModel2.model, 50),
-
-leafyMod("map1.png", "", "models/obstacles/leafRound.obj", 10),
+leafyMod("data/textures/map1.png", "", "models/obstacles/leafRound.obj", 10),
 leafy(leafyMod.model, 10)
+smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
+smallRock2(smallRockModel2.model, 50)
 {
 	hm = HeightMapManager::GetHeightMap();
 	

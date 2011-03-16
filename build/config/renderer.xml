@@ -1,2 +1,6 @@
 <?xml version="1.0" ?>
 <param type="3" name="shader_texture" value="basicDepth.tx3" />
+<param type="3" name="ground_texture" value="data/textures/ground_wrap.png" />
+<param type="3" name="ground_texture_small" value="data/textures/ground_wrap_NRM.png" />
+<param type="3" name="ground_bump" value="data/textures/map3_NRM.jpg" />
+<param type="3" name="ground_bump_small" value="data/textures/map3_NRM.jpg" />

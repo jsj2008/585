@@ -1,7 +1,9 @@
 #include "Renderer.h"
 #include <iostream>
 #include "Physics/HeightMapManager.h"
+#include "Common/SettingsFactory.h"
 
+#define LOW_RES
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
 
@@ -349,7 +351,7 @@ void Renderer::drawSky() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initSky() {
-	sky = RenderObject("textures/skyDome_2.png", "", "models/dome.obj", 1000);
+	sky = RenderObject("data/textures/skyDome_2.png", "", "models/dome.obj", 1000);
 }
 
 void Renderer::drawGround() {
@@ -365,13 +367,13 @@ void Renderer::drawGround() {
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
-	//loadTexture("textures/bigTex.png", &groundTex);		// Load the ground texture
-	//loadTexture("textures/bigTex_NRM.png", &groundBump);	// Load the ground bump map
-	//loadTexture("textures/map3.jpg", &groundTex);		// Load the ground texture
-	//loadTexture("textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
-
-	loadTexture("ground_wrap.png", &groundTex);		// Load the ground texture
-	loadTexture("ground_wrap_NRM.png", &groundBump);	// Load the ground bump map
+	#ifndef LOW_RES
+	loadTexture(LoadString2("config/renderer.xml", "ground_texture"), &groundTex);		// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_bump"), &groundBump);	// Load the ground bump map
+	#else
+	loadTexture(LoadString2("config/renderer.xml", "ground_texture_small"), &groundTex);		// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_bump_small"), &groundBump);	// Load the ground bump map
+	#endif
 
 	hm = HeightMapManager::GetHeightMap();
 	

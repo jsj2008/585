@@ -75,7 +75,7 @@ void Physics::newActors(ActorList const & newActors)
 
 void Physics::step(seconds timeStep)
 {
-	dynamicsWorld.stepSimulation(timeStep,1);
+	dynamicsWorld.stepSimulation(timeStep,30);
 	#ifdef DEBUG_RENDERING2
 	dynamicsWorld.debugDrawWorld();
 	#endif

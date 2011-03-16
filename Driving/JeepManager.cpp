@@ -7,7 +7,7 @@
 #include "UI/Input.h"
 
 JeepManager::JeepManager() :
-jeepModel("jeep_uv2.png", "blank.bmp", "models/jeep7.obj")
+jeepModel("data/textures/jeep_uv2.png", "data/textures/blank.bmp", "models/Jeep/jeep7.obj")
 {}
 
 void JeepManager::initialize(Physics * physics, Input * playerInput)

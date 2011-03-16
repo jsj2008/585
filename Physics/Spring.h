@@ -39,7 +39,8 @@ private:
 	btQuaternion current_direction;
 	btVector3 planeProjection(btVector3 const & tire_direction) const;
 	btVector3 hitPoint;
-	
+	btScalar physical_length;
+
 	btScalar tire_rot;
 };
 
