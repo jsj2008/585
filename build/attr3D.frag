@@ -412,7 +412,14 @@ void main() {
 		gl_FragColor = gl_FragColor+kspec*gl_LightSource[0].specular;
 	}
 
-	vec4 texValue = texture2D(colourMap,gl_TexCoord[0].st);
+	vec4 texValue;// = texture2D(colourMap,gl_TexCoord[0].st);
+	float uppity = dot(-trueNormal, vec3(0,1,0));
+	if (uppity < 0.2) texValue = vec4(1,0,0,1);
+	else if (uppity < 0.9) texValue = vec4(1,1,0,1);
+	else if (uppity < 0.95) texValue = vec4(1-(uppity-0.9)*20,1,0,1);
+	//else if (uppity < 0.9) texValue = vec4(0.5,0.5,1,1);
+	else texValue = vec4(0,1,0,1);
+	
 	//texValue = vec4(0.5, 0.5, 0.5, 1);
 	/*float balance;
 	if (xAttr == 5) balance = 1.0+xAttrVal;
@@ -431,4 +438,5 @@ void main() {
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
 	//gl_FragColor = ((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 	gl_FragColor = (balance * gl_FragColor * texValue) + (1.0 - balance)*((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
+	//gl_FragColor.w = texValue.w;
 }

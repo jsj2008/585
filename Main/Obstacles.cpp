@@ -16,7 +16,10 @@ log(logModel.model, 30),
 smallRockModel("map1.png", "", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50),
 smallRockModel2("map1.png", "", "models/obstacles/fallingRock2.obj", 50),
-smallRock2(smallRockModel2.model, 50)
+smallRock2(smallRockModel2.model, 50),
+
+leafyMod("map1.png", "", "models/obstacles/leafRound.obj", 10),
+leafy(leafyMod.model, 10)
 {
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -27,6 +30,8 @@ smallRock2(smallRockModel2.model, 50)
 
 void Obstacles::initialize(ActorList & actors)
 {
+	addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
+
 	addObstacle(smallRock2, smallRockModel2, btVector3(138,12,57), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(141,12,57), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(143,15,57), actors);

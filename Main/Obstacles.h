@@ -23,6 +23,8 @@ private:
 	const RenderObject smallRockModel;
 	const RenderObject smallRockModel2;
 
+	const RenderObject leafyMod;
+
 	/*objShapes*/
 	const libModel largeRock;
 	const libModel largeRock2;
@@ -30,6 +32,8 @@ private:
 	const libModel log;
 	const libModel smallRock;
 	const libModel smallRock2;
+
+	const libModel leafy;
 	
 	HeightMap* hm;
 	float xscale;

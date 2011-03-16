@@ -11,6 +11,7 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 	paths = Paths();
 	paths.push_back(Path("mainPath+.pth"));
 	paths.push_back(Path("path2+.pth"));
+	paths.push_back(Path("rediculous.pth"));
 	//path = Path("crashCourse.pth");
 
 	// redundant!!! Improve?

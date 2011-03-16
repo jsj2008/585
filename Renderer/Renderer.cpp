@@ -169,7 +169,6 @@ void Renderer::applyShader() {
 
 void Renderer::initializeGL() {
 	//glClearColor(0.63, 0.77, 0.77, 0);
-	//glClearColor(1, 1, 1, 0);
 	glClearColor(0.94, 0.97, 0.97, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
@@ -188,7 +187,12 @@ void Renderer::initializeGL() {
 
 	glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
 	glEnable(GL_LIGHTING);
-	//glEnable(GL_COLOR_MATERIAL);
+
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	//glFrontFace(GL_CW);
@@ -363,8 +367,11 @@ void Renderer::drawGround() {
 void Renderer::initGround() {
 	//loadTexture("textures/bigTex.png", &groundTex);		// Load the ground texture
 	//loadTexture("textures/bigTex_NRM.png", &groundBump);	// Load the ground bump map
-	loadTexture("textures/map3.jpg", &groundTex);		// Load the ground texture
-	loadTexture("textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
+	//loadTexture("textures/map3.jpg", &groundTex);		// Load the ground texture
+	//loadTexture("textures/map3_NRM.jpg", &groundBump);	// Load the ground bump map
+
+	loadTexture("ground_wrap.png", &groundTex);		// Load the ground texture
+	loadTexture("ground_wrap_NRM.png", &groundBump);	// Load the ground bump map
 
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -477,12 +484,12 @@ void Renderer::initGround() {
 // Defines the texture coordinate of the ground at the given location
 // xend and zend define which edge of the polygon this is, and therefore whether the texture coordinate should be 1 or 0 for propper wrapping
 void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
-/*	float xc = ((float)(x%10))/10.0;
+	float xc = ((float)(x%10))/10.0;
 	float zc = ((float)(z%10))/10.0;
 	if (xend && xc == 0) xc = 1;
-	if (zend && zc == 0) zc = 1;*/
-	float xc = (float)(x)/(float)(hm->width);
-	float zc = (float)(z)/(float)(hm->height);
+	if (zend && zc == 0) zc = 1;
+	//float xc = (float)(x)/(float)(hm->width);
+	//float zc = (float)(z)/(float)(hm->height);
 	glTexCoord2f(zc, xc);
 }
 
