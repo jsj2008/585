@@ -1,6 +1,5 @@
 #ifndef MAINCONTROLLER_H
 #define MAINCONTROLLER_H
-#include "UI/Window.h"
 #include <Renderer/GLDebugDrawer.h>
 #include "Renderer/RenderObject.h"
 #include "Driving/JeepManager.h"
@@ -9,18 +8,18 @@
 class Physics;
 class Renderer;
 class Sound;
-
+class Models;
+class Window;
 
 
 class MainController{
 public:
-	MainController();
+	MainController(Window const &);
 	virtual ~MainController();
 	void tick(unsigned long);
 	static void restart();
 	static void addActor(Actor *);
 	static Sound * Audio();
-	Window window;
 	
 protected:
 	static MainController * ptr;
@@ -33,7 +32,10 @@ protected:
 	JeepManager jeepManager;
 	Obstacles obstacles;
 	
+	Models * models;
 	Sound * const audio;
+	
+	Window const & window;
 	
 };
 #endif

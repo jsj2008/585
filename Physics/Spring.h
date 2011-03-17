@@ -34,7 +34,7 @@ private:
 	btScalar current_weight;
 	btScalar wheel_speed;
 	btScalar const & wheel_radius;
-	RenderObject wheelModel;
+	RenderObject const * wheelModel;
 	Actor * wheel_actor;
 	btQuaternion current_direction;
 	btVector3 planeProjection(btVector3 const & tire_direction) const;

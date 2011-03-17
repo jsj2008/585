@@ -30,7 +30,7 @@ private:
 	JeepActor * human;
 	const libChasis mChasis;
 	
-	RenderObject jeepModel;
+	RenderObject const * jeepModel;
 };
 
 #endif

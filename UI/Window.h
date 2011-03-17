@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include "SDL_opengl.h"
 
-#define LOW_RES;
+#define LOW_RES
 
 class Input;
 class MainController;

@@ -80,14 +80,14 @@ void Renderer::renderObjects() {
 		glMultMatrixf(frameMatrix);
 
 		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
 		glActiveTexture(GL_TEXTURE5); // Apply the current actor's bump map
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.bumpMap);
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
 		shader->on();
 			applyShader();
 
 			glColor3f(1,1,1);
-			currentActor->renderObject.draw();
+			currentActor->renderObject->draw();
 			//currentActor->renderObject.drawNormals();
 
 			// Clear all textures
@@ -264,7 +264,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0f, ratio, 0.1f, 2000.0f); // 90 degree field of view
+	gluPerspective(90.0f, ratio, 1.0f, 1500.0f); // 90 degree field of view
 	glMatrixMode(GL_MODELVIEW);
 }
 

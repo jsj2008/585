@@ -7,6 +7,7 @@
 #include "Physics.h"
 #include "Common/Actor.h"
 #include <btBulletDynamicsCommon.h>
+#include "Renderer/Models.h"
 
 // RenderObject Spring::wheelModel;
 
@@ -131,7 +132,7 @@ from(from),
 to(to), 
 physics(physics), 
 wheel_radius(LoadFloat("config/spring.xml", "radius")),
-wheelModel("data/textures/jeep_uv2.png", "data/textures/blank.bmp", "models/Jeep/wheel2.obj"),
+wheelModel( Models::GetModel("wheel") ),
 current_direction(0,0,0)
 {
 	#ifdef DEBUG_RENDERER
