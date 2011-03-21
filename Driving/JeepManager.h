@@ -22,6 +22,7 @@ public:
 	void renderTick();
 	JeepActor* getHuman();
 	Jeeps getAIs();
+	btVector3 getPlayerPos(int p) const;
 
 private:
 	Jeeps aiJeeps;

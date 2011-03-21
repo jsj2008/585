@@ -27,8 +27,8 @@ private:
 	jeepPositions pathPositions;
 	Paths paths;
 
-
 	Point closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end);
+	Path getPlayerPath(int p);
 
 public:	
 	LevelAI();
@@ -42,6 +42,8 @@ public:
 	btVector3 getPathDirection(int lookAhead, int c);
 	btVector3 getVectorToTrack(int c);
 	btVector3 getVectorToSeg(int lookAhead, int c);
+
+	int getPlayerPlace(int p);
 
 };
 #endif

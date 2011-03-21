@@ -11,7 +11,7 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 	paths = Paths();
 	paths.push_back(Path("mainPath+.pth"));
 	paths.push_back(Path("path2+.pth"));
-	paths.push_back(Path("rediculous.pth"));
+	//paths.push_back(Path("rediculous.pth"));
 	//path = Path("crashCourse.pth");
 
 	// redundant!!! Improve?
@@ -28,7 +28,7 @@ void LevelAI::step() {
 	int c = 0;
 	Path path;
 	for (Jeeps::iterator itr = jeeps.begin(); itr != jeeps.end(); ++itr, c++) {
-		path = paths[c % paths.size()]; // The path AI player 'c' is following
+		path = getPlayerPath(c);
 		btVector3 playerPos = jeeps[c]->pos;
 		Point lookAhead;
 		Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
@@ -59,7 +59,8 @@ void LevelAI::step() {
 			}
 		}
 
-		//path.debugDraw(pathPositions[c], Point(&playerPos));
+		path.debugDraw(pathPositions[c], Point(&playerPos));
+		//LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
 	}
 }
 
@@ -86,7 +87,7 @@ Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point ac
 btVector3 LevelAI::getPathDirection(int lookAhead, int c) {
 	Point bp, ep;
 	int currentPlayerSeg = segments[c];
-	Path path = paths[c % paths.size()]; // The path AI player 'c' is following
+	Path path = getPlayerPath(c); // The path AI player 'c' is following
 	if (currentPlayerSeg < path.length() - 1 - lookAhead) {
 		bp = path.at(currentPlayerSeg + lookAhead);
 		ep = path.at(currentPlayerSeg + 1 + lookAhead);
@@ -107,7 +108,7 @@ btVector3 LevelAI::getVectorToTrack(int c) {
 
 btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 	int currentPlayerSeg = segments[c];
-	Path path = paths[c % paths.size()]; // The path AI player 'c' is following
+	Path path = getPlayerPath(c); // The path AI player 'c' is following
 	Point nextSegPoint;
 	btVector3 playerPos = jeeps[c]->pos;
 	btVector3 playerWorldPos = btVector3(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
@@ -117,4 +118,22 @@ btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 		return getVectorToSeg(lookAhead-1, c);
 	btVector3 nextSegV = btVector3(nextSegPoint.x, nextSegPoint.y, nextSegPoint.z);
 	return playerWorldPos - nextSegV;
+}
+
+int LevelAI::getPlayerPlace(int p) {
+	int place = 1;
+	for (int i = 0; i < LoadInt("config/ai.xml","num_players")+1; i++) {
+		if (i == p) continue; // Don't compare to self
+		if (segments[i] > segments[p]) place++;
+		else if (segments[i] == segments[p]) {
+			if ((getPlayerPath(p).at(segments[i]+1) - pathPositions[i]).getMagnitude() < (getPlayerPath(p).at(segments[p]+1) - pathPositions[p]).getMagnitude())
+				place++;
+		}
+	}
+	return place;
+}
+
+Path LevelAI::getPlayerPath(int p) {
+	//return paths[p % paths.size()]; // The path player 'p' is following
+	return paths[0]; // TODO: Make paths equal
 }

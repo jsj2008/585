@@ -3,9 +3,10 @@
 #include "Physics/HeightMapManager.h"
 #include "Common/SettingsFactory.h"
 
-#define LOW_RES
+//#define LOW_RES
 
-Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
+Renderer::Renderer(IWindow const & window, ActorList const & actorList, JeepManager const & jeepManager) : 
+actorList(actorList), jeepManager(jeepManager) {
 
 	hm = 0;
 
@@ -13,20 +14,24 @@ Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorL
 	width = window.ScreenWidth();
 	height = window.ScreenHeight();
 
-	//camPos = btVector3(9,21,45);
-	//camLook = btVector3(1.5,0,5);
 	camUp = btVector3(0,1,0);
 
-	lightPos = btVector3(5000,15000,2400);
+	lightPos = btVector3(500,15000,240);
 
-	shaderTextures.resize(MAX_TEXTURES);
-	for (int i = 0; i < MAX_TEXTURES; i++) {
-		shaderTextures[i] = new GLuint;
-	}
+	shaderTexturesG.resize(MAX_TEXTURES);
+	shaderTexturesO.resize(MAX_TEXTURES);
+	for (int i = 0; i < MAX_TEXTURES; i++)
+		shaderTexturesG[i] = new GLuint;
+	for (int i = 0; i < MAX_TEXTURES; i++)
+		shaderTexturesO[i] = new GLuint;
 
-	attrData = new AttributeData();
-	texData = new TextureData(3);
-	optData = new OptionsData();
+	attrDataG = new AttributeData(); // Ground shader data
+	texDataG = new TextureData(3);
+	optDataG = new OptionsData();
+
+	attrDataO = new AttributeData(); // Object shader data
+	texDataO = new TextureData(4);
+	optDataO = new OptionsData();
 
 	initializeGL();
 	paintGL();
@@ -47,8 +52,11 @@ void Renderer::paintGL() {
 
 	updateCamera();
 	
+	glDisable(GL_DEPTH_TEST); // Ignore depth for the sky so that it is always drawn behind everything else
+		drawSky();
+	glEnable(GL_DEPTH_TEST);
+
 	drawGround();
-	drawSky();
 	renderObjects();
 }
 
@@ -81,46 +89,48 @@ void Renderer::renderObjects() {
 
 		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
-		glActiveTexture(GL_TEXTURE5); // Apply the current actor's bump map
+		glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.bumpMap);
-		shader->on();
-			applyShader();
+		objectShader->on();
+			applyObjectShader();
 
-			glColor3f(1,1,1);
+			glColor4f(1,1,1,1);
 			currentActor->renderObject.draw();
 			//currentActor->renderObject.drawNormals();
 
 			// Clear all textures
-			for (int i = MAX_TEXTURES-1; i >= 0; i--) {
+			for (int i = MAX_TEXTURES+2; i >= 0; i--) {
 				glActiveTexture(GL_TEXTURE0+i);
 				glDisable(GL_TEXTURE_2D);
 			}
-		shader->off();
+		objectShader->off();
 
 		glPopMatrix();
 	}
 }
 
-void Renderer::applyShader() {
-	vector<int> index = texData->getTextureIndices();
+void Renderer::applyGroundShader() {
+	vector<int> index = texDataG->getTextureIndices();
 
 	// Set all the uniforms in the shaders to the values supplied by the attribute data structure
-	glUniform1i(xAttrLoc, (int) attrData->xAttr);
-	glUniform1f(xModLoc, attrData->xMod);
-	glUniform1f(xZminLoc, attrData->xZmin);
-	glUniform1i(xFlipLoc, (int) attrData->xFlip);
+	glUniform1i(xAttrLocG, (int) attrDataG->xAttr);
+	glUniform1f(xModLocG, attrDataG->xMod);
+	glUniform1f(xZminLocG, attrDataG->xZmin);
+	glUniform1i(xFlipLocG, (int) attrDataG->xFlip);
 
-	glUniform1i(yAttrLoc, (int) attrData->yAttr);
-	glUniform1f(yModLoc, attrData->yMod);
-	glUniform1f(yZminLoc, attrData->yZmin);
-	glUniform1i(yFlipLoc, (int) attrData->yFlip);
+	glUniform1i(yAttrLocG, (int) attrDataG->yAttr);
+	glUniform1f(yModLocG, attrDataG->yMod);
+	glUniform1f(yZminLocG, attrDataG->yZmin);
+	glUniform1i(yFlipLocG, (int) attrDataG->yFlip);
 
-	glUniform1i(zAttrLoc, (int) attrData->zAttr);
-	glUniform1f(zModLoc, attrData->zMod);
-	glUniform1f(zZminLoc, attrData->zZmin);
-	glUniform1i(zFlipLoc, (int) attrData->zFlip);
+	glUniform1i(zAttrLocG, (int) attrDataG->zAttr);
+	glUniform1f(zModLocG, attrDataG->zMod);
+	glUniform1f(zZminLocG, attrDataG->zZmin);
+	glUniform1i(zFlipLocG, (int) attrDataG->zFlip);
 
-	glUniform1i(numTexLoc, index.size());
+	glUniform1i(numTexLocG, index.size());
+	
+	glUniform3f(jeepShadowTestPositionLocG, jeepManager.getPlayerPos(10).getX(), jeepManager.getPlayerPos(10).getY(), jeepManager.getPlayerPos(10).getZ());
 
 	GLfloat texPos[MAX_TEXTURES];
 	GLfloat texHSkew[MAX_TEXTURES];
@@ -130,13 +140,13 @@ void Renderer::applyShader() {
 	// For each texture, pass the texture data for this texture from the texture data structure
 	for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
 		if (i < index.size()) {
-			texPos[i] = texData->getTexturePos(index[i]);
-			texHSkew[i] = texData->getTextureHSkew(index[i]);
-			texVSkew[i] = texData->getTextureVSkew(index[i]);
+			texPos[i] = texDataG->getTexturePos(index[i]);
+			texHSkew[i] = texDataG->getTextureHSkew(index[i]);
+			texVSkew[i] = texDataG->getTextureVSkew(index[i]);
 
 			glActiveTexture(GL_TEXTURE0+i);
 			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, *shaderTextures[index[i]]);
+			glBindTexture(GL_TEXTURE_2D, *shaderTexturesG[index[i]]);
 		}
 		else {
 			texPos[i] = 5.0f;
@@ -147,31 +157,99 @@ void Renderer::applyShader() {
 	}
 
 	// Pass the texture indices into the shader
-	glUniform1i(tex0Loc, 0);
-	glUniform1i(tex1Loc, 1);
-	glUniform1i(tex2Loc, 2);
-	glUniform1i(tex3Loc, 3);
-	glUniform1i(colourMapLoc, 4);
+	glUniform1i(tex0LocG, 0);
+	glUniform1i(tex1LocG, 1);
+	glUniform1i(tex2LocG, 2);
+	glUniform1i(tex3LocG, 3);
+	glUniform1i(groundTexLocG, 4);
+	glUniform1i(cliffTexLocG, 5);
 
-	glActiveTexture(GL_TEXTURE5); // Apply the bump map, right now, the same one for everything :-o
+	glActiveTexture(GL_TEXTURE6); // Apply the bump map, right now, the same one for everything :-o
 	glBindTexture(GL_TEXTURE_2D, groundBump);
+	glActiveTexture(GL_TEXTURE7); // Apply the bump map, right now, the same one for everything :-o
+	glBindTexture(GL_TEXTURE_2D, cliffBump);
 
-	glUniform1i(normalMapLoc, 5);
+	glUniform1i(groundNormalMapLocG, 6);
+	glUniform1i(cliffNormalMapLocG, 7);
 
-	glUniform1fv(texPosLoc, MAX_TEXTURES, texPos);
-	glUniform1fv(texHskewLoc, MAX_TEXTURES, texHSkew);
-	glUniform1fv(texVskewLoc, MAX_TEXTURES, texVSkew);
+	glUniform1fv(texPosLocG, MAX_TEXTURES, texPos);
+	glUniform1fv(texHskewLocG, MAX_TEXTURES, texHSkew);
+	glUniform1fv(texVskewLocG, MAX_TEXTURES, texVSkew);
 
 	// Auto shading options
-	glUniform1i(autoDiffuseLoc, (int) optData->autoDiffuse);
-	glUniform1i(autoSpecularLoc, (int) optData->autoSpecular);
+	glUniform1i(autoDiffuseLocG, (int) optDataG->autoDiffuse);
+	glUniform1i(autoSpecularLocG, (int) optDataG->autoSpecular);
+
+	glActiveTexture(GL_TEXTURE0+MAX_TEXTURES);
+}
+
+// TODO: This is a bit repetative
+void Renderer::applyObjectShader() {
+	vector<int> index = texDataO->getTextureIndices();
+
+	// Set all the uniforms in the shaders to the values supplied by the attribute data structure
+	glUniform1i(xAttrLocO, (int) attrDataO->xAttr);
+	glUniform1f(xModLocO, attrDataO->xMod);
+	glUniform1f(xZminLocO, attrDataO->xZmin);
+	glUniform1i(xFlipLocO, (int) attrDataO->xFlip);
+
+	glUniform1i(yAttrLocO, (int) attrDataO->yAttr);
+	glUniform1f(yModLocO, attrDataO->yMod);
+	glUniform1f(yZminLocO, attrDataO->yZmin);
+	glUniform1i(yFlipLocO, (int) attrDataO->yFlip);
+
+	glUniform1i(zAttrLocO, (int) attrDataO->zAttr);
+	glUniform1f(zModLocO, attrDataO->zMod);
+	glUniform1f(zZminLocO, attrDataO->zZmin);
+	glUniform1i(zFlipLocO, (int) attrDataO->zFlip);
+
+	glUniform1i(numTexLocO, index.size());
+
+	GLfloat texPos[MAX_TEXTURES];
+	GLfloat texHSkew[MAX_TEXTURES];
+	GLfloat texVSkew[MAX_TEXTURES];
+	GLint texInterp[MAX_TEXTURES];
+
+	// For each texture, pass the texture data for this texture from the texture data structure
+	for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
+		if (i < index.size()) {
+			texPos[i] = texDataO->getTexturePos(index[i]);
+			texHSkew[i] = texDataO->getTextureHSkew(index[i]);
+			texVSkew[i] = texDataO->getTextureVSkew(index[i]);
+
+			glActiveTexture(GL_TEXTURE0+i);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, *shaderTexturesO[index[i]]);
+		}
+		else {
+			texPos[i] = 5.0f;
+			texHSkew[i] = 0.0f;
+			texVSkew[i] = 0.0f;
+			texInterp[i] = 1;
+		}
+	}
+
+	// Pass the texture indices into the shader
+	glUniform1i(tex0LocO, 0);
+	glUniform1i(tex1LocO, 1);
+	glUniform1i(tex2LocO, 2);
+	glUniform1i(tex3LocO, 3);
+	glUniform1i(colourMapLocO, 4);
+
+	glUniform1fv(texPosLocO, MAX_TEXTURES, texPos);
+	glUniform1fv(texHskewLocO, MAX_TEXTURES, texHSkew);
+	glUniform1fv(texVskewLocO, MAX_TEXTURES, texVSkew);
+
+	// Auto shading options
+	glUniform1i(autoDiffuseLocO, (int) optDataO->autoDiffuse);
+	glUniform1i(autoSpecularLocO, (int) optDataO->autoSpecular);
 
 	glActiveTexture(GL_TEXTURE0+MAX_TEXTURES);
 }
 
 void Renderer::initializeGL() {
-	//glClearColor(0.63, 0.77, 0.77, 0);
-	glClearColor(0.94, 0.97, 0.97, 0);
+	//glClearColor(0.94, 0.97, 0.97, 0);
+	glClearColor(1, 0, 0.5, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
@@ -211,44 +289,97 @@ void Renderer::initializeGL() {
 
 	GLenum err = glewInit();
 	if (GLEW_OK == err) {
-		shader = new Shader("attr3D.frag", "model.vert");
-		xAttrLoc = shader->getUniLoc("xAttr");
-		xModLoc = shader->getUniLoc("xMod");
-		xZminLoc = shader->getUniLoc("xZMin");
-		xFlipLoc = shader->getUniLoc("xFlip");
+		groundShader = new Shader(LoadString2("config/renderer.xml","ground_shader_f").c_str(),
+			LoadString2("config/renderer.xml","ground_shader_v").c_str());
+		xAttrLocG = groundShader->getUniLoc("xAttr");
+		xModLocG = groundShader->getUniLoc("xMod");
+		xZminLocG = groundShader->getUniLoc("xZMin");
+		xFlipLocG = groundShader->getUniLoc("xFlip");
 
-		yAttrLoc = shader->getUniLoc("yAttr");
-		yModLoc = shader->getUniLoc("yMod");
-		yZminLoc = shader->getUniLoc("yZMin");
-		yFlipLoc = shader->getUniLoc("yFlip");
+		yAttrLocG = groundShader->getUniLoc("yAttr");
+		yModLocG = groundShader->getUniLoc("yMod");
+		yZminLocG = groundShader->getUniLoc("yZMin");
+		yFlipLocG = groundShader->getUniLoc("yFlip");
 
-		zAttrLoc = shader->getUniLoc("zAttr");
-		zModLoc = shader->getUniLoc("zMod");
-		zZminLoc = shader->getUniLoc("zZMin");
-		zFlipLoc = shader->getUniLoc("zFlip");
+		zAttrLocG = groundShader->getUniLoc("zAttr");
+		zModLocG = groundShader->getUniLoc("zMod");
+		zZminLocG = groundShader->getUniLoc("zZMin");
+		zFlipLocG = groundShader->getUniLoc("zFlip");
 
-		numTexLoc = shader->getUniLoc("numTex");
-		texPosLoc = shader->getUniLoc("texPos");
-		texHskewLoc = shader->getUniLoc("texHSkew");
-		texVskewLoc = shader->getUniLoc("texVSkew");
+		numTexLocG = groundShader->getUniLoc("numTex");
+		texPosLocG = groundShader->getUniLoc("texPos");
+		texHskewLocG = groundShader->getUniLoc("texHSkew");
+		texVskewLocG = groundShader->getUniLoc("texVSkew");
 
-		tex0Loc = shader->getUniLoc("tex0");
-		tex1Loc = shader->getUniLoc("tex1");
-		tex2Loc = shader->getUniLoc("tex2");
-		tex3Loc = shader->getUniLoc("tex3");
-		colourMapLoc = shader->getUniLoc("colourMap");
-		normalMapLoc = shader->getUniLoc("normalMap");
+		tex0LocG = groundShader->getUniLoc("tex0");
+		tex1LocG = groundShader->getUniLoc("tex1");
+		tex2LocG = groundShader->getUniLoc("tex2");
+		tex3LocG = groundShader->getUniLoc("tex3");
+		groundTexLocG = groundShader->getUniLoc("groundTex");
+		cliffTexLocG = groundShader->getUniLoc("cliffTex");
+		groundNormalMapLocG = groundShader->getUniLoc("groundNormalMap");
+		cliffNormalMapLocG = groundShader->getUniLoc("cliffNormalMap");
 
-		tangentLoc = shader->getAttrLoc("vertTangent");
+		jeepShadowTestPositionLocG = groundShader->getUniLoc("jeepShadowTestPosition");
 
-		autoDiffuseLoc = shader->getUniLoc("autoDiffuse");
-		autoSpecularLoc = shader->getUniLoc("autoSpecular");
+		tangentLocG = groundShader->getAttrLoc("vertTangent");
+
+		autoDiffuseLocG = groundShader->getUniLoc("autoDiffuse");
+		autoSpecularLocG = groundShader->getUniLoc("autoSpecular");
 		
-		//load3DTexture("goldmist.tx3");
-		load3DTexture(LoadString2("config/renderer.xml","shader_texture"));
-		loadTextures();
+		loadGround3DTexture(LoadString2("config/renderer.xml","ground_shader_texture"));
+		loadGroundTextures();
 	}
-	shader->off();
+	groundShader->off();
+
+	GLenum err2 = glewInit();
+	if (GLEW_OK == err2) {
+		objectShader = new Shader(LoadString2("config/renderer.xml","object_shader_f").c_str(),
+			LoadString2("config/renderer.xml","object_shader_v").c_str());
+		xAttrLocO = objectShader->getUniLoc("xAttr");
+		xModLocO = objectShader->getUniLoc("xMod");
+		xZminLocO = objectShader->getUniLoc("xZMin");
+		xFlipLocO = objectShader->getUniLoc("xFlip");
+
+		yAttrLocO = objectShader->getUniLoc("yAttr");
+		yModLocO = objectShader->getUniLoc("yMod");
+		yZminLocO = objectShader->getUniLoc("yZMin");
+		yFlipLocO = objectShader->getUniLoc("yFlip");
+
+		zAttrLocO = objectShader->getUniLoc("zAttr");
+		zModLocO = objectShader->getUniLoc("zMod");
+		zZminLocO = objectShader->getUniLoc("zZMin");
+		zFlipLocO = objectShader->getUniLoc("zFlip");
+
+		numTexLocO = objectShader->getUniLoc("numTex");
+		texPosLocO = objectShader->getUniLoc("texPos");
+		texHskewLocO = objectShader->getUniLoc("texHSkew");
+		texVskewLocO = objectShader->getUniLoc("texVSkew");
+
+		tex0LocO = objectShader->getUniLoc("tex0");
+		tex1LocO = objectShader->getUniLoc("tex1");
+		tex2LocO = objectShader->getUniLoc("tex2");
+		tex3LocO = objectShader->getUniLoc("tex3");
+		colourMapLocO = objectShader->getUniLoc("colourMap");
+		normalMapLocO = objectShader->getUniLoc("normalMap");
+
+		tangentLocO = objectShader->getAttrLoc("vertTangent");
+
+		autoDiffuseLocO = objectShader->getUniLoc("autoDiffuse");
+		autoSpecularLocO = objectShader->getUniLoc("autoSpecular");
+		
+		loadObject3DTexture(LoadString2("config/renderer.xml","object_shader_texture"));
+		loadObjectTextures();
+	}
+	objectShader->off();
+
+	GLenum err3 = glewInit();
+	if (GLEW_OK == err3) {
+		skyShader = new Shader(LoadString2("config/renderer.xml","sky_shader_f").c_str(),
+			LoadString2("config/renderer.xml","sky_shader_v").c_str());
+		skyDomeLocS = skyShader->getUniLoc("skyDome");
+	}
+	skyShader->off();
 
 	resizeGL(width, height); // Make the world not suck
 	initSky();
@@ -268,7 +399,8 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0f, ratio, 0.1f, 2000.0f); // 90 degree field of view
+	gluPerspective(90.0f, ratio, 0.1f, 1500.0f); // 90 degree field of view
+	//gluPerspective(90.0f, ratio, 100.0f, 15000.0f); // for overhead view (testing)
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -276,23 +408,37 @@ void Renderer::updateCamera() {
 	gluLookAt(camPos.getX(), camPos.getY(), camPos.getZ(),
 				  camLook.getX(), camLook.getY(), camLook.getZ(),
 				  camUp.getX(), camUp.getY(), camUp.getZ());
+	
+	//gluLookAt(0, 3000, 0, 0, 0, 0, 0, 0, -1); // Overhead camera for testing
 
 	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 }
 
-// Loads the data of a .tx3 file into the appropreate structures
-void Renderer::load3DTexture(string filename) {
-	texData->load(filename);
-	attrData->load(filename);
-	optData->load(filename);
+// Loads the data of a .tx3 file into the data structures
+void Renderer::loadGround3DTexture(string filename) {
+	texDataG->load(filename);
+	attrDataG->load(filename);
+	optDataG->load(filename);
 }
 
-void Renderer::loadTextures() {
-	vector<int> index = texData->getTextureIndices();
-	for (unsigned int i = 0; i < index.size(); i++) {
-		loadTexture(texData->getTextureFilename(index[i]), shaderTextures[index[i]]);
-	}
+// Loads the data of a .tx3 file into the data structures
+void Renderer::loadObject3DTexture(string filename) {
+	texDataO->load(filename);
+	attrDataO->load(filename);
+	optDataO->load(filename);
+}
+
+void Renderer::loadGroundTextures() {
+	vector<int> index = texDataG->getTextureIndices();
+	for (unsigned int i = 0; i < index.size(); i++)
+		loadTexture(texDataG->getTextureFilename(index[i]), shaderTexturesG[index[i]]);
+}
+
+void Renderer::loadObjectTextures() {
+	vector<int> index = texDataO->getTextureIndices();
+	for (unsigned int i = 0; i < index.size(); i++)
+		loadTexture(texDataO->getTextureFilename(index[i]), shaderTexturesO[index[i]]);
 }
 
 // Loads a texture into the specified GL texture location
@@ -336,43 +482,56 @@ bool Renderer::loadTexture(string name, GLuint *texID) {
 }
 
 void Renderer::drawSky() {
-/*	//shader->on();
-	//	applyShader();
-	glColor3f(1,1,1);
-	glActiveTexture(GL_TEXTURE4); // Apply the aky texture
-	glBindTexture(GL_TEXTURE_2D, sky.texture);
-	glPushMatrix();
-	//glTranslated(434, 290, -1736);
-	sky.draw();
-	sky.drawNormals();
-	glPopMatrix();
-	//shader->off();*/
+	glMatrixMode(GL_PROJECTION); // Change the projection so that the skybox is visible
+	glLoadIdentity();
+	gluPerspective(90.0f, ratio, 60.0f, 6000.0f);
+	glMatrixMode(GL_MODELVIEW);
+
+	skyShader->on();
+		glColor3f(1,1,1);
+		glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+		glBindTexture(GL_TEXTURE_2D, sky.texture);
+		glUniform1i(skyDomeLocS, 4);
+		glPushMatrix();
+			//glTranslated(434, 290, -1736);
+			sky.draw();
+			//sky.drawNormals();
+		glPopMatrix();
+	skyShader->off();
+
+	setProjection();
 }
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initSky() {
-	sky = RenderObject("data/textures/skyDome_2.png", "", "models/dome.obj", 1000);
+	sky = RenderObject(LoadString2("config/renderer.xml", "sky_texture"), "data/textures/blank.bmp", "models/dome.obj", 2000);
 }
 
 void Renderer::drawGround() {
 	//drawGroundNormals();
-	shader->on();
-		applyShader();
+	groundShader->on();
+		applyGroundShader();
 		glColor3f(1,1,1);
-		glActiveTexture(GL_TEXTURE4); // Apply the ground texture
+		glActiveTexture(GL_TEXTURE4); // Apply the ground textures
 		glBindTexture(GL_TEXTURE_2D, groundTex);
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, cliffTex);
 		glCallList(groundGeometry);
-	shader->off();
+	groundShader->off();
 }
 
 // Does all the initial calculations for rendering the ground efficiently
 void Renderer::initGround() {
 	#ifndef LOW_RES
 	loadTexture(LoadString2("config/renderer.xml", "ground_texture"), &groundTex);		// Load the ground texture
-	loadTexture(LoadString2("config/renderer.xml", "ground_bump"), &groundBump);	// Load the ground bump map
+	loadTexture(LoadString2("config/renderer.xml", "cliff_texture"), &cliffTex);		// Load the cliff texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_bump"), &groundBump);		// Load the ground bump map
+	loadTexture(LoadString2("config/renderer.xml", "cliff_bump"), &cliffBump);			// Load the cliff bump map
 	#else
-	loadTexture(LoadString2("config/renderer.xml", "ground_texture_small"), &groundTex);		// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "ground_texture_small"), &groundTex);// Load the ground texture
+	loadTexture(LoadString2("config/renderer.xml", "cliff_texture_small"), &cliffTex);	// Load the cliff texture
 	loadTexture(LoadString2("config/renderer.xml", "ground_bump_small"), &groundBump);	// Load the ground bump map
+	loadTexture(LoadString2("config/renderer.xml", "cliff_bump_small"), &groundBump);	// Load the cliff bump map
 	#endif
 
 	hm = HeightMapManager::GetHeightMap();
@@ -451,28 +610,28 @@ void Renderer::initGround() {
 					Point pn =  mapVertexNormals.at(x).at(z+1);
 					Point pt = 	mapVertexTangents.at(x).at(z+1);
 					glNormal3f(pn.x, pn.y, pn.z);
-					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					glVertexAttrib3f(tangentLocG, pt.x, pt.y, pt.z);
 					groundTexCoord(x, z+1, false, true);
 					glVertex3f(v2.getZ() + zscale/2, v2.getY(), v2.getX() + xscale/2);
 
 					pn  = mapVertexNormals.at(x).at(z);
 					pt = mapVertexTangents.at(x).at(z);
 					glNormal3f(pn.x, pn.y, pn.z);
-					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					glVertexAttrib3f(tangentLocG, pt.x, pt.y, pt.z);
 					groundTexCoord(x, z, false, false);
 					glVertex3f(v1.getZ() + zscale/2, v1.getY(), v1.getX() + xscale/2);
 					
 					pn = mapVertexNormals.at(x+1).at(z);
 					pt = mapVertexTangents.at(x+1).at(z);
 					glNormal3f(pn.x, pn.y, pn.z);
-					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					glVertexAttrib3f(tangentLocG, pt.x, pt.y, pt.z);
 					groundTexCoord(x+1, z, true, false);
 					glVertex3f(v4.getZ() + zscale/2, v4.getY(), v4.getX() + xscale/2);
 					
 					pn = mapVertexNormals.at(x+1).at(z+1);
 					pt = mapVertexTangents.at(x+1).at(z+1);
 					glNormal3f(pn.x, pn.y, pn.z);
-					glVertexAttrib3f(tangentLoc, pt.x, pt.y, pt.z);
+					glVertexAttrib3f(tangentLocG, pt.x, pt.y, pt.z);
 					groundTexCoord(x+1, z+1, true, true);
 					glVertex3f(v3.getZ() + zscale/2, v3.getY(), v3.getX() + xscale/2);
 					
@@ -486,8 +645,8 @@ void Renderer::initGround() {
 // Defines the texture coordinate of the ground at the given location
 // xend and zend define which edge of the polygon this is, and therefore whether the texture coordinate should be 1 or 0 for propper wrapping
 void Renderer::groundTexCoord(int x, int z, bool xend, bool zend) {
-	float xc = ((float)(x%10))/10.0;
-	float zc = ((float)(z%10))/10.0;
+	float xc = ((float)(x%5))/5.0;
+	float zc = ((float)(z%5))/5.0;
 	if (xend && xc == 0) xc = 1;
 	if (zend && zc == 0) zc = 1;
 	//float xc = (float)(x)/(float)(hm->width);

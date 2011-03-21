@@ -3,6 +3,8 @@
 #include "depend.h"
 #include "Shader.h"
 #include "Common/Actor.h"
+#include "Driving/JeepManager.h"
+#include "Driving/JeepActor.h"
 #include "UI/IWindow.h"
 #include "AttributeData.h"
 #include "OptionsData.h"
@@ -20,7 +22,7 @@ using namespace std;
 
 class Renderer {
 public:
-	Renderer(IWindow const &, ActorList const & actorList);
+	Renderer(IWindow const &, ActorList const & actorList, JeepManager const & jeepManager);
 	~Renderer();
 	void step();
 	void reset();
@@ -43,13 +45,16 @@ private:
 	void drawGround();
 	void initGround();
 	void drawGroundNormals();
-	void applyShader();
+	void applyGroundShader();
+	void applyObjectShader();
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
 
-	void load3DTexture(string filename);
-	void loadTextures();
+	void loadGround3DTexture(string filename);
+	void loadObject3DTexture(string filename);
+	void loadGroundTextures();
+	void loadObjectTextures();
 	bool loadTexture(string name, GLuint *texID);
 
 	void groundTexCoord(int x, int z, bool xend, bool zend);
@@ -65,45 +70,90 @@ private:
 	int height;						// Height of the window
 
 	ActorList const & actorList;
-	Shader* shader;
-	vector<GLuint*> shaderTextures;
+	JeepManager const & jeepManager;
+	Shader* groundShader;
+	Shader* objectShader;
+	Shader* skyShader;
+	int skyDomeLocS;				// Uniform location for sky dome texure
+	vector<GLuint*> shaderTexturesG;
+	vector<GLuint*> shaderTexturesO;
 
-	AttributeData* attrData;		// Contains attribute information about the shader
-	OptionsData* optData;			// Contains optional details about the shader
-	TextureData* texData;			// Holds information about the textures used by the shader
+	AttributeData* attrDataG;		// Contains attribute information about the shader
+	OptionsData* optDataG;			// Contains optional details about the shader
+	TextureData* texDataG;			// Holds information about the textures used by the shader
+	AttributeData* attrDataO;		// Contains attribute information about the shader
+	OptionsData* optDataO;			// Contains optional details about the shader
+	TextureData* texDataO;			// Holds information about the textures used by the shader
 
-	/*Uniform Locations for the shader*/
-	int xAttrLoc;		// X attribute info from attrData
-	int xModLoc;
-	int xZminLoc;
-	int xFlipLoc;
+	/*Uniform Locations for the ground shader*/
+	int xAttrLocG;		// X attribute info from attrData
+	int xModLocG;
+	int xZminLocG;
+	int xFlipLocG;
 
-	int yAttrLoc;		// Y attribute info from attrData
-	int yModLoc;
-	int yZminLoc;
-	int yFlipLoc;
+	int yAttrLocG;		// Y attribute info from attrData
+	int yModLocG;
+	int yZminLocG;
+	int yFlipLocG;
 
-	int zAttrLoc;		// Z attribute info from attrData
-	int zModLoc;
-	int zZminLoc;
-	int zFlipLoc;
+	int zAttrLocG;		// Z attribute info from attrData
+	int zModLocG;
+	int zZminLocG;
+	int zFlipLocG;
 
-	int numTexLoc;		// Number of textures actually in use
-	int texPosLoc;		// Positions of the 2D textures in the 3D texture (an array)
-	int texHskewLoc;	// Horizontal skews of the 2D textures (an array)
-	int texVskewLoc;	// Vertical skews of the 2D textures (an array)
+	int numTexLocG;		// Number of textures actually in use
+	int texPosLocG;		// Positions of the 2D textures in the 3D texture (an array)
+	int texHskewLocG;	// Horizontal skews of the 2D textures (an array)
+	int texVskewLocG;	// Vertical skews of the 2D textures (an array)
 
-	int tex0Loc;		// Up to four 2D textures to be used in the 3D texture
-	int tex1Loc;
-	int tex2Loc;
-	int tex3Loc;
-	int colourMapLoc;	// Colourmap to apply in the shader
-	int normalMapLoc;	// Bump map texture
+	int tex0LocG;		// Up to four 2D textures to be used in the 3D texture
+	int tex1LocG;
+	int tex2LocG;
+	int tex3LocG;
+	int groundTexLocG;	// Texture to apply to the ground
+	int cliffTexLocG;	// Texture to apply to slopes
+	int groundNormalMapLocG;	// Bump map texture
+	int cliffNormalMapLocG;	// Bump map texture
+	
+	int jeepShadowTestPositionLocG;	// testing
 
-	int tangentLoc;		// Tangent for used in bump mapping
+	int tangentLocG;		// Tangent for used in bump mapping
 
-	int autoDiffuseLoc;		// Specifies whether or not to apply automatic diffuse lighting
-	int autoSpecularLoc;	// Specifies whether or not to apply automatic specular lighting
+	int autoDiffuseLocG;		// Specifies whether or not to apply automatic diffuse lighting
+	int autoSpecularLocG;	// Specifies whether or not to apply automatic specular lighting
+
+	/*Uniform Locations for the object shader*/
+	int xAttrLocO;		// X attribute info from attrData
+	int xModLocO;
+	int xZminLocO;
+	int xFlipLocO;
+
+	int yAttrLocO;		// Y attribute info from attrData
+	int yModLocO;
+	int yZminLocO;
+	int yFlipLocO;
+
+	int zAttrLocO;		// Z attribute info from attrData
+	int zModLocO;
+	int zZminLocO;
+	int zFlipLocO;
+
+	int numTexLocO;		// Number of textures actually in use
+	int texPosLocO;		// Positions of the 2D textures in the 3D texture (an array)
+	int texHskewLocO;	// Horizontal skews of the 2D textures (an array)
+	int texVskewLocO;	// Vertical skews of the 2D textures (an array)
+
+	int tex0LocO;		// Up to four 2D textures to be used in the 3D texture
+	int tex1LocO;
+	int tex2LocO;
+	int tex3LocO;
+	int colourMapLocO;	// Colourmap to apply in the shader
+	int normalMapLocO;	// Bump map texture
+
+	int tangentLocO;		// Tangent for used in bump mapping
+
+	int autoDiffuseLocO;		// Specifies whether or not to apply automatic diffuse lighting
+	int autoSpecularLocO;	// Specifies whether or not to apply automatic specular lighting
 
 	// Heightmap rendering
 	HeightMap* hm;
@@ -115,7 +165,9 @@ private:
 	float zscale;			// Z scale factor for the heightmap
 	GLuint groundGeometry;	// Display list containing the ground information
 	GLuint groundTex;		// The texture applied to the ground
+	GLuint cliffTex;		// The texture applied to the slopes
 	GLuint groundBump;		// The bump map for the ground
+	GLuint cliffBump;		// The bump map for the cliffs
 	
 	RenderObject sky;		// The sky dome model
 };

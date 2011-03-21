@@ -26,7 +26,7 @@ audio(new Sound() )
 	obstacles.initialize(obstacleList);
 	physics->newActors(obstacleList);	//adds the obstacles
 	jeepManager.initialize(physics, window.aInput);
-	renderer = new Renderer(window, actorList);
+	renderer = new Renderer(window, actorList, jeepManager);
 	
 	/*audio code*/
 	alutInit(NULL, 0);

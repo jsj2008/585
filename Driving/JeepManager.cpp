@@ -88,3 +88,8 @@ JeepActor* JeepManager::getHuman() {
 JeepManager::Jeeps JeepManager::getAIs() {
 	return aiJeeps;
 }
+
+btVector3 JeepManager::getPlayerPos(int p) const {
+	if (p < aiJeeps.size()) return aiJeeps[p]->pos;
+	else return human->pos;
+}

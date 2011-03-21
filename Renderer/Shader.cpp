@@ -1,7 +1,7 @@
 
 #include "Shader.h"
 
-Shader::Shader(GLchar *fs, GLchar *vs) {
+Shader::Shader(const char *fs, const char *vs) {
 	char *vsf = NULL;
 	char *fsf = NULL;
 	vsf = textFileRead(vs); // Load the vertex shader

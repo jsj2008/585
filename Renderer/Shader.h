@@ -6,7 +6,7 @@ using namespace std;
 
 class Shader {
 public:
-	Shader(GLchar *fs, GLchar *vs);
+	Shader(const char *fs, const char *vs);
 
 	void on();
 	void off();

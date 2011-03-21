@@ -2,6 +2,7 @@ varying vec3 tNormal;
 varying vec3 lightDir;
 varying vec3 viewDir;
 varying vec3 trueNormal;
+varying vec4 truePos;
 varying vec4 position;
 attribute vec3 vertTangent; 
 
@@ -13,6 +14,7 @@ void main() {
 	vec3 tangent = normalize(gl_NormalMatrix * vertTangent);
 	vec3 binormal = cross(normal, tangent);
 	trueNormal = normalize(gl_Normal);
+	truePos = gl_Vertex;
 	
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 	position = gl_ModelViewMatrix * gl_Vertex;
