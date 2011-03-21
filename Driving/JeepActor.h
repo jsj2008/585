@@ -3,6 +3,7 @@
 
 #include "Common/Actor.h"
 #include "JeepEngine.h"
+#include <vector>
 
 class PhysObject;
 class RenderObject;
@@ -14,7 +15,7 @@ class Sound;
 class JeepActor : public Actor
 {
 public:
-	JeepActor(PhysObject const &, RenderObject const &, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
+	JeepActor(PhysObject const &, RenderObject const *, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
 	~JeepActor();
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);

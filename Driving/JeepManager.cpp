@@ -5,9 +5,10 @@
 #include "Physics/Physics.h"
 #include "AI/AIInput.h"
 #include "UI/Input.h"
+#include "Renderer/Models.h"
 
 JeepManager::JeepManager() :
-jeepModel("data/textures/jeep_uv2.png", "data/textures/blank.bmp", "models/Jeep/jeep7.obj")
+jeepModel( Models::GetModel("jeep") )
 {}
 
 void JeepManager::initialize(Physics * physics, Input * playerInput)

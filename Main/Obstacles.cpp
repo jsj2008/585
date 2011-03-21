@@ -80,7 +80,7 @@ void Obstacles::initialize(ActorList & actors)
 }
 
 void Obstacles::addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors, btQuaternion const & orientation) {
-	Actor * c = new Actor(phys, render, convertToWorldPos(mapPosition));
+	Actor * c = new Actor(phys, &render, convertToWorldPos(mapPosition));
 	actors.push_back(c);
 	c->orientation = orientation;
 	MainController::addActor(c);

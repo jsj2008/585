@@ -1,13 +1,15 @@
 #include "Actor.h"
+#include "Physics/PhysObject.h"
+#include "Renderer/RenderObject.h"
 
-Actor::Actor(PhysObject const & phys, RenderObject const & render, btVector3 const & pos, btVector3 const & vel) : physObject(phys), renderObject(render)
+Actor::Actor(PhysObject const & phys, RenderObject const * render, btVector3 const & pos, btVector3 const & vel) : physObject(phys), renderObject(render)
 {
 	this->pos = pos;
 	this->initialVel = vel;
 	orientation = btQuaternion(0,0,0,1);
 }
 
-Actor::Actor(RenderObject const & render, btVector3 const & pos, btVector3 const & vel) : physObject(temp), renderObject(render)
+Actor::Actor(RenderObject const * render, btVector3 const & pos, btVector3 const & vel) : physObject(temp), renderObject(render)
 {
 	this->pos = pos;
 	this->initialVel = vel;

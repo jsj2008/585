@@ -8,6 +8,8 @@
 #include "Physics/PhysicsFactory.h"
 #include "Audio/Sound.h"
 #include <iostream>
+#include "Renderer/Models.h"
+#include "UI/Window.h"
 
 MainController * MainController::ptr = NULL;
 
@@ -15,13 +17,16 @@ void cleanup(){
 	MainController::Audio()->KillALData();
 }
 
-MainController::MainController() : 
+MainController::MainController(Window const & window) : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-audio(new Sound() )
+audio(new Sound() ),
+window(window)
 {
 
 	if(ptr == NULL)
-		ptr = this;
+		ptr = this;	
+	
+	models = new Models();
 	
 	obstacles.initialize(obstacleList);
 	physics->newActors(obstacleList);	//adds the obstacles
@@ -82,6 +87,8 @@ MainController::~MainController()
 	{
 		delete (*itr);
 	}
+	
+	delete models;
 	
 	delete physics;
 	delete renderer;

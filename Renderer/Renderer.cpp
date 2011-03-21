@@ -88,14 +88,14 @@ void Renderer::renderObjects() {
 		glMultMatrixf(frameMatrix);
 
 		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.texture);
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
 		glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject.bumpMap);
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
 		objectShader->on();
 			applyObjectShader();
 
-			glColor4f(1,1,1,1);
-			currentActor->renderObject.draw();
+			glColor3f(1,1,1);
+			currentActor->renderObject->draw();
 			//currentActor->renderObject.drawNormals();
 
 			// Clear all textures

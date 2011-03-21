@@ -15,6 +15,7 @@
 #include "Common/SettingsFactory.h"
 #include "Physics/Heightmap.h"
 #include "Common/Point.h" //I don't want this here but btVector3 is not cooperating
+#include "RenderObject.h"
 
 #define MAX_TEXTURES 4
 
