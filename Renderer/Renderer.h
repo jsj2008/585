@@ -23,7 +23,7 @@ using namespace std;
 
 class Renderer {
 public:
-	Renderer(IWindow const &, ActorList const & actorList, JeepManager const & jeepManager);
+	Renderer(IWindow const &, ActorList const & actorList, JeepManager & jeepManager);
 	~Renderer();
 	void step();
 	void reset();
@@ -41,6 +41,7 @@ private:
 	IWindow * window;
 	
 	void renderObjects();
+	void renderJeeps();
 	void drawSky();
 	void initSky();
 	void drawGround();
@@ -71,7 +72,7 @@ private:
 	int height;						// Height of the window
 
 	ActorList const & actorList;
-	JeepManager const & jeepManager;
+	JeepManager & jeepManager;
 	Shader* groundShader;
 	Shader* objectShader;
 	Shader* skyShader;
@@ -116,7 +117,17 @@ private:
 	int groundNormalMapLocG;	// Bump map texture
 	int cliffNormalMapLocG;	// Bump map texture
 	
-	int jeepShadowTestPositionLocG;	// testing
+	int jeep0ShadowPosLocG; // Locations to draw the jeep shadows in the shader
+	int jeep1ShadowPosLocG;
+	int jeep2ShadowPosLocG;
+	int jeep3ShadowPosLocG;
+	int jeep4ShadowPosLocG;
+	int jeep5ShadowPosLocG;
+	int jeep6ShadowPosLocG;
+	int jeep7ShadowPosLocG;
+	int jeep8ShadowPosLocG;
+	int jeep9ShadowPosLocG;
+	int jeep10ShadowPosLocG;
 
 	int tangentLocG;		// Tangent for used in bump mapping
 
