@@ -15,8 +15,8 @@ logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/
 log(logModel.model, 30),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50),
-leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
-leafy(leafyMod.model, 20),
+// leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
+// leafy(leafyMod.model, 20),
 smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
 smallRock2(smallRockModel2.model, 50)
 {
@@ -76,7 +76,7 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(smallRock, smallRockModel, btVector3(44,2,38), actors);
 
 	//addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
-	addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);
+	// addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);
 }
 
 void Obstacles::addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors, btQuaternion const & orientation) {

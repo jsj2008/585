@@ -81,6 +81,7 @@ audio_frame(new float [6])
 
 	delta = 0;
 	die_time = 0;
+	long_speed = 0;
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)

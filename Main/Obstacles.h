@@ -33,7 +33,7 @@ private:
 	const libModel smallRock;
 	const libModel smallRock2;
 
-	const libModel leafy;
+	// const libModel leafy;
 	
 	HeightMap* hm;
 	float xscale;
