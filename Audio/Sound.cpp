@@ -68,7 +68,7 @@ ALboolean Sound::LoadALData()
 
 	loadAudio("media/TribalGroove.wav", MUSIC);	
 	loadAudio("media/ExoticBirds.wav", BIRDS);
-	loadAudio("media/engine idle.wav", ENGINE);
+	loadAudio("media/engine_idle.wav", ENGINE);
 	loadAudio("media/cars031.wav",START);
 	loadAudio("media/crash2.wav", CRASH);
 	loadAudio("media/TribalDrums2.wav", PANIC);
@@ -175,8 +175,8 @@ void Sound::decreasePitch(float pitchFactor)
 
 void Sound::beginLevel()
 {
-	alSourcePlay(Sources[BIRDS]);
-	alSourcePlay(Sources[ENGINE]);
+	//alSourcePlay(Sources[BIRDS]);
+	alSourcePlay(Sources[MUSIC]);
 }
 
 void Sound::pauseTrack(ALuint track)
@@ -299,9 +299,17 @@ void Sound::playRespawn()
 
 void Sound::SetListenerValues(btScalar const * pos, btScalar const * vel, float const * orient)
 {
-	alListenerfv(AL_POSITION, ListenerPos);
-	alListenerfv(AL_VELOCITY, ListenerVel);
-	alListenerfv(AL_ORIENTATION, ListenerOrient);
+	alListenerfv(AL_POSITION, pos);
+	alListenerfv(AL_VELOCITY, vel);
+	alListenerfv(AL_ORIENTATION, orient);
+}
+
+void Sound::SetSource(ALuint source, btScalar const * pos, btScalar const * vel)
+{
+	alSourcefv(source, AL_POSITION, SourcesPos[source]);
+	alSourcefv(source, AL_VELOCITY, SourcesVel[source]);
+	//alSourcePlay(Sources[ENGINE]);
+
 }
 
 /*

@@ -3,7 +3,7 @@
 #include "Physics/HeightMapManager.h"
 #include "Common/SettingsFactory.h"
 
-#define LOW_RES
+//#define LOW_RES
 
 Renderer::Renderer(IWindow const & window, ActorList const & actorList) : actorList(actorList) {
 

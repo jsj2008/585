@@ -41,6 +41,7 @@ class Sound
 	void playTrack(ALuint track);
 
 	void SetListenerValues(btScalar const *, btScalar const *, float const *);
+	void SetSource(ALuint source, btScalar const *, btScalar const *);
 
 	void beginLevel();
 	void playHeart();

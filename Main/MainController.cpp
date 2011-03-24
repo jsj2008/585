@@ -39,7 +39,8 @@ audio(new Sound() )
 	JeepActor * human = jeepManager.getHuman();
 	human->registerAudio(audio);
 	audio->beginLevel();
-	audio->playMusic();
+	//audio->SetListenerValues(human->pos, human->velocity, human->orientation);
+	//audio->SetSource(2, human->pos, human->velocity);
 
 }
 
