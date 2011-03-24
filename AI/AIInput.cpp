@@ -5,7 +5,7 @@
 
 AIInput::AIInput(){
 	XAxis = 0;  
-	YAxis = 0;
+	YAxis = 1.1;
 	AcceleratePressed = false;  
 	BrakePressed = false;  
 	EBrakePressed = false;

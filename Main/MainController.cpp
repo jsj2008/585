@@ -59,8 +59,8 @@ void MainController::tick(unsigned long interval)
 	JeepActor* player = jeepManager.getHuman();
 	static btVector3 pos = btVector3(0,0,0);
 	btVector3 look = player->pos;
-	btVector3 behind = quatRotate(player->orientation, btVector3(-0.8,0.4,0) );
-	pos += (look + 30*behind - pos ) / 15.0;
+	btVector3 behind = quatRotate(player->orientation, btVector3(-0.8,0.4, 0) );
+	pos += (look+ 30*behind - pos ) / 10.0;
 	
 	renderer->setCamera(pos,look);
 	
