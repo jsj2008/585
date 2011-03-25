@@ -15,7 +15,7 @@ class Sound;
 class JeepActor : public Actor
 {
 public:
-	JeepActor(PhysObject const &, RenderObject const *, Physics * const, IInput const * const = NULL, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
+	JeepActor(PhysObject const &, RenderObject const *, Physics * const, IInput *, btVector3 const & pos = btVector3(0,0,0), btQuaternion const & vel = btQuaternion(0,0,0, 1));
 	~JeepActor();
 	void setOrientation(btQuaternion const &);
 	void setPosition(btVector3 const &);
@@ -35,6 +35,8 @@ public:
 	float * audio_frame;
 	bool isHuman;
 	btScalar delta;
+
+	bool onGround;
 	
 		
 private:
@@ -53,7 +55,7 @@ private:
 	typedef std::vector<Spring *> Springs;
 	Springs springs;
 	btRigidBody * chasis;
-	IInput const * input;
+	IInput * input;
 	
 	JeepEngine engine;	
 	
@@ -71,7 +73,7 @@ private:
 	
 	
 	//other states
-	bool onGround;
+	
 	btScalar die_time;
 	
 };

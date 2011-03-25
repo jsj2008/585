@@ -24,6 +24,14 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 
 LevelAI::~LevelAI() { }
 
+void LevelAI::restart()
+{
+	for(jeepSegments::iterator itr = segments.begin(); itr != segments.end(); ++itr)
+	{
+		(*itr) = 0;
+	}
+}
+
 void LevelAI::step() {
 	int c = 0;
 	Path path;
@@ -59,7 +67,7 @@ void LevelAI::step() {
 			}
 		}
 
-		path.debugDraw(pathPositions[c], Point(&playerPos));
+		//path.debugDraw(pathPositions[c], Point(&playerPos));
 		//LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
 	}
 }

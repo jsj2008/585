@@ -2,13 +2,17 @@
 #include "Common/Debug.h"
 #include "Driving/JeepActor.h"
 #include <btBulletDynamicsCommon.h>
-
-AIInput::AIInput(){
+#include <iostream>
+AIInput::AIInput() {
 	XAxis = 0;  
 	YAxis = 1.5;
 	AcceleratePressed = false;  
 	BrakePressed = false;  
 	EBrakePressed = false;
+	recovering = LoadFloat("config/ai.xml","recovery_cooldown");
+}
+
+void AIInput::restart() {
 	recovering = LoadFloat("config/ai.xml","recovery_cooldown");
 }
 
@@ -115,7 +119,7 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	//if (recovering != 0) LOG(recovering, "ai");
 	if (recovering < 0) recovering++; // Burn through the recovery cooldown period
 	if (recovering == recoveryTime) recovering = -recoveryCooldown; // If recovery time has elapsed, start the cooldown period
-	else if ((jeep->speed < stuckThreshold && recovering == 0) || recovering > 0) { // If stuck...
+	else if ((jeep->speed < stuckThreshold && recovering == 0 && jeep->onGround) || recovering > 0) { // If stuck...
 		recovering++; // Increment the recovery time
 		AcceleratePressed = false; // Stop accelerating
 		BrakePressed = true; // Back up

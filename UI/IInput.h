@@ -8,6 +8,7 @@ public:
 	bool AcceleratePressed;  
 	bool BrakePressed;  
 	bool EBrakePressed;
+	virtual void restart()=0;
 };
 
 #endif
