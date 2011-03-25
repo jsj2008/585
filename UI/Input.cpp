@@ -39,7 +39,7 @@ void Input::checkState(){
 
 	int axisVal=SDL_JoystickGetAxis(joystick, 0);
 
-	if ( ( axisVal < -5000 ) || (axisVal > 5000 ) ) //if analog is moved far enough
+	if ( ( axisVal < -10000 ) || (axisVal > 10000 ) ) //if analog is moved far enough
 			{
 					//TODO: Have a scale value to make controls move faster depending on axis
 					if(axisVal<0)
