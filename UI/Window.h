@@ -11,6 +11,7 @@
 
 class Input;
 class MainController;
+class Renderer;
 
 class Window : public IWindow
 {
@@ -25,6 +26,7 @@ public:
 	int ScreenDepth() const {return SCREEN_DEPTH;}
 	Input *aInput;
 	Input *bInput;
+	Renderer * renderer;
 
 private:
 	static Uint32 Timer(Uint32 interval, void* param);

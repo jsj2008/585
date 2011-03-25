@@ -14,7 +14,7 @@ class Window;
 
 class MainController{
 public:
-	MainController(Window const &);
+	MainController(Window &);
 	virtual ~MainController();
 	void tick(unsigned long);
 	static void restart();
@@ -35,7 +35,7 @@ protected:
 	Models * models;
 	Sound * const audio;
 	
-	Window const & window;
+	Window & window;
 	
 };
 #endif

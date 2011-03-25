@@ -4,6 +4,7 @@
 #include "Common/Debug.h"
 #include "Main/MainController.h"
 #include "UI/Input.h"
+#include "Renderer/Renderer.h"
 
 Window::Window()
 {
@@ -30,7 +31,9 @@ Window::Window()
 }
 
 void Window::stopLoading()
-{}
+{
+	
+}
 
 Uint32 Window::Timer(Uint32 interval, void* )
 {

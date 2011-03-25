@@ -17,7 +17,7 @@ void cleanup(){
 	MainController::Audio()->KillALData();
 }
 
-MainController::MainController(Window const & window) : 
+MainController::MainController(Window & window) : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
 audio(new Sound() ),
 window(window)
@@ -32,7 +32,8 @@ window(window)
 	physics->newActors(obstacleList);	//adds the obstacles
 	jeepManager.initialize(physics, window.aInput);
 	renderer = new Renderer(window, actorList, jeepManager);
-	
+	//renderer->setMessage("data/UI/loading.jpg");
+	window.renderer = renderer;
 	/*audio code*/
 	alutInit(NULL, 0);
 	alGetError();
