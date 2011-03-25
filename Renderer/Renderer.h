@@ -42,6 +42,7 @@ private:
 	
 	void renderObjects();
 	void renderJeeps();
+	void drawMessage();
 	void drawSky();
 	void initSky();
 	void drawGround();

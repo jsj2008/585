@@ -208,6 +208,20 @@ void Renderer::renderObjects() {
 	}
 }
 
+void Renderer::drawMessage() {
+	glPushMatrix();
+		glLoadIdentity();
+
+		glBegin(GL_QUADS);
+		glVertex2f((double)width / 3.0, (double)height / 3.0);
+		glVertex2f((double)width / 3.0, 2*(double)height / 3.0);
+		glVertex2f(2*(double)width / 3.0, 2*(double)height / 3.0);
+		glVertex2f(2*(double)width / 3.0, (double)height / 3.0);
+
+		glEnd();
+	glPopMatrix();
+}
+
 void Renderer::applyGroundShader() {
 	vector<int> index = texDataG->getTextureIndices();
 
