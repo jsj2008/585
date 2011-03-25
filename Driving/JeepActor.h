@@ -33,7 +33,7 @@ public:
 	btVector3 long_velocity;
 	btScalar long_speed;
 	float * audio_frame;
-	
+	bool isHuman;
 	btScalar delta;
 	
 		
