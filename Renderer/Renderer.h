@@ -29,6 +29,7 @@ public:
 	void reset();
 	void resetView();
 	void setCamera(btVector3 const &, btVector3 const &);	//giant hack
+	void setMessage(string const & texName);
 	//GLuint listIndex;
 	
 protected:
@@ -42,7 +43,6 @@ private:
 	
 	void renderObjects();
 	void renderJeeps();
-	void setMessage(string const & texName);
 	void drawMessage();
 	void drawSky();
 	void initSky();

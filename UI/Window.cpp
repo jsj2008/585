@@ -27,12 +27,13 @@ Window::Window()
 
 	bInput = new Input();
 	aInput=new Input();
+
 	
 }
 
 void Window::stopLoading()
 {
-	
+	renderer->setMessage("");
 }
 
 Uint32 Window::Timer(Uint32 interval, void* )
