@@ -15,6 +15,8 @@ actorList(actorList), jeepManager(jeepManager) {
 	height = window.ScreenHeight();
 
 	camUp = btVector3(0,1,0);
+	showMessage = false;
+	setMessage("");
 
 	lightPos = btVector3(500,15000,240);
 
@@ -59,6 +61,8 @@ void Renderer::paintGL() {
 	drawGround();
 	renderObjects();
 	renderJeeps();
+	
+	if (showMessage) drawMessage();
 }
 
 void Renderer::step() {
@@ -206,6 +210,46 @@ void Renderer::renderObjects() {
 
 		glPopMatrix();
 	}
+}
+
+void Renderer::setMessage(string const & texName) {
+	if (texName.compare("") == 0) showMessage = false;
+	else {
+		loadTexture(texName, &messageTex);
+		showMessage = true;
+	}
+}
+
+void Renderer::drawMessage() {
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, 0, height, 1, -1);
+	glMatrixMode(GL_MODELVIEW);
+
+	glColor4f(1,1,1,1);
+	skyShader->on();
+	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glBindTexture(GL_TEXTURE_2D, messageTex);
+	glUniform1i(skyDomeLocS, 4);
+	glPushMatrix();
+		glLoadIdentity();
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glTexCoord2f(1, 0);
+		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
+
+		glEnd();
+	glPopMatrix();
+	skyShader->off();
+
+	setProjection();
 }
 
 void Renderer::applyGroundShader() {
