@@ -59,6 +59,10 @@ void Renderer::paintGL() {
 	drawGround();
 	renderObjects();
 	renderJeeps();
+	
+	glDisable(GL_DEPTH_TEST);
+		drawMessage();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::step() {
@@ -209,17 +213,27 @@ void Renderer::renderObjects() {
 }
 
 void Renderer::drawMessage() {
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, 0, height, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+
+	skyShader->on();
 	glPushMatrix();
 		glLoadIdentity();
 
 		glBegin(GL_QUADS);
-		glVertex2f((double)width / 3.0, (double)height / 3.0);
-		glVertex2f((double)width / 3.0, 2*(double)height / 3.0);
-		glVertex2f(2*(double)width / 3.0, 2*(double)height / 3.0);
-		glVertex2f(2*(double)width / 3.0, (double)height / 3.0);
+		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
 
 		glEnd();
 	glPopMatrix();
+	skyShader->off();
+
+	setProjection();
 }
 
 void Renderer::applyGroundShader() {
