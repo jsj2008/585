@@ -233,7 +233,7 @@ void JeepActor::tick(seconds timeStep)
 	
 	if(input->AcceleratePressed)
 	{
-		engine.accelerate();
+		engine.accelerate(input->YAxis);
 		central_forces += update_tires();
 		//MainController::Audio()->increasePitch(0.1);
 		
@@ -242,7 +242,7 @@ void JeepActor::tick(seconds timeStep)
 
 	if(input->BrakePressed)
 	{
-		engine.decelerate();
+		engine.decelerate(fabs(input->YAxis));
 		central_forces += update_tires();
 		//MainController::Audio()->decreasePitch(0.3);
 	}

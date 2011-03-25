@@ -33,6 +33,9 @@ public:
 	btVector3 long_velocity;
 	btScalar long_speed;
 	float * audio_frame;
+	
+	btScalar delta;
+	
 		
 private:
 	
@@ -65,7 +68,6 @@ private:
 	static float gravity;
 	float const & max_rotate;
 	float const & turn_time;
-	btScalar delta;
 	
 	
 	//other states
