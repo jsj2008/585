@@ -42,6 +42,7 @@ private:
 	
 	void renderObjects();
 	void renderJeeps();
+	void setMessage(string const & texName);
 	void drawMessage();
 	void drawSky();
 	void initSky();
@@ -71,6 +72,8 @@ private:
 	double ratio;					// Aspect ratio of the window
 	int width;						// Width of the window
 	int height;						// Height of the window
+
+	bool showMessage;
 
 	ActorList const & actorList;
 	JeepManager & jeepManager;
@@ -181,6 +184,8 @@ private:
 	GLuint cliffTex;		// The texture applied to the slopes
 	GLuint groundBump;		// The bump map for the ground
 	GLuint cliffBump;		// The bump map for the cliffs
+
+	GLuint messageTex;		// The image for the UI message
 	
 	RenderObject sky;		// The sky dome model
 };

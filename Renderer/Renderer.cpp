@@ -15,6 +15,8 @@ actorList(actorList), jeepManager(jeepManager) {
 	height = window.ScreenHeight();
 
 	camUp = btVector3(0,1,0);
+	showMessage = false;
+	setMessage("");
 
 	lightPos = btVector3(500,15000,240);
 
@@ -60,11 +62,7 @@ void Renderer::paintGL() {
 	renderObjects();
 	renderJeeps();
 	
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
-		drawMessage();
-	glDepthMask(GL_TRUE);
-	glEnable(GL_DEPTH_TEST);
+	if (showMessage) drawMessage();
 }
 
 void Renderer::step() {
@@ -214,6 +212,14 @@ void Renderer::renderObjects() {
 	}
 }
 
+void Renderer::setMessage(string const & texName) {
+	if (texName.compare("") == 0) showMessage = false;
+	else {
+		loadTexture(texName, &messageTex);
+		showMessage = true;
+	}
+}
+
 void Renderer::drawMessage() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
@@ -223,13 +229,20 @@ void Renderer::drawMessage() {
 
 	glColor4f(1,1,1,1);
 	skyShader->on();
+	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glBindTexture(GL_TEXTURE_2D, messageTex);
+	glUniform1i(skyDomeLocS, 4);
 	glPushMatrix();
 		glLoadIdentity();
 
 		glBegin(GL_QUADS);
-		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
-		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(1, 1);
 		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glTexCoord2f(1, 0);
 		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
 
 		glEnd();
@@ -408,12 +421,12 @@ void Renderer::initializeGL() {
 	glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
 	glEnable(GL_LIGHTING);
 
-	//glEnable(GL_ALPHA_TEST);
-	//glEnable(GL_BLEND);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_COLOR_MATERIAL);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	//glFrontFace(GL_CW);
 	glEnable(GL_RESCALE_NORMAL);
