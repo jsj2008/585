@@ -21,7 +21,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
 	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
-	MainController::addActor(human);
+	//MainController::addActor(human);
 	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
@@ -29,7 +29,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 		jeep->setOrientation( rotation );
 		
 		aiJeeps.push_back(jeep);
-		MainController::addActor(jeep);
+		//MainController::addActor(jeep);
 	}
 
 	levelAI = new LevelAI(aiJeeps, human);

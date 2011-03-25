@@ -6,8 +6,8 @@ class JeepEngine
 public:
 	JeepEngine();
 	void step(float const, float const acclerate );
-	void accelerate();
-	void decelerate();
+	void accelerate(float);
+	void decelerate(float);
 	float torque;
 
 private:

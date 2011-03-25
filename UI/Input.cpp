@@ -184,6 +184,9 @@ bool Input::UpdateInput(SDL_Event& event){
 	}//end else if type button
 
 	LOG("\t" << XAxis, "input");
+
+	YAxis = 1.0;
+
 	return false;//tell quit to quit
 }//end startInput() function
 

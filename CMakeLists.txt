@@ -61,6 +61,10 @@ SOURCE_GROUP("Driving\\Src" FILES ${AI_SOURCES})
 SOURCE_GROUP("Audio\\Include" FILES ${AUDIO_HEADERS})
 SOURCE_GROUP("Audio\\Src" FILES ${AUDIO_SOURCES})
 
+SOURCE_GROUP("AI\\Include" FILES ${AI_HEADERS})
+SOURCE_GROUP("AI\\Src" FILES ${AI_SOURCES})
+
+
 #OpenGL
 find_package(OpenGL)
 include_directories(${OPENGL_INCLUDE_DIR})

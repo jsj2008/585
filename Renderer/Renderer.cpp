@@ -5,7 +5,7 @@
 
 //#define LOW_RES
 
-Renderer::Renderer(IWindow const & window, ActorList const & actorList, JeepManager const & jeepManager) : 
+Renderer::Renderer(IWindow const & window, ActorList const & actorList, JeepManager & jeepManager) : 
 actorList(actorList), jeepManager(jeepManager) {
 
 	hm = 0;
@@ -58,17 +58,18 @@ void Renderer::paintGL() {
 
 	drawGround();
 	renderObjects();
+	renderJeeps();
 }
 
 void Renderer::step() {
 	paintGL();
 }
 
-void Renderer::renderObjects() {
+void Renderer::renderJeeps() {
 
 	Actor* currentActor = 0;
-	for (ActorList::const_iterator i = actorList.begin(); i != actorList.end(); i++) {
-		currentActor = *i;
+	for (int i = 0; i < jeepManager.getAIs().size(); i++) {
+		currentActor = jeepManager.getAIs().at(i);
 		glPushMatrix();
 
 		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
@@ -107,6 +108,104 @@ void Renderer::renderObjects() {
 
 		glPopMatrix();
 	}
+	// Draw the human controlled jeep separately
+	currentActor = jeepManager.getHuman();
+	glPushMatrix();
+
+	glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
+
+	btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
+	btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
+	btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+	h.normalize();
+	b.normalize();
+	n.normalize();
+
+	// This matrix is defined columnwise
+	GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
+								n.getX(), n.getY(), n.getZ(), 0, 
+								b.getX(), b.getY(), b.getZ(), 0, 
+								0, 0, 0, 1};
+	glMultMatrixf(frameMatrix);
+
+	glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
+	glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
+	glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
+	glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
+	objectShader->on();
+		applyObjectShader();
+
+		glColor3f(1,1,1);
+		currentActor->renderObject->draw();
+		//currentActor->renderObject.drawNormals();
+
+		// Clear all textures
+		for (int i = MAX_TEXTURES+2; i >= 0; i--) {
+			glActiveTexture(GL_TEXTURE0+i);
+			glDisable(GL_TEXTURE_2D);
+		}
+	objectShader->off();
+
+	glPopMatrix();
+}
+
+void Renderer::renderObjects() {
+
+	Actor* currentActor = 0;
+	for (ActorList::const_iterator i = actorList.begin(); i != actorList.end(); i++) {
+		currentActor = *i;
+		glPushMatrix();
+
+		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
+
+		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
+		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
+		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+		h.normalize();
+		b.normalize();
+		n.normalize();
+
+		// This matrix is defined columnwise
+		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
+									n.getX(), n.getY(), n.getZ(), 0, 
+									b.getX(), b.getY(), b.getZ(), 0, 
+									0, 0, 0, 1};
+		glMultMatrixf(frameMatrix);
+
+		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
+		glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
+		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
+		objectShader->on();
+			applyObjectShader();
+			
+			GLfloat texPos[MAX_TEXTURES];
+			vector<int> index = texDataG->getTextureIndices();
+			for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
+				if (i < index.size()) {
+					texPos[i] = texDataG->getTexturePos(index[i]);
+
+					glActiveTexture(GL_TEXTURE0+i);
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, *shaderTexturesG[index[i]]);
+				}
+				else
+					texPos[i] = 5.0f;
+			}
+
+			glColor3f(1,1,1);
+			currentActor->renderObject->draw();
+			//currentActor->renderObject.drawNormals();
+
+			// Clear all textures
+			for (int i = MAX_TEXTURES+2; i >= 0; i--) {
+				glActiveTexture(GL_TEXTURE0+i);
+				glDisable(GL_TEXTURE_2D);
+			}
+		objectShader->off();
+
+		glPopMatrix();
+	}
 }
 
 void Renderer::applyGroundShader() {
@@ -130,7 +229,17 @@ void Renderer::applyGroundShader() {
 
 	glUniform1i(numTexLocG, index.size());
 	
-	glUniform3f(jeepShadowTestPositionLocG, jeepManager.getPlayerPos(10).getX(), jeepManager.getPlayerPos(10).getY(), jeepManager.getPlayerPos(10).getZ());
+	glUniform3f(jeep0ShadowPosLocG, jeepManager.getPlayerPos(0).getX(), jeepManager.getPlayerPos(0).getY(), jeepManager.getPlayerPos(0).getZ());
+	glUniform3f(jeep1ShadowPosLocG, jeepManager.getPlayerPos(1).getX(), jeepManager.getPlayerPos(1).getY(), jeepManager.getPlayerPos(1).getZ());
+	glUniform3f(jeep2ShadowPosLocG, jeepManager.getPlayerPos(2).getX(), jeepManager.getPlayerPos(2).getY(), jeepManager.getPlayerPos(2).getZ());
+	glUniform3f(jeep3ShadowPosLocG, jeepManager.getPlayerPos(3).getX(), jeepManager.getPlayerPos(3).getY(), jeepManager.getPlayerPos(3).getZ());
+	glUniform3f(jeep4ShadowPosLocG, jeepManager.getPlayerPos(4).getX(), jeepManager.getPlayerPos(4).getY(), jeepManager.getPlayerPos(4).getZ());
+	glUniform3f(jeep5ShadowPosLocG, jeepManager.getPlayerPos(5).getX(), jeepManager.getPlayerPos(5).getY(), jeepManager.getPlayerPos(5).getZ());
+	glUniform3f(jeep6ShadowPosLocG, jeepManager.getPlayerPos(6).getX(), jeepManager.getPlayerPos(6).getY(), jeepManager.getPlayerPos(6).getZ());
+	glUniform3f(jeep7ShadowPosLocG, jeepManager.getPlayerPos(7).getX(), jeepManager.getPlayerPos(7).getY(), jeepManager.getPlayerPos(7).getZ());
+	glUniform3f(jeep8ShadowPosLocG, jeepManager.getPlayerPos(8).getX(), jeepManager.getPlayerPos(8).getY(), jeepManager.getPlayerPos(8).getZ());
+	glUniform3f(jeep9ShadowPosLocG, jeepManager.getPlayerPos(9).getX(), jeepManager.getPlayerPos(9).getY(), jeepManager.getPlayerPos(9).getZ());
+	glUniform3f(jeep10ShadowPosLocG, jeepManager.getPlayerPos(10).getX(), jeepManager.getPlayerPos(10).getY(), jeepManager.getPlayerPos(10).getZ());
 
 	GLfloat texPos[MAX_TEXTURES];
 	GLfloat texHSkew[MAX_TEXTURES];
@@ -320,7 +429,17 @@ void Renderer::initializeGL() {
 		groundNormalMapLocG = groundShader->getUniLoc("groundNormalMap");
 		cliffNormalMapLocG = groundShader->getUniLoc("cliffNormalMap");
 
-		jeepShadowTestPositionLocG = groundShader->getUniLoc("jeepShadowTestPosition");
+		jeep0ShadowPosLocG = groundShader->getUniLoc("jeep0shadowPos");
+		jeep1ShadowPosLocG = groundShader->getUniLoc("jeep1shadowPos");
+		jeep2ShadowPosLocG = groundShader->getUniLoc("jeep2shadowPos");
+		jeep3ShadowPosLocG = groundShader->getUniLoc("jeep3shadowPos");
+		jeep4ShadowPosLocG = groundShader->getUniLoc("jeep4shadowPos");
+		jeep5ShadowPosLocG = groundShader->getUniLoc("jeep5shadowPos");
+		jeep6ShadowPosLocG = groundShader->getUniLoc("jeep6shadowPos");
+		jeep7ShadowPosLocG = groundShader->getUniLoc("jeep7shadowPos");
+		jeep8ShadowPosLocG = groundShader->getUniLoc("jeep8shadowPos");
+		jeep9ShadowPosLocG = groundShader->getUniLoc("jeep9shadowPos");
+		jeep10ShadowPosLocG = groundShader->getUniLoc("jeep10shadowPos");
 
 		tangentLocG = groundShader->getAttrLoc("vertTangent");
 

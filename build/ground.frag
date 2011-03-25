@@ -4,7 +4,18 @@ varying vec3 viewDir;
 varying vec3 trueNormal;
 varying vec4 truePos;
 varying vec4 position;
-uniform vec3 jeepShadowTestPosition;
+
+uniform vec3 jeep0shadowPos;
+uniform vec3 jeep1shadowPos;
+uniform vec3 jeep2shadowPos;
+uniform vec3 jeep3shadowPos;
+uniform vec3 jeep4shadowPos;
+uniform vec3 jeep5shadowPos;
+uniform vec3 jeep6shadowPos;
+uniform vec3 jeep7shadowPos;
+uniform vec3 jeep8shadowPos;
+uniform vec3 jeep9shadowPos;
+uniform vec3 jeep10shadowPos;
 
 uniform int xAttr;
 uniform float xMod;
@@ -436,13 +447,104 @@ void main() {
 	if (zAttr == 5) balance = balance * (1.0-zAttrVal);
 	gl_FragColor = (balance * gl_FragColor * texValue) + (1.0 - balance)*((1.0 - balance)*(gl_FragColor + gl_LightSource[0].ambient)) + (balance * texValue);
 	
-	vec4 hackPosition = vec4(jeepShadowTestPosition.x + 1792.0, jeepShadowTestPosition.y, jeepShadowTestPosition.z + 1792.0, 1.0);
+	// I wish I had a loop :-(
+	vec4 jPosition = vec4(jeep0shadowPos.x + 1792.0, jeep0shadowPos.y, jeep0shadowPos.z + 1792.0, 1.0);
 	
-	if (sqrt(pow(abs(truePos.x - hackPosition.x),2.0)/2.0 + pow(abs(truePos.z - hackPosition.z),2.0)/2.0) < 4.0 &&
-		truePos.y < hackPosition.y + 10.0) {
-			float exp = max(5.0 - (abs(truePos.y - hackPosition.y)/5.0), 0.0);
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
 			gl_FragColor = gl_FragColor * 
-(pow((sqrt(pow(abs(truePos.x - hackPosition.x),2.0)/2.0 + pow(abs(truePos.z - hackPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep1shadowPos.x + 1792.0, jeep1shadowPos.y, jeep1shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep2shadowPos.x + 1792.0, jeep2shadowPos.y, jeep2shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep3shadowPos.x + 1792.0, jeep3shadowPos.y, jeep3shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep4shadowPos.x + 1792.0, jeep4shadowPos.y, jeep4shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep5shadowPos.x + 1792.0, jeep5shadowPos.y, jeep5shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep6shadowPos.x + 1792.0, jeep6shadowPos.y, jeep6shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep7shadowPos.x + 1792.0, jeep7shadowPos.y, jeep7shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep8shadowPos.x + 1792.0, jeep8shadowPos.y, jeep8shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep9shadowPos.x + 1792.0, jeep9shadowPos.y, jeep9shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
+	}
+			
+	jPosition = vec4(jeep10shadowPos.x + 1792.0, jeep10shadowPos.y, jeep10shadowPos.z + 1792.0, 1.0);
+	
+	if (sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) < 4.0 &&
+		truePos.y < jPosition.y + 10.0) {
+			float exp = max(5.0 - (abs(truePos.y - jPosition.y)/5.0), 0.0);
+			gl_FragColor = gl_FragColor * 
+(pow((sqrt(pow(abs(truePos.x - jPosition.x),2.0)/2.0 + pow(abs(truePos.z - jPosition.z),2.0)/2.0) / 4.0),exp)/1.5 + 0.3333);
 	}
 		
 	gl_FragColor.w = 1.0;
