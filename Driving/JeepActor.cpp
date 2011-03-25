@@ -30,7 +30,8 @@ c_roll( LoadFloat("config/jeep_springs.xml", "c_roll") ),
 c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
 max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
 turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
-audio_frame(new float [6])
+audio_frame(new float [6]),
+isHuman(false)
 {
 	orientation = rot;
 	
@@ -213,7 +214,7 @@ void JeepActor::tick(seconds timeStep)
 		die_time = 0;
 	}
 	
-	if(die_time > 3)	//not driving for few seconds
+	if(die_time > 3 && isHuman)	//not driving for few seconds
 	{
 		die_time = 0;
 		MainController::restart();

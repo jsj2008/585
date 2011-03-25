@@ -21,6 +21,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
 	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
+	human->isHuman = true;
 	//MainController::addActor(human);
 	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
@@ -41,7 +42,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 void JeepManager::restart()
 {
 	/*TODO: reset AI segments*/
-/*	float jeepX			= LoadFloat("config/start.xml", "jeepX");
+	float jeepX			= LoadFloat("config/start.xml", "jeepX");
 	float jeepY			= LoadFloat("config/start.xml", "jeepY");
 	float jeepZ 		= LoadFloat("config/start.xml", "jeepZ");
 	float jeepRotation	= LoadFloat("config/start.xml", "jeepRotation");
@@ -53,7 +54,7 @@ void JeepManager::restart()
 	for (int i = 0; i < num_players; ++i) {
 		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
 	}
-	*/
+	
 }
 
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)
