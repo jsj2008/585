@@ -53,7 +53,9 @@ void JeepManager::restart()
 	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
+		this->aiInputs[i]->restart();
 	}
+	levelAI->restart();
 	
 }
 

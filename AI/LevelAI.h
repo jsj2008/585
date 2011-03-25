@@ -34,6 +34,7 @@ public:
 	LevelAI();
 	LevelAI(Jeeps jeeps, JeepActor* human);
 	virtual ~LevelAI();
+	void restart();
 
 	Jeeps jeeps;
 	JeepActor* human;

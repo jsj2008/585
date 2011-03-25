@@ -15,7 +15,7 @@
 float JeepActor::gravity = 1;
 float JeepActor::mass = 1;
 
-JeepActor::JeepActor(PhysObject const & physObj, RenderObject const * renderObj, Physics * const physics, IInput const * input, btVector3 const & pos, btQuaternion const & rot) : 
+JeepActor::JeepActor(PhysObject const & physObj, RenderObject const * renderObj, Physics * const physics, IInput * input, btVector3 const & pos, btQuaternion const & rot) : 
 Actor(physObj, renderObj, pos),
 physics(physics), offset_x(LoadFloat("config/jeep_springs.xml", "offset_x")),
 offset_z(LoadFloat("config/jeep_springs.xml", "offset_z")),
@@ -217,6 +217,7 @@ void JeepActor::tick(seconds timeStep)
 	if(die_time > 3 && isHuman)	//not driving for few seconds
 	{
 		die_time = 0;
+		input->restart();
 		MainController::restart();
 	}
 	

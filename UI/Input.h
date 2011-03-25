@@ -7,6 +7,8 @@
 class Input : public IInput {
 public:
 
+	void restart(){};
+
 /*	float XAxis;    
 	float YAxis;
 	bool AcceleratePressed;  
