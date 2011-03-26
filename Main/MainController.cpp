@@ -103,4 +103,6 @@ MainController::~MainController()
 	
 	delete physics;
 	delete renderer;
+    delete jeepManager;
+    delete obstacles;
 }
