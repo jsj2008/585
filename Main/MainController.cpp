@@ -10,6 +10,8 @@
 #include <iostream>
 #include "Renderer/Models.h"
 #include "UI/Window.h"
+#include "Obstacles.h"
+
 
 MainController * MainController::ptr = NULL;
 
@@ -25,15 +27,20 @@ window(window)
 
 	if(ptr == NULL)
 		ptr = this;	
-	
-	models = new Models();
-	
-	obstacles.initialize(obstacleList);
-	physics->newActors(obstacleList);	//adds the obstacles
-	jeepManager.initialize(physics, window.aInput);
-	renderer = new Renderer(window, actorList, jeepManager);
-	//renderer->setMessage("data/UI/loading.jpg");
+		
+	renderer = new Renderer(window, actorList);
 	window.renderer = renderer;
+    window.loadScreen();
+	
+    renderer->initialize();
+	models = new Models();
+    obstacles = new Obstacles();
+	obstacles->initialize(obstacleList);
+	physics->newActors(obstacleList);	//adds the obstacles
+    jeepManager = new JeepManager();
+	jeepManager->initialize(physics, window.aInput);
+    renderer->jeepManager = jeepManager; //update the pointer
+    
 	/*audio code*/
 	alutInit(NULL, 0);
 	alGetError();
@@ -42,7 +49,7 @@ window(window)
 
 	atexit(cleanup);
 
-	JeepActor * human = jeepManager.getHuman();
+	JeepActor * human = jeepManager->getHuman();
 	human->registerAudio(audio);
 	audio->beginLevel();
 	audio->playMusic();
@@ -53,11 +60,11 @@ void MainController::tick(unsigned long interval)
 {
 	renderer->step();
 	physics->step(interval / 1000.0);
-	jeepManager.renderTick();
+	jeepManager->renderTick();
 	
 	/*giant hack for camera*/
 
-	JeepActor* player = jeepManager.getHuman();
+	JeepActor* player = jeepManager->getHuman();
 	static btVector3 pos = btVector3(0,0,0);
 	btVector3 look = player->pos;
 	btVector3 behind = quatRotate(player->orientation, btVector3(-0.8,0.4, 0) );
@@ -74,7 +81,7 @@ void MainController::addActor(Actor * actor)
 
 void MainController::restart()
 {
-	ptr->jeepManager.restart();
+	ptr->jeepManager->restart();
 }
 
 Sound * MainController::Audio()

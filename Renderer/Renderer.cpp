@@ -5,8 +5,13 @@
 
 //#define LOW_RES
 
-Renderer::Renderer(IWindow const & window, ActorList const & actorList, JeepManager & jeepManager) : 
+Renderer * Renderer::ptr = NULL;
+
+Renderer::Renderer(IWindow const & window, ActorList const & actorList, JeepManager * jeepManager) : 
 actorList(actorList), jeepManager(jeepManager) {
+
+    if(ptr == NULL)     //singleton
+        ptr = this;
 
 	hm = 0;
 
@@ -19,8 +24,14 @@ actorList(actorList), jeepManager(jeepManager) {
 	setMessage("");
 
 	lightPos = btVector3(500,15000,240);
+    initializeGL();
+    paintGL();
+}
 
-	shaderTexturesG.resize(MAX_TEXTURES);
+void Renderer::initialize()
+{
+    
+    shaderTexturesG.resize(MAX_TEXTURES);
 	shaderTexturesO.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++)
 		shaderTexturesG[i] = new GLuint;
@@ -34,9 +45,9 @@ actorList(actorList), jeepManager(jeepManager) {
 	attrDataO = new AttributeData(); // Object shader data
 	texDataO = new TextureData(4);
 	optDataO = new OptionsData();
-
-	initializeGL();
-	paintGL();
+	
+	initializeGL2();
+    paintGL();
 }
 
 void Renderer::setCamera(btVector3 const & pos, btVector3 const & look) {
@@ -53,14 +64,16 @@ void Renderer::paintGL() {
 	glLoadIdentity();
 
 	updateCamera();
-	
-	glDisable(GL_DEPTH_TEST); // Ignore depth for the sky so that it is always drawn behind everything else
-		drawSky();
-	glEnable(GL_DEPTH_TEST);
-
-	drawGround();
-	renderObjects();
-	renderJeeps();
+    if(jeepManager != NULL) //done loading
+    {
+        glDisable(GL_DEPTH_TEST); // Ignore depth for the sky so that it is always drawn behind everything else
+    		drawSky();
+    	glEnable(GL_DEPTH_TEST);
+    	
+	    drawGround();
+    	renderObjects();
+    	renderJeeps();
+    }
 	
 	if (showMessage) drawMessage();
 }
@@ -72,8 +85,8 @@ void Renderer::step() {
 void Renderer::renderJeeps() {
 
 	Actor* currentActor = 0;
-	for (int i = 0; i < jeepManager.getAIs().size(); i++) {
-		currentActor = jeepManager.getAIs().at(i);
+	for (int i = 0; i < jeepManager->getAIs().size(); i++) {
+		currentActor = jeepManager->getAIs().at(i);
 		glPushMatrix();
 
 		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
@@ -113,7 +126,7 @@ void Renderer::renderJeeps() {
 		glPopMatrix();
 	}
 	// Draw the human controlled jeep separately
-	currentActor = jeepManager.getHuman();
+	currentActor = jeepManager->getHuman();
 	glPushMatrix();
 
 	glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
@@ -220,6 +233,39 @@ void Renderer::setMessage(string const & texName) {
 	}
 }
 
+void Renderer::loadingMessage(string const & textName) {
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, 0, height, 1, -1);
+	glMatrixMode(GL_MODELVIEW);
+
+	glColor4f(1,1,1,1);
+    /*skyShader->on();
+	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	
+	glBindTexture(GL_TEXTURE_2D, messageTex);
+	glUniform1i(skyDomeLocS, 4);
+	glPushMatrix();
+		glLoadIdentity();
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glTexCoord2f(1, 0);
+		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
+
+		glEnd();
+	glPopMatrix();
+    skyShader->off();
+
+	setProjection();*/
+}
+
 void Renderer::drawMessage() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
@@ -228,7 +274,7 @@ void Renderer::drawMessage() {
 	glMatrixMode(GL_MODELVIEW);
 
 	glColor4f(1,1,1,1);
-	skyShader->on();
+    skyShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 	glBindTexture(GL_TEXTURE_2D, messageTex);
 	glUniform1i(skyDomeLocS, 4);
@@ -247,7 +293,7 @@ void Renderer::drawMessage() {
 
 		glEnd();
 	glPopMatrix();
-	skyShader->off();
+    skyShader->off();
 
 	setProjection();
 }
@@ -273,17 +319,17 @@ void Renderer::applyGroundShader() {
 
 	glUniform1i(numTexLocG, index.size());
 	
-	glUniform3f(jeep0ShadowPosLocG, jeepManager.getPlayerPos(0).getX(), jeepManager.getPlayerPos(0).getY(), jeepManager.getPlayerPos(0).getZ());
-	glUniform3f(jeep1ShadowPosLocG, jeepManager.getPlayerPos(1).getX(), jeepManager.getPlayerPos(1).getY(), jeepManager.getPlayerPos(1).getZ());
-	glUniform3f(jeep2ShadowPosLocG, jeepManager.getPlayerPos(2).getX(), jeepManager.getPlayerPos(2).getY(), jeepManager.getPlayerPos(2).getZ());
-	glUniform3f(jeep3ShadowPosLocG, jeepManager.getPlayerPos(3).getX(), jeepManager.getPlayerPos(3).getY(), jeepManager.getPlayerPos(3).getZ());
-	glUniform3f(jeep4ShadowPosLocG, jeepManager.getPlayerPos(4).getX(), jeepManager.getPlayerPos(4).getY(), jeepManager.getPlayerPos(4).getZ());
-	glUniform3f(jeep5ShadowPosLocG, jeepManager.getPlayerPos(5).getX(), jeepManager.getPlayerPos(5).getY(), jeepManager.getPlayerPos(5).getZ());
-	glUniform3f(jeep6ShadowPosLocG, jeepManager.getPlayerPos(6).getX(), jeepManager.getPlayerPos(6).getY(), jeepManager.getPlayerPos(6).getZ());
-	glUniform3f(jeep7ShadowPosLocG, jeepManager.getPlayerPos(7).getX(), jeepManager.getPlayerPos(7).getY(), jeepManager.getPlayerPos(7).getZ());
-	glUniform3f(jeep8ShadowPosLocG, jeepManager.getPlayerPos(8).getX(), jeepManager.getPlayerPos(8).getY(), jeepManager.getPlayerPos(8).getZ());
-	glUniform3f(jeep9ShadowPosLocG, jeepManager.getPlayerPos(9).getX(), jeepManager.getPlayerPos(9).getY(), jeepManager.getPlayerPos(9).getZ());
-	glUniform3f(jeep10ShadowPosLocG, jeepManager.getPlayerPos(10).getX(), jeepManager.getPlayerPos(10).getY(), jeepManager.getPlayerPos(10).getZ());
+	glUniform3f(jeep0ShadowPosLocG, jeepManager->getPlayerPos(0).getX(), jeepManager->getPlayerPos(0).getY(), jeepManager->getPlayerPos(0).getZ());
+	glUniform3f(jeep1ShadowPosLocG, jeepManager->getPlayerPos(1).getX(), jeepManager->getPlayerPos(1).getY(), jeepManager->getPlayerPos(1).getZ());
+	glUniform3f(jeep2ShadowPosLocG, jeepManager->getPlayerPos(2).getX(), jeepManager->getPlayerPos(2).getY(), jeepManager->getPlayerPos(2).getZ());
+	glUniform3f(jeep3ShadowPosLocG, jeepManager->getPlayerPos(3).getX(), jeepManager->getPlayerPos(3).getY(), jeepManager->getPlayerPos(3).getZ());
+	glUniform3f(jeep4ShadowPosLocG, jeepManager->getPlayerPos(4).getX(), jeepManager->getPlayerPos(4).getY(), jeepManager->getPlayerPos(4).getZ());
+	glUniform3f(jeep5ShadowPosLocG, jeepManager->getPlayerPos(5).getX(), jeepManager->getPlayerPos(5).getY(), jeepManager->getPlayerPos(5).getZ());
+	glUniform3f(jeep6ShadowPosLocG, jeepManager->getPlayerPos(6).getX(), jeepManager->getPlayerPos(6).getY(), jeepManager->getPlayerPos(6).getZ());
+	glUniform3f(jeep7ShadowPosLocG, jeepManager->getPlayerPos(7).getX(), jeepManager->getPlayerPos(7).getY(), jeepManager->getPlayerPos(7).getZ());
+	glUniform3f(jeep8ShadowPosLocG, jeepManager->getPlayerPos(8).getX(), jeepManager->getPlayerPos(8).getY(), jeepManager->getPlayerPos(8).getZ());
+	glUniform3f(jeep9ShadowPosLocG, jeepManager->getPlayerPos(9).getX(), jeepManager->getPlayerPos(9).getY(), jeepManager->getPlayerPos(9).getZ());
+	glUniform3f(jeep10ShadowPosLocG, jeepManager->getPlayerPos(10).getX(), jeepManager->getPlayerPos(10).getY(), jeepManager->getPlayerPos(10).getZ());
 
 	GLfloat texPos[MAX_TEXTURES];
 	GLfloat texHSkew[MAX_TEXTURES];
@@ -439,8 +485,13 @@ void Renderer::initializeGL() {
 	glMaterialf(GL_FRONT, GL_SHININESS, 1.0f);
 
 	glEnable(GL_SAMPLE_BUFFERS_ARB);
+	resizeGL(width, height); // Make the world not suck
+    
+}
 
-	GLenum err = glewInit();
+void Renderer::initializeGL2()  //more advanced stuff
+{
+    GLenum err = glewInit();
 	if (GLEW_OK == err) {
 		groundShader = new Shader(LoadString2("config/renderer.xml","ground_shader_f").c_str(),
 			LoadString2("config/renderer.xml","ground_shader_v").c_str());
@@ -544,7 +595,6 @@ void Renderer::initializeGL() {
 	}
 	skyShader->off();
 
-	resizeGL(width, height); // Make the world not suck
 	initSky();
 	initGround();
 }

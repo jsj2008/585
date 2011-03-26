@@ -27,10 +27,11 @@ public:
 	Input *aInput;
 	Input *bInput;
 	Renderer * renderer;
+	
+    void loadScreen();
 
 private:
 	static Uint32 Timer(Uint32 interval, void* param);
-	
 	#ifdef LOW_RES
 	static const int SCREEN_WIDTH = 800;
 	static const int SCREEN_HEIGHT = 600;

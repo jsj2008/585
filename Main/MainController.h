@@ -2,15 +2,14 @@
 #define MAINCONTROLLER_H
 #include <Renderer/GLDebugDrawer.h>
 #include "Renderer/RenderObject.h"
-#include "Driving/JeepManager.h"
-#include "Obstacles.h"
 
 class Physics;
 class Renderer;
 class Sound;
 class Models;
 class Window;
-
+class Obstacles;
+class JeepManager;
 
 class MainController{
 public:
@@ -29,8 +28,8 @@ protected:
 	Renderer * renderer;
 	Physics * const physics;
 		
-	JeepManager jeepManager;
-	Obstacles obstacles;
+	JeepManager * jeepManager;
+	Obstacles * obstacles;
 	
 	Models * models;
 	Sound * const audio;

@@ -23,28 +23,33 @@ using namespace std;
 
 class Renderer {
 public:
-	Renderer(IWindow const &, ActorList const & actorList, JeepManager & jeepManager);
+	Renderer(IWindow const &, ActorList const & actorList, JeepManager * jeepManager = NULL);
 	~Renderer();
 	void step();
 	void reset();
 	void resetView();
 	void setCamera(btVector3 const &, btVector3 const &);	//giant hack
 	void setMessage(string const & texName);
-	static void Loading(int width, int height);
+    void initialize();
+    void loadingMessage(string const & texName);
+    JeepManager * jeepManager;
+    
 	//GLuint listIndex;
 	
 protected:
 	void paintGL();
 	void initializeGL();
+    void initializeGL2();
 	void resizeGL(int w, int h);
 	
 private:
+	
+    static Renderer * ptr;
 	
 	IWindow * window;
 	
 	void renderObjects();
 	void renderJeeps();
-	void drawMessage();
 	void drawSky();
 	void initSky();
 	void drawGround();
@@ -62,7 +67,7 @@ private:
 	void loadGroundTextures();
 	void loadObjectTextures();
 	bool loadTexture(string name, GLuint *texID);
-
+	void drawMessage();
 	void groundTexCoord(int x, int z, bool xend, bool zend);
 
 	btVector3 camPos;				// Position of the camera
@@ -78,7 +83,6 @@ private:
 	bool showMessage;
 
 	ActorList const & actorList;
-	JeepManager & jeepManager;
 	Shader* groundShader;
 	Shader* objectShader;
 	Shader* skyShader;
