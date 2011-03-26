@@ -40,6 +40,7 @@ private:
 	#endif
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;
+	bool loading;
 
 };
 #endif

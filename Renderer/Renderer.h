@@ -30,6 +30,7 @@ public:
 	void resetView();
 	void setCamera(btVector3 const &, btVector3 const &);	//giant hack
 	void setMessage(string const & texName);
+	static void Loading(int width, int height);
 	//GLuint listIndex;
 	
 protected:
@@ -54,6 +55,7 @@ private:
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
+	static void SetProjection();
 
 	void loadGround3DTexture(string filename);
 	void loadObject3DTexture(string filename);

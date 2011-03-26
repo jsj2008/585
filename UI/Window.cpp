@@ -6,7 +6,7 @@
 #include "UI/Input.h"
 #include "Renderer/Renderer.h"
 
-Window::Window()
+Window::Window() : loading(true)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);	//initialize timer, audio, video, cd_rom, and joystick
 
@@ -33,7 +33,21 @@ Window::Window()
 
 void Window::stopLoading()
 {
-	renderer->setMessage("");
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	//sets up double buffering and 16-bit depth
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, SCREEN_DEPTH);
+	
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);	//each channel is 8-bit
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	
+	/*sets up OpenGL drawing context*/
+	SDL_Surface * drawContext;
+	Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
+	drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
+
+
+	loading = false;
 }
 
 Uint32 Window::Timer(Uint32 interval, void* )
