@@ -241,7 +241,7 @@ void Renderer::loadingMessage(string const & textName) {
 	glMatrixMode(GL_MODELVIEW);
 
 	glColor4f(1,1,1,1);
-    /*skyShader->on();
+    skyShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 	
 	glBindTexture(GL_TEXTURE_2D, messageTex);
@@ -263,7 +263,7 @@ void Renderer::loadingMessage(string const & textName) {
 	glPopMatrix();
     skyShader->off();
 
-	setProjection();*/
+	setProjection();
 }
 
 void Renderer::drawMessage() {

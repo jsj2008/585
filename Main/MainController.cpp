@@ -29,10 +29,10 @@ window(window)
 		ptr = this;	
 		
 	renderer = new Renderer(window, actorList);
+    renderer->initialize();
 	window.renderer = renderer;
     window.loadScreen();
 	
-    renderer->initialize();
 	models = new Models();
     obstacles = new Obstacles();
 	obstacles->initialize(obstacleList);
