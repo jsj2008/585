@@ -31,7 +31,7 @@ window(window)
 	renderer = new Renderer(window, actorList);
 	window.renderer = renderer;
     window.loadScreen();
-	
+
     renderer->initialize();
 	models = new Models();
     obstacles = new Obstacles();
@@ -86,6 +86,7 @@ void MainController::tick(unsigned long interval)
 	
 }
 
+
 bool MainController::countDown(unsigned long interval)
 {
     static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png", "data/UI/3.png"};
@@ -105,6 +106,7 @@ bool MainController::countDown(unsigned long interval)
     return true;
         
 }
+
 
 void MainController::addActor(Actor * actor)
 {
@@ -132,6 +134,4 @@ MainController::~MainController()
 	
 	delete physics;
 	delete renderer;
-    delete jeepManager;
-    delete obstacles;
 }

@@ -234,6 +234,7 @@ void Renderer::setMessage(string const & texName) {
 }
 
 void Renderer::loadingMessage(string const & textName) {
+	setMessage(textName);
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -241,7 +242,7 @@ void Renderer::loadingMessage(string const & textName) {
 	glMatrixMode(GL_MODELVIEW);
 
 	glColor4f(1,1,1,1);
-    /*skyShader->on();
+    skyShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 	
 	glBindTexture(GL_TEXTURE_2D, messageTex);
@@ -251,19 +252,19 @@ void Renderer::loadingMessage(string const & textName) {
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(1, 1);
-		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(width, height, 0);
 		glTexCoord2f(0, 1);
-		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(0, height, 0);
 		glTexCoord2f(0, 0);
-		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glVertex3f(0, 0, 0);
 		glTexCoord2f(1, 0);
-		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
+		glVertex3f(width, 0, 0);
 
 		glEnd();
 	glPopMatrix();
     skyShader->off();
 
-	setProjection();*/
+	setProjection();
 }
 
 void Renderer::drawMessage() {
@@ -487,6 +488,13 @@ void Renderer::initializeGL() {
 	glEnable(GL_SAMPLE_BUFFERS_ARB);
 	resizeGL(width, height); // Make the world not suck
     
+	GLenum err3 = glewInit();
+	if (GLEW_OK == err3) {
+		skyShader = new Shader(LoadString2("config/renderer.xml","sky_shader_f").c_str(),
+			LoadString2("config/renderer.xml","sky_shader_v").c_str());
+		skyDomeLocS = skyShader->getUniLoc("skyDome");
+	}
+	skyShader->off();
 }
 
 void Renderer::initializeGL2()  //more advanced stuff
@@ -586,14 +594,6 @@ void Renderer::initializeGL2()  //more advanced stuff
 		loadObjectTextures();
 	}
 	objectShader->off();
-
-	GLenum err3 = glewInit();
-	if (GLEW_OK == err3) {
-		skyShader = new Shader(LoadString2("config/renderer.xml","sky_shader_f").c_str(),
-			LoadString2("config/renderer.xml","sky_shader_v").c_str());
-		skyDomeLocS = skyShader->getUniLoc("skyDome");
-	}
-	skyShader->off();
 
 	initSky();
 	initGround();

@@ -74,7 +74,7 @@ void Window::run(MainController * controller)
 	Uint32 before = SDL_GetTicks();
     LOG("Run Physics", "UI");
 	while(!quit) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
         float lastDelay = after - before;
 		controller->tick(lastDelay);
