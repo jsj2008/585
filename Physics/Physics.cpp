@@ -1,3 +1,4 @@
+#include "Common/Debug.h"
 #include "Physics.h"
 #include "Common/SettingsFactory.h"
 #include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"

@@ -117,9 +117,9 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	else if (XAxis < 0) XAxis = -1;
 	else XAxis = 0;
 	//if (recovering != 0) LOG(recovering, "ai");
-	if (recovering < 0) recovering++; // Burn through the recovery cooldown period
+	if (recovering < 0 && !jeep->frozen && jeep->onGround) recovering++; // Burn through the recovery cooldown period
 	if (recovering == recoveryTime) recovering = -recoveryCooldown; // If recovery time has elapsed, start the cooldown period
-	else if ((jeep->speed < stuckThreshold && recovering == 0 && jeep->onGround) || recovering > 0) { // If stuck...
+	else if ((jeep->speed < stuckThreshold && recovering == 0) || recovering > 0) { // If stuck...
 		recovering++; // Increment the recovery time
 		AcceleratePressed = false; // Stop accelerating
 		BrakePressed = true; // Back up

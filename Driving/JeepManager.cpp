@@ -1,3 +1,4 @@
+#include "Common/Debug.h"
 #include "JeepManager.h"
 #include "JeepActor.h"
 #include "AI/LevelAI.h"
@@ -23,7 +24,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
 	human->isHuman = true;
 	//MainController::addActor(human);
-	int num_players = LoadInt("config/ai.xml","num_players");
+	num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
 		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX + (10*i + 10), jeepY, jeepZ), rotation );
@@ -36,6 +37,7 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	levelAI = new LevelAI(aiJeeps, human);
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
+    freezeAt(btVector3(jeepX, jeepY, jeepZ));
 	
 }
 
@@ -50,13 +52,32 @@ void JeepManager::restart()
 	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
 	human->reset(rotation, btVector3(jeepX, jeepY, jeepZ));
-	int num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
 		this->aiInputs[i]->restart();
 	}
 	levelAI->restart();
 	
+    freezeAt(btVector3(jeepX, jeepY, jeepZ));
+	
+}
+
+void JeepManager::release()
+{
+    human->release();
+    for (int i = 0; i < num_players; ++i) {
+        aiJeeps[i]->release();
+	}
+    
+}
+
+void JeepManager::freezeAt(btVector3 const & pos)
+{
+    human->freezeAt(pos);
+    int num_players = LoadInt("config/ai.xml","num_players");
+    for (int i = 0; i < num_players; ++i) {
+        aiJeeps[i]->freezeAt(pos);
+	}
 }
 
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)

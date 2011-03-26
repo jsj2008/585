@@ -22,7 +22,8 @@ void cleanup(){
 MainController::MainController(Window & window) : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
 audio(new Sound() ),
-window(window)
+window(window),
+counting(true)
 {
 
 	if(ptr == NULL)
@@ -64,10 +65,12 @@ void MainController::tick(unsigned long interval)
         return;
     }
     
-    static bool counting = true;
     if(counting)
     {
         counting = countDown(interval);
+    }else
+    {
+        
     }
         
 	renderer->step();
@@ -87,11 +90,18 @@ void MainController::tick(unsigned long interval)
 }
 
 
-bool MainController::countDown(unsigned long interval)
+bool MainController::countDown(unsigned long interval, bool restart)
 {
     static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png", "data/UI/3.png"};
     static int timer = 0;
     static int count = 4;
+    
+    if(restart)
+    {
+        timer = 0;
+        count = 4;
+    }
+    
     timer += interval;
     if(timer > 1000)
     {
@@ -101,8 +111,14 @@ bool MainController::countDown(unsigned long interval)
         timer = 0;
     }
     
+    if(count == 0)  //GO
+    {
+        jeepManager->release();
+    }
+    
     if(count < 0)
         return false;
+
     return true;
         
 }
@@ -115,6 +131,8 @@ void MainController::addActor(Actor * actor)
 
 void MainController::restart()
 {
+    ptr->counting = true;
+    ptr->countDown(0, true);    //restart countdown
 	ptr->jeepManager->restart();
 }
 

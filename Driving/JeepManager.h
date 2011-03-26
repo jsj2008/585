@@ -23,6 +23,8 @@ public:
 	JeepActor* getHuman();
 	Jeeps getAIs();
 	btVector3 getPlayerPos(int p) const;
+    void freezeAt(btVector3 const &);
+    void release();
 
 private:
 	Jeeps aiJeeps;
@@ -30,6 +32,7 @@ private:
 	LevelAI * levelAI;
 	JeepActor * human;
 	const libChasis mChasis;
+    int num_players;
 	
 	RenderObject const * jeepModel;
 };

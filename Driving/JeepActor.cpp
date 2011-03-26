@@ -31,7 +31,8 @@ c_roll2( LoadFloat("config/jeep_springs.xml", "c_roll2") ),
 max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
 turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
 audio_frame(new float [6]),
-isHuman(false)
+isHuman(false),
+frozen(false)
 {
 	orientation = rot;
 	
@@ -143,6 +144,17 @@ btVector3 JeepActor::update_tires()
 	return f0 / 2.0 + f1 / 2.0;
 }
 
+void JeepActor::freezeAt(btVector3 const & pos)
+{
+    frozenAt = pos;
+    frozen = true;
+}
+
+void JeepActor::release()
+{
+    this->chasis->activate(true);
+    frozen = false;
+}
 
 void JeepActor::isOnGround()
 {
@@ -203,6 +215,12 @@ void JeepActor::tick(seconds timeStep)
 		dying &= (springs[i]->plane_normal.length() == 0);	//check if all tires are off ground
 	}
 	
+	//can freeze player if we want//
+	if(frozen)
+	{
+        return;
+	}
+	
 	/*check if still able to drive*/
 	if(dying)
 	{
@@ -228,10 +246,12 @@ void JeepActor::tick(seconds timeStep)
 	this->long_speed = this->velocity.dot(u);
 	this->long_velocity = u*this->long_speed;
 	
+
 	isOnGround();	//update the onGround status
 	
 	//accumulate forces acting on jeep
 	btVector3 central_forces = btVector3(0,0,0);
+
 	
 	if(input->AcceleratePressed)
 	{
@@ -254,7 +274,6 @@ void JeepActor::tick(seconds timeStep)
 	//calculate environment forces on jeep	
 	//gravity
 	central_forces += btVector3(0, mass*gravity, 0);
-	
 	//friction
 	central_forces += long_friction();
 	central_forces += lateral_friction(delta);

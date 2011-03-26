@@ -21,7 +21,7 @@ public:
 	static Sound * Audio();
 	
 protected:
-    bool countDown(unsigned long);
+    bool countDown(unsigned long, bool restart=false);
 	static MainController * ptr;
 	ActorList actorList;
 	ActorList obstacleList;
@@ -36,6 +36,8 @@ protected:
 	Sound * const audio;
 	
 	Window & window;
+	
+    bool counting;
 	
 };
 #endif

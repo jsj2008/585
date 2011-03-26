@@ -23,6 +23,8 @@ public:
 	void render();
 	void reset(btQuaternion const &, btVector3 const &);
 	void registerAudio(Sound *);
+    void freezeAt(btVector3 const &);
+    void release();
 	
 	/*useful vectors*/
 	btVector3 u;	//jeep is facing this way
@@ -37,6 +39,7 @@ public:
 	btScalar delta;
 
 	bool onGround;
+    bool frozen;
 	
 		
 private:
@@ -75,7 +78,7 @@ private:
 	//other states
 	
 	btScalar die_time;
-	
+    btVector3 frozenAt;
 };
 
 #endif
