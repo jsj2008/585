@@ -67,8 +67,9 @@ void LevelAI::step() {
 			}
 		}
 
-		//path.debugDraw(pathPositions[c], Point(&playerPos));
-		//LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
+		path.debugDraw(pathPositions[c], Point(&playerPos));
+		LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
+		//LOG("Player progress: " << playerProgress(LoadInt("config/ai.xml","num_players")), "ai");
 	}
 }
 
@@ -90,6 +91,19 @@ Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point ac
 
 	Point closest = pathSegStart + (heading * t);
 	return closest;
+}
+
+double LevelAI::progressOnSeg(Point pathSegStart, Point pathSegEnd, Point actorPos) {
+	Vector3 startToPos = actorPos - pathSegStart;
+	Vector3 heading = pathSegEnd - pathSegStart;
+	float ab2 = heading.x*heading.x + heading.z*heading.z;
+	float ap_ab = startToPos.x*heading.x + startToPos.z*heading.z;
+	float t = ap_ab / ab2;
+	
+	if (t < 0.0f) t = 0.0f;
+	else if (t > 1.0f) t = 1.0f;
+
+	return t;
 }
 
 btVector3 LevelAI::getPathDirection(int lookAhead, int c) {
@@ -132,16 +146,22 @@ int LevelAI::getPlayerPlace(int p) {
 	int place = 1;
 	for (int i = 0; i < LoadInt("config/ai.xml","num_players")+1; i++) {
 		if (i == p) continue; // Don't compare to self
-		if (segments[i] > segments[p]) place++;
-		else if (segments[i] == segments[p]) {
-			if ((getPlayerPath(p).at(segments[i]+1) - pathPositions[i]).getMagnitude() < (getPlayerPath(p).at(segments[p]+1) - pathPositions[p]).getMagnitude())
-				place++;
-		}
+		if (playerProgress(i) > playerProgress(p)) place++;
 	}
 	return place;
 }
 
 Path LevelAI::getPlayerPath(int p) {
-	//return paths[p % paths.size()]; // The path player 'p' is following
-	return paths[0]; // TODO: Make paths equal
+	return paths[p % paths.size()]; // The path player 'p' is following
+}
+
+double LevelAI::playerProgress(int p) {
+	Path playerPath = getPlayerPath(p);
+	btVector3 playerPos = jeeps[p]->pos;
+	Point playerWorldPos = Point(playerPos.getX() + (width/2.0) * xscale, playerPos.getY(), playerPos.getZ() + (height/2.0) * zscale);
+
+	double segStartProgress = playerPath.pointProgress.at(segments[p]);
+	double segEndProgress = playerPath.pointProgress.at(segments[p]+1);
+	double segProgress = progressOnSeg(playerPath.points.at(segments[p]), playerPath.points.at(segments[p]+1), playerWorldPos);
+	return segStartProgress * (1-segProgress) + segEndProgress * segProgress;
 }
