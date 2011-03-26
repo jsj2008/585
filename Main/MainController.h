@@ -21,6 +21,7 @@ public:
 	static Sound * Audio();
 	
 protected:
+    bool countDown(unsigned long);
 	static MainController * ptr;
 	ActorList actorList;
 	ActorList obstacleList;

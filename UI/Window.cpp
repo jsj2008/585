@@ -10,7 +10,7 @@ void Window::loadScreen()
 {
     renderer->loadingMessage("data/UI/loading.jpg");
     updateGL();
-    LOG("load screen!!!", "temp");
+    LOG("Load Screen", "UI");
 }
 
 Window::Window() : loading(true)
@@ -72,6 +72,7 @@ void Window::run(MainController * controller)
 	bool quit = false;
 	int deltaT;
 	Uint32 before = SDL_GetTicks();
+    LOG("Run Physics", "UI");
 	while(!quit) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
