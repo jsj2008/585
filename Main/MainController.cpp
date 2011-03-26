@@ -60,6 +60,12 @@ void MainController::tick(unsigned long interval)
 {
     if(interval > 100)  //huge hack but seems to work
         return;
+    
+    static bool counting = true;
+    if(counting)
+    {
+        counting = countDown(interval);
+    }
         
 	renderer->step();
 	physics->step(interval / 1000.0);
@@ -75,6 +81,26 @@ void MainController::tick(unsigned long interval)
 	
 	renderer->setCamera(pos,look);
 	
+}
+
+bool MainController::countDown(unsigned long interval)
+{
+    static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png", "data/UI/3.png"};
+    static int timer = 0;
+    static int count = 4;
+    timer += interval;
+    if(timer > 1000)
+    {
+        std::cout << "count" << std::endl;
+        renderer->setMessage(imgs[count]);
+        count -= 1;
+        timer = 0;
+    }
+    
+    if(count < 0)
+        return false;
+    return true;
+        
 }
 
 void MainController::addActor(Actor * actor)
