@@ -58,6 +58,9 @@ window(window)
 
 void MainController::tick(unsigned long interval)
 {
+    if(interval > 100)  //huge hack but seems to work
+        return;
+        
 	renderer->step();
 	physics->step(interval / 1000.0);
 	jeepManager->renderTick();
