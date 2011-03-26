@@ -30,11 +30,12 @@ Window::Window() : loading(true)
      Uint32 flags = SDL_OPENGL;// | SDL_FULLSCREEN;
      drawContext = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 0, flags);
 	
-	SDL_WM_SetCaption("SDL App", NULL);
+	SDL_WM_SetCaption("The Legend of Abazu", NULL);
 
 	bInput = new Input();
 	aInput=new Input();
-
+	
+    SDL_ShowCursor(SDL_DISABLE);
 	
 }
 
@@ -87,6 +88,7 @@ void Window::run(MainController * controller)
 			switch(event.type) {
 			case SDL_QUIT:
 				quit = true;
+                SDL_ShowCursor(SDL_ENABLE);
 				break;
 			default:
 				quit=aInput->UpdateInput(event);
