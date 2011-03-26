@@ -16,6 +16,7 @@ class Path {
 private:
 	void addPoint(int x, int z);
 	void load(string filename);
+	void computeProgress();
 
 public:	
 	Path();
@@ -24,6 +25,7 @@ public:
 
 	RenderObject testCube;
 	vector<Point> points;
+	vector<double> pointProgress;
 	HeightMap* hm;
 
 	float xscale;

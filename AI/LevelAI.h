@@ -28,7 +28,9 @@ private:
 	Paths paths;
 
 	Point closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end);
+	double progressOnSeg(Point pathSegStart, Point pathSegEnd, Point actorPos);
 	Path getPlayerPath(int p);
+	double playerProgress(int p);
 
 public:	
 	LevelAI();

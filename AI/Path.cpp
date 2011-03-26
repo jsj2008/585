@@ -12,6 +12,8 @@ Path::Path(string filename) {
 	zscale = LoadFloat("config/world.xml","height_map_scale_z");
 
 	load(filename);
+	computeProgress();
+	int serser = 245;
 }
 
 Path::~Path() { }
@@ -84,4 +86,16 @@ void Path::load(string filename) {
 	double x, y;
 	while (in >> x >> y)
 		addPoint(x,y);
+}
+
+void Path::computeProgress() {
+	double totalLength = 0;
+	for (int i = 0; i < points.size() - 1; i++) {
+		totalLength += points.at(i).distanceTo(points.at(i+1));
+	}
+
+	pointProgress.push_back(0); // First point is zero
+	for (int i = 1; i < points.size(); i++) {
+		pointProgress.push_back(pointProgress.at(i-1) + (points.at(i-1).distanceTo(points.at(i)))/totalLength);
+	}
 }
