@@ -59,7 +59,10 @@ window(window)
 void MainController::tick(unsigned long interval)
 {
     if(interval > 100)  //huge hack but seems to work
+    {
+        std::cout << "LAG" << std::endl;
         return;
+    }
     
     static bool counting = true;
     if(counting)

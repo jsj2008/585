@@ -76,7 +76,8 @@ void Window::run(MainController * controller)
 	while(!quit) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
-		controller->tick(after - before);
+        float lastDelay = after - before;
+		controller->tick(lastDelay);
 		deltaT = delay - (after-before);
 		before = after;
 
@@ -92,7 +93,7 @@ void Window::run(MainController * controller)
 			}
 		}
 		aInput->checkState();
-		if(!loading)
+		if(!loading && lastDelay < 100)
 		    updateGL();
 		if (deltaT > 0) SDL_Delay( deltaT );
 	}
