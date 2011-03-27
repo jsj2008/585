@@ -27,4 +27,4 @@
 <param type="0" name="engine_torque" value="500" />
 <param type="0" name="torque_decay" value="1.1" />
 <param type="0" name="turning_cap" value="10" />
-<param type="0" name="turn_boost" value="50" />
+<param type="0" name="turn_boost" value="5" />
