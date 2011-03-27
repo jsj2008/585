@@ -22,6 +22,7 @@ public:
 	
 protected:
     bool countDown(unsigned long, bool restart=false);
+    void tickMenu(unsigned long);
 	static MainController * ptr;
 	ActorList actorList;
 	ActorList obstacleList;
@@ -38,6 +39,12 @@ protected:
 	Window & window;
 	
     bool counting;
+    bool inMenu;
+    bool startMenu;
+    bool menuSwitch;
+    int menuCount;
+    
+    btVector3 pos;
 	
 };
 #endif

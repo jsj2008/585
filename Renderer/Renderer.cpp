@@ -284,13 +284,13 @@ void Renderer::drawMessage() {
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(1, 1);
-		glVertex3f(2*(double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(width, height, 0);
 		glTexCoord2f(0, 1);
-		glVertex3f((double)width / 3.0, 2*(double)height / 3.0, 0);
+		glVertex3f(0, height, 0);
 		glTexCoord2f(0, 0);
-		glVertex3f((double)width / 3.0, (double)height / 3.0, 0);
+		glVertex3f(0, 0, 0);
 		glTexCoord2f(1, 0);
-		glVertex3f(2*(double)width / 3.0, (double)height / 3.0, 0);
+		glVertex3f(width, 0, 0);
 
 		glEnd();
 	glPopMatrix();

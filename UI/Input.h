@@ -22,6 +22,8 @@ public:
 	Uint8 BRAKEBUTTON;
 	Uint8 EBRAKEBUTTON;
 	SDL_Joystick *joystick;
+	
+    bool Escape;
 
 	Input();
 	~Input();

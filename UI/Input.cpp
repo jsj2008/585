@@ -32,6 +32,7 @@ Input::Input(){
 	ACCELBUTTON=0;
 	BRAKEBUTTON=1;
 	EBRAKEBUTTON=2;
+    Escape = false;
 }
 
 void Input::checkState(){
@@ -91,6 +92,7 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_RIGHT: XAxis=1.0; break;
             case SDLK_DOWN: YAxis=-1.0;  break;
             case SDLK_UP: YAxis=1.0; break;
+            case SDLK_ESCAPE: Escape = true; break;
         }//end switch
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=true;
 		if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=true;
@@ -106,6 +108,7 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_RIGHT: XAxis=0; break;
             case SDLK_DOWN: YAxis=0;  break;
             case SDLK_UP: YAxis=0; break;
+            case SDLK_ESCAPE: Escape = false; break;
         }
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=false;
         if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=false;

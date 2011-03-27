@@ -1,3 +1,4 @@
+#include "Common/Debug.h"
 #include "MainController.h"
 #include <Renderer/Renderer.h>
 #include <Common/Actor.h>
@@ -11,6 +12,7 @@
 #include "Renderer/Models.h"
 #include "UI/Window.h"
 #include "Obstacles.h"
+#include "UI/Input.h"
 
 
 MainController * MainController::ptr = NULL;
@@ -23,7 +25,11 @@ MainController::MainController(Window & window) :
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
 audio(new Sound() ),
 window(window),
-counting(true)
+counting(true),
+inMenu(true),
+startMenu(false),
+menuSwitch(true),
+menuCount(0)
 {
 
 	if(ptr == NULL)
@@ -52,9 +58,80 @@ counting(true)
 
 	JeepActor * human = jeepManager->getHuman();
 	human->registerAudio(audio);
-	audio->beginLevel();
-	audio->playMusic();
+    // audio->beginLevel();
+    // audio->playMusic();
 
+}
+
+void MainController::tickMenu(unsigned long interval)
+{
+    renderer->step();   //ensures a nice background
+    jeepManager->renderTick();  //keep this in case it's paused
+    
+    if(!startMenu)
+    {
+        static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/paused_3.png"};
+        
+        if(menuCount < 0)   //all the way up
+        {
+            menuCount = 0;
+            menuSwitch = false; //don't bother reloading
+        }else if(menuCount > 3)   //all the way down
+        {
+            menuCount = 3;  //for now only 0 menus
+            menuSwitch = false; //don't bother reloading
+        }
+        
+        if(menuSwitch)
+        {
+            renderer->setMessage(menus[menuCount]);
+            menuSwitch = false;
+        }
+        
+        JeepActor* player = jeepManager->getHuman();
+    	btVector3 look = player->pos;
+        static btScalar angle = 0.0;
+        angle += 0.005;
+        btVector3 behind = quatRotate(btQuaternion(btVector3(0,1,0), angle) * player->orientation,  btVector3(-0.8,0.4, 0) );
+    	pos += (look+ 25*behind - pos ) / 10.0;
+
+    	renderer->setCamera(pos,look);
+    	    	
+    }else   //proper menu
+    {
+        
+    }
+    
+	//check user input
+	static int keyCount = 0;    //big hack because our controller input is awesome
+    keyCount += interval;
+    if(keyCount < 50)
+        return;    
+	
+	if(window.aInput->AcceleratePressed)  //go up
+	{
+        keyCount = 0;
+        menuCount --;
+        menuSwitch = true;
+	}
+	
+	if(window.aInput->BrakePressed)  //go down
+	{
+        keyCount = 0;
+        menuCount ++;
+        menuSwitch = true;
+	}
+	
+	if(window.aInput->EBrakePressed)    //stand in for enter
+	{
+        renderer->setMessage("");
+        inMenu = false;
+	}
+	        LOG("menuCount " << menuCount, "temp");
+	
+	
+    
+    
 }
 
 void MainController::tick(unsigned long interval)
@@ -64,6 +141,13 @@ void MainController::tick(unsigned long interval)
         std::cout << "LAG" << std::endl;
         return;
     }
+    
+    if(inMenu)
+    {
+        tickMenu(interval); //if we're in menu mode then don't do these other steps
+        return;
+    }
+    
     
     if(counting)
     {
@@ -80,12 +164,20 @@ void MainController::tick(unsigned long interval)
 	/*giant hack for camera*/
 
 	JeepActor* player = jeepManager->getHuman();
-	static btVector3 pos = btVector3(0,0,0);
 	btVector3 look = player->pos;
 	btVector3 behind = quatRotate(player->orientation, btVector3(-0.8,0.4, 0) );
 	pos += (look+ 25*behind - pos ) / 10.0;
 	
 	renderer->setCamera(pos,look);
+	
+	//check for menu input
+	if(window.aInput->Escape)    //hack for start menu or something
+	{
+        inMenu = true;
+        menuSwitch = true;
+        startMenu = false;
+        menuCount = 0;
+	}
 	
 }
 
