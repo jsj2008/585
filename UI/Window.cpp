@@ -46,7 +46,6 @@ Window::Window() : loading(true)
 
 void Window::stopLoading()
 {
-    renderer->setMessage("");
     loading = false;
 }
 
