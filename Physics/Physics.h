@@ -16,6 +16,7 @@ public:
 	~Physics();
 	void newActors(ActorList const & newActors);	//physics needs to know if new objects have been added to actorList
 	void step(btScalar timeStep);
+    void restart();
 	btRigidBody * const newActor(Actor * const);
 	friend class Spring;
 	friend class JeepActor;

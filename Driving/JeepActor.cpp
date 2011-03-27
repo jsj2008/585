@@ -90,9 +90,23 @@ void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
 {
 	btTransform tr(rot, pos);
 	chasis->setWorldTransform(tr);
-	chasis->clearForces();
 	chasis->setLinearVelocity(btVector3(0,0,0));
 	chasis->setAngularVelocity(btVector3(0,0,0));
+		
+	u = btVector3(1,0,0);	//jeep is facing this way
+	up_axis = btVector3(0,1,0);	//up of jeep
+	lateral = btVector3(0,0,1);	//lateral of jeep
+	velocity = btVector3(0,0,0);
+	speed = 0;
+	long_velocity = velocity;
+	long_speed = 0;
+	delta = false;
+
+	onGround = false;
+    frozen = true;
+	
+    for(int i=0; i<4; i++)
+        springs[i]->reset();
 }
 
 void JeepActor::render()
@@ -148,12 +162,17 @@ void JeepActor::freezeAt(btVector3 const & pos)
 {
     frozenAt = pos;
     frozen = true;
+    
+    for(int i=0; i<4; i++)
+        springs[i]->frozen = true;
 }
 
 void JeepActor::release()
 {
     this->chasis->activate(true);
     frozen = false;
+    for(int i=0; i<4; i++)
+        springs[i]->frozen = false;
 }
 
 void JeepActor::isOnGround()

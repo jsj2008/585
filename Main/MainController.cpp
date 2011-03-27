@@ -27,7 +27,7 @@ audio(new Sound() ),
 window(window),
 counting(true),
 inMenu(true),
-startMenu(false),
+startMenu(true),
 menuSwitch(true),
 menuCount(0)
 {
@@ -51,13 +51,13 @@ menuCount(0)
 	/*audio code*/
 	alutInit(NULL, 0);
 	alGetError();
-	if(audio->LoadALData() == AL_FALSE)
-		std::cout << "could not load audio" << std::endl;
+    // if(audio->LoadALData() == AL_FALSE)
+        // std::cout << "could not load audio" << std::endl;
 
 	atexit(cleanup);
 
-	JeepActor * human = jeepManager->getHuman();
-	human->registerAudio(audio);
+    // JeepActor * human = jeepManager->getHuman();
+    // human->registerAudio(audio);
     // audio->beginLevel();
     // audio->playMusic();
 
@@ -65,21 +65,17 @@ menuCount(0)
 
 void MainController::tickMenu(unsigned long interval)
 {
-    renderer->step();   //ensures a nice background
-    jeepManager->renderTick();  //keep this in case it's paused
     
     if(!startMenu)
     {
-        static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/paused_3.png"};
+        static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png"};
         
         if(menuCount < 0)   //all the way up
         {
-            menuCount = 0;
-            menuSwitch = false; //don't bother reloading
-        }else if(menuCount > 3)   //all the way down
+            menuCount = 2;
+        }else if(menuCount > 2)   //all the way down
         {
-            menuCount = 3;  //for now only 0 menus
-            menuSwitch = false; //don't bother reloading
+            menuCount = 0;  //for now only 0 menus
         }
         
         if(menuSwitch)
@@ -96,9 +92,22 @@ void MainController::tickMenu(unsigned long interval)
     	pos += (look+ 25*behind - pos ) / 10.0;
 
     	renderer->setCamera(pos,look);
+    	//draw world and such so it's nice
+        renderer->step();   //ensures a nice background
+        jeepManager->renderTick();  //keep this in case it's paused
+    	
     	    	
     }else   //proper menu
     {
+        static std::string menus[] = {"data/UI/start_0.jpg"};
+        
+        menuCount = 0;
+        if(menuSwitch)
+        {
+            renderer->setMessage(menus[0]);
+            renderer->step();
+            menuSwitch = false;
+        }
         
     }
     
@@ -108,28 +117,39 @@ void MainController::tickMenu(unsigned long interval)
     if(keyCount < 50)
         return;    
 	
-	if(window.aInput->AcceleratePressed)  //go up
+	if(window.aInput->XAxis == -1)  //go left
 	{
         keyCount = 0;
         menuCount --;
         menuSwitch = true;
 	}
 	
-	if(window.aInput->BrakePressed)  //go down
+	if(window.aInput->XAxis == 1)  //go right
 	{
         keyCount = 0;
         menuCount ++;
         menuSwitch = true;
 	}
 	
-	if(window.aInput->EBrakePressed)    //stand in for enter
+	if(window.aInput->Enter)
 	{
-        renderer->setMessage("");
-        inMenu = false;
-	}
-	        LOG("menuCount " << menuCount, "temp");
-	
-	
+	    if(menuCount == 0)
+	    {
+            renderer->setMessage("");
+            inMenu = false;
+        }
+        if(menuCount == 1)
+        {
+            restart();
+            renderer->setMessage("");
+            inMenu = false;
+        }
+        
+        if(menuCount == 2)
+        {
+            window.quit();
+        }
+	}	
     
     
 }
@@ -223,6 +243,7 @@ void MainController::addActor(Actor * actor)
 
 void MainController::restart()
 {
+    ptr->physics->restart();
     ptr->counting = true;
     ptr->countDown(0, true);    //restart countdown
 	ptr->jeepManager->restart();

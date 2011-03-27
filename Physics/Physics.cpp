@@ -11,6 +11,11 @@
 // #define DEBUG_RENDERING
 // #define DEBUG_RENDERING2
 
+void Physics::restart()
+{
+    dynamicsWorld.clearForces();
+}
+
 Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) : 
 	actorList(actors), 
 	debugger(debugger), 

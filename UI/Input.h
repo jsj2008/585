@@ -24,6 +24,7 @@ public:
 	SDL_Joystick *joystick;
 	
     bool Escape;
+    bool Enter;
 
 	Input();
 	~Input();

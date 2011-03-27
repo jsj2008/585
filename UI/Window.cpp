@@ -13,6 +13,11 @@ void Window::loadScreen()
     LOG("Load Screen", "UI");
 }
 
+void Window::quit()
+{
+    quitMe = true;
+}
+
 Window::Window() : loading(true)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);	//initialize timer, audio, video, cd_rom, and joystick
@@ -70,11 +75,11 @@ void Window::updateGL()
 void Window::run(MainController * controller)
 {     
 	static int const & delay = LoadInt("config/window.xml", "delay");
-	bool quit = false;
+    quitMe = false;
 	int deltaT;
 	Uint32 before = SDL_GetTicks();
     LOG("Run Physics", "UI");
-	while(!quit) {
+	while(!quitMe) {
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear last drawing
 		Uint32 after = SDL_GetTicks();
         float lastDelay = after - before;
@@ -87,11 +92,11 @@ void Window::run(MainController * controller)
 			LOG("Raw input: " << event.jaxis.value, "input");
 			switch(event.type) {
 			case SDL_QUIT:
-				quit = true;
+				quitMe = true;
                 SDL_ShowCursor(SDL_ENABLE);
 				break;
 			default:
-				quit=aInput->UpdateInput(event);
+                aInput->UpdateInput(event);
 			}
 		}
 		aInput->checkState();

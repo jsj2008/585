@@ -17,8 +17,10 @@ public:
 	btVector3 getLateralForce(btVector3 const & linear_velocity, btVector3 const & tire_direction);
 	btVector3 getFriction(btVector3 const & linear_velocity, btVector3 const & angular_velocity) const;
 	btVector3 plane_normal;
+    bool frozen;
 	void render();
 	void spinTire(btVector3 const &, btScalar);
+    void reset();
 	
 private:
 	

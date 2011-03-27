@@ -24,6 +24,7 @@ public:
 	int ScreenWidth() const {return SDL_GetVideoSurface()->w;}
 	int ScreenHeight() const {return SDL_GetVideoSurface()->h;}
 	int ScreenDepth() const {return SCREEN_DEPTH;}
+    void quit();
 	Input *aInput;
 	Input *bInput;
 	Renderer * renderer;
@@ -42,6 +43,7 @@ private:
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;
 	bool loading;
+    bool quitMe;
 
 };
 #endif

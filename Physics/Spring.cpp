@@ -12,6 +12,20 @@
 // RenderObject Spring::wheelModel;
 
 // #define DEBUG_RENDERER
+
+void Spring::reset()
+{
+	old_x = 0;
+	was_hit = false;
+	current_weight = 0;
+	wheel_speed = 0;
+	current_direction = btQuaternion::getIdentity();
+	btVector3 hitPoint = btVector3(0,0,0);
+	tire_rot = 0;
+    plane_normal = btVector3(0,0,0);
+    
+}
+
 btScalar Spring::slip_ratio_lookup(btScalar slip)	//replace with a real lookup
 {
 	return slip*200.0;
@@ -64,6 +78,9 @@ btVector3 Spring::planeProjection(btVector3 const & tire_direction) const
 
 void Spring::spinTire(btVector3 const & lateral, btScalar linear_velocity)
 {
+    if(frozen)
+        return;
+        
 	btScalar speed = 0;
 	speed = -linear_velocity/100.0;
 	tire_rot += speed;
@@ -148,6 +165,7 @@ current_direction(0,0,0)
 	MainController::addActor(wheel_actor);
 	old_x = 0;
 	tire_rot = 0;
+    frozen = true;
 }
 
 btScalar Spring::getWeight()
@@ -210,7 +228,7 @@ void Spring::tick(seconds timeStep, btVector3 const & pos, btScalar steer_angle)
 		
 		btScalar angle_scale = projection.dot( this->plane_normal );
 		force *= angle_scale;
-		if(force > 0)
+		if(force > 0 && !frozen)
 		{
 			chasis->applyForce( projection * force , from - pos);
 			current_weight = force;
