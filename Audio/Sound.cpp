@@ -140,7 +140,7 @@ void Sound::loadAudio(char * file)
     #if defined(__APPLE__)
     alutLoadWAVFile(file, &alFormatBuffer, (void **) &data.back(), &alBufferLen, &alFreqBuffer);
     #else
-    alutLoadWAVFile(file, &alFormatBuffer, (void **) &data.back(), &alBufferLen, &alFreqBuffer, &loop);
+    alutLoadWAVFile(file, &alFormatBuffer, (void **) &data.back(), &alBufferLen, &alFreqBuffer, &alLoop);
     #endif
     
     unsigned int alSampleSet;
