@@ -32,6 +32,7 @@ Input::Input(){
 	ACCELBUTTON=0;
 	BRAKEBUTTON=1;
 	EBRAKEBUTTON=2;
+	STARTBUTTON = 7;
     Escape = false;
     Enter = false;
 }
@@ -179,19 +180,24 @@ bool Input::UpdateInput(SDL_Event& event){
 	}//end else if type
 	else if(event.type ==SDL_JOYBUTTONDOWN){
 		//TODO:Figure out which xbox button is which 
-		if(event.jbutton.button==ACCELBUTTON) AcceleratePressed=true;
+		if(event.jbutton.button==ACCELBUTTON)
+		{
+			AcceleratePressed=true; Enter = true;
+		}
+		if(event.jbutton.button == STARTBUTTON) Escape = true;
         if(event.jbutton.button==BRAKEBUTTON) BrakePressed=true;
 		if(event.jbutton.button==EBRAKEBUTTON) EBrakePressed=true;
 	}//end else if type button
 	else if(event.type ==SDL_JOYBUTTONUP){
 		//TODO:Figure out which xbox button is which 
-		if(event.jbutton.button==ACCELBUTTON) AcceleratePressed=false;
+		if(event.jbutton.button==ACCELBUTTON)
+		{
+			AcceleratePressed=false; Enter = false;
+		}
+		if(event.jbutton.button == STARTBUTTON) Escape = false;
         if(event.jbutton.button==BRAKEBUTTON) BrakePressed=false;
 		if(event.jbutton.button==EBRAKEBUTTON) EBrakePressed=false;
 	}//end else if type button
-
-	LOG("\t" << XAxis, "input");
-
 	YAxis = 1.0;
 
 	return false;//tell quit to quit
