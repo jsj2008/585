@@ -10,7 +10,6 @@ int main(int , char **) {
 	SettingsFactory settings_singleton;
 	START_LOG();
 	HeightMapManager hm;
-	
 	Window window;	//launch SDL window
 	MainController m(window);
 	window.stopLoading();

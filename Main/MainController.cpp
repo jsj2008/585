@@ -17,10 +17,6 @@
 
 MainController * MainController::ptr = NULL;
 
-void cleanup(){
-    // MainController::Audio()->KillALData();
-}
-
 MainController::MainController(Window & window) : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
 window(window),
@@ -28,7 +24,8 @@ counting(true),
 inMenu(true),
 startMenu(true),
 menuSwitch(true),
-menuCount(0)
+menuCount(0),
+pos(btVector3(0,0,0))
 {
 
 	if(ptr == NULL)
@@ -45,7 +42,7 @@ menuCount(0)
     menuMusic = audio->addSource("data/audio/WildDiscovery.wav", true);  //music
     audio->playSource(menuMusic);
     
-	models = new Models();
+    models = new Models();
     obstacles = new Obstacles();
 	obstacles->initialize(obstacleList);
 	physics->newActors(obstacleList);	//adds the obstacles
@@ -87,9 +84,7 @@ void MainController::tickMenu(unsigned long interval)
     	pos += (look+ 25*behind - pos ) / 10.0;
 
     	renderer->setCamera(pos,look);
-    	//draw world and such so it's nice
-        renderer->step();   //ensures a nice background
-        jeepManager->renderTick();  //keep this in case it's paused
+    	
     	
     	    	
     }else   //proper menu
@@ -153,7 +148,11 @@ void MainController::tickMenu(unsigned long interval)
         {
             window.quit();
         }
-	}	
+	}
+	
+	//draw world and such so it's nice
+    renderer->step();   //ensures a nice background
+    jeepManager->renderTick();  //keep this in case it's paused	
     
     
 }
@@ -259,11 +258,6 @@ void MainController::restart()
 	ptr->jeepManager->restart();
 }
 
-Sound * MainController::Audio()
-{
-	return ptr->audio;
-}
-
 MainController::~MainController()
 {
 	for(ActorList::iterator itr = actorList.begin(); itr != actorList.end(); ++itr)
@@ -271,7 +265,7 @@ MainController::~MainController()
 		delete (*itr);
 	}
 	
-	delete models;
+    // delete models;
 	
 	delete physics;
 	delete renderer;

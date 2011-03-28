@@ -18,7 +18,6 @@ public:
 	void tick(unsigned long);
 	static void restart();
 	static void addActor(Actor *);
-	static Sound * Audio();
 	
 protected:
     bool countDown(unsigned long, bool restart=false);
