@@ -4,8 +4,8 @@
 #include "Common/Debug.h"
 #include "Audio/Sound.h"
 
-float gears_max[] = {1.0, 1.2, 1.4, 1.7};
-float gears_min[] = {0.6, 0.65, 0.7, 0.75};
+float gears_max[] = {2.0, 3.2, 3.4, 3.7};
+float gears_min[] = {1.6, 1.65, 1.7, 1.75};
 
 int last_gear = 3;
 

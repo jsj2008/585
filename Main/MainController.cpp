@@ -135,6 +135,7 @@ void MainController::tickMenu(unsigned long interval)
             inMenu = false;
             audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
+            
             audio->playSource(gameMusic);
         }
         if(menuCount == 1)

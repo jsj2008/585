@@ -49,7 +49,7 @@ protected:
     DataKey keys;
     Loops loops;
     
-    void loadAudio(char *);
+    void loadAudio(char *, bool loop = true);
 
     
 

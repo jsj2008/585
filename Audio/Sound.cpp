@@ -59,9 +59,9 @@ Sound::Sound()
     
     alGetError();
     loadAudio("data/audio/engine.wav");
-    loadAudio("data/audio/accel_2.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
+    
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -122,7 +122,6 @@ void Sound::playSource(unsigned int alSource)
     alGetSourcei(alSource, AL_SOURCE_STATE, &t);
     if(t != AL_PLAYING)
     {
-        alSourceRewind(alSource);
         alSourcePlay(alSource);
     }
 }
@@ -183,7 +182,7 @@ void Sound::restartAllSources()
 }
 
 
-void Sound::loadAudio(char * file)
+void Sound::loadAudio(char * file, bool loop)
 {
     char * alBuffer;
     data.push_back(alBuffer);    //add to our audio library
@@ -213,7 +212,7 @@ void Sound::loadAudio(char * file)
     
     
     //lazy for now all loop
-    loops.push_back(AL_TRUE);
+    loops.push_back(loop);
     
 }
 
@@ -258,11 +257,11 @@ unsigned int Sound::addSource(char * file, bool relative)
     
     
     //add to sources
+    sources.push_back(alSource);
     if(!relative)
-        sources.push_back(alSource);
-    else
+    {
         dSources.push_back(alSource);
-    
+    }
     
     return alSource;
 }
