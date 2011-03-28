@@ -131,7 +131,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
             
-            audio->playSource(gameMusic);
+            //audio->playSource(gameMusic);
         }
         if(menuCount == 1)
         {

@@ -118,9 +118,8 @@ void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
 void JeepActor::render()
 {
     Sound * ptr = Sound::GetInstance();
-    ptr->setSource(idleSource, pos, velocity, -u);
+    ptr->setSource(idleSource, pos, velocity, u);
     engine.sound(idleSource);
-    engine.step(0, 0);
     
 	for(int i=0; i<4; i++)
 		springs[i]->render();
@@ -282,19 +281,24 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 central_forces = btVector3(0,0,0);
 
 	
+
 	if(input->AcceleratePressed)
 	{
-		engine.accelerate(input->YAxis);
+		engine.accelerate(input->YAxis, !onGround);
 		central_forces += update_tires();
 		
 		
-	}
+	}else
+	
 
 	if(input->BrakePressed)
 	{
-		engine.decelerate(fabs(input->YAxis));
+		engine.decelerate(fabs(input->YAxis), !onGround);
 		central_forces += update_tires();
         
+	}else
+	{
+		engine.step(!onGround);
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");

@@ -4,10 +4,12 @@
 #include "Common/Debug.h"
 #include "Audio/Sound.h"
 
-float gears_max[] = {2.0, 3.2, 3.4, 3.7};
-float gears_min[] = {1.6, 1.65, 1.7, 1.75};
-
-int last_gear = 3;
+float gears_max[] = {3.4, 3.5, 3.7, 3.9, 3.0};
+float gears_top[] = {2.5, 2.7, 3.0, 2.9, 3.0};
+float gears_min[] = {1.6, 1.75, 1.85, 1.95, 2.0};
+float gears_ratio[] = {0.012, 0.012, 0.013, 0.014, 0.014};
+float air_boost = 1.5;
+int last_gear = 4;
 
 JeepEngine::JeepEngine() :
 engine_torque( LoadFloat("config/jeep_springs.xml", "engine_torque") ),
@@ -26,18 +28,22 @@ void JeepEngine::sound(unsigned int alSource)
     ptr->setPitch(alSource, engine_pitch);
 }
 
-void JeepEngine::accelerate(float max)
+void JeepEngine::accelerate(float max, bool inAir)
 {
-    engine_pitch += 0.005;
-    if(engine_pitch > gears_max[gear])
+	float delta = gears_ratio[gear];
+	if(inAir)
+		delta *= air_boost;
+
+    engine_pitch += delta;
+    if(engine_pitch > gears_max[gear] && !inAir)
     {
         if(gear < last_gear)
         {
             gear ++;
-            engine_pitch = gears_min[gear];
+            engine_pitch = gears_min[gear] + 0.1;
         }else
         {
-            engine_pitch -= 0.005;
+            engine_pitch = gears_max[gear];
         }
     }
     
@@ -51,18 +57,22 @@ void JeepEngine::accelerate(float max)
 		torque = max_torque*max;
 }
 
-void JeepEngine::decelerate(float max)
+void JeepEngine::decelerate(float max, bool inAir)
 {
-    engine_pitch -= 0.007;
-    if(engine_pitch < gears_min[gear])
+	float delta = gears_ratio[gear];
+	if(inAir)
+		delta *= air_boost;
+
+    engine_pitch -= delta;
+    if(engine_pitch < gears_min[gear] && !inAir)
     {
         if(gear > 0)
         {
             gear --;
-            engine_pitch = gears_max[gear];
+            engine_pitch = gears_top[gear + 1];
         }else
         {
-            engine_pitch += 0.007;
+            engine_pitch = gears_min[gear];
         }
     }
     
@@ -78,18 +88,22 @@ void JeepEngine::decelerate(float max)
 		torque = min_torque*max;
 }
 
-void JeepEngine::step(float timeStep, float accelerate)
+void JeepEngine::step(bool inAir)
 {
-    engine_pitch -= 0.004;
-    if(engine_pitch < gears_min[gear])
+	float delta = 0.02;
+	if(inAir)
+		delta *= air_boost;
+
+    engine_pitch -= delta;
+    if(engine_pitch < gears_min[gear]  && !inAir)
     {
         if(gear > 0)
         {
             gear --;
-            engine_pitch = gears_max[gear];
+            engine_pitch = gears_top[gear + 1];
         }else
         {
-            engine_pitch += 0.004;
+            engine_pitch += delta;
         }
     }
     // torque /= torque_decay;      

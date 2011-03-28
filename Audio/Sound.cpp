@@ -70,7 +70,7 @@ Sound::Sound()
     
    //setup the doppler effects
    alDopplerFactor(1.0);
-   alSpeedOfSound(1193.0);
+   //alSpeedOfSound(1193.0);
     
 }
 
@@ -249,12 +249,13 @@ unsigned int Sound::addSource(char * file, bool relative)
     alSourcei(alSource, AL_SOURCE_RELATIVE, relative);
     
     //how far it can go
-    alSourcef(alSource, AL_REFERENCE_DISTANCE, 50);
+    alSourcef(alSource, AL_REFERENCE_DISTANCE, 100);
     
     //how loud/quiet it can get
     alSourcef(alSource, AL_MAX_GAIN, 5);
     alSourcef(alSource, AL_MIN_GAIN, 0.1);
     
+	//alSourcef(alSource, AL_ROLLOFF_FACTOR, 0.1);
     
     //add to sources
     sources.push_back(alSource);
