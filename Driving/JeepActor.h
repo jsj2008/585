@@ -79,6 +79,9 @@ private:
 	
 	btScalar die_time;
     btVector3 frozenAt;
+    
+    //audio sources
+    unsigned int engineSource;
 };
 
 #endif

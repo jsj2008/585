@@ -1,63 +1,47 @@
 #ifndef SOUND_H
 #define SOUND_H
-#include <math.h>
 #include <sound_dependencies/alc.h>
 #include <sound_dependencies/al.h>
 #include <sound_dependencies/alut.h>
 #include <btBulletDynamicsCommon.h>
-
-
-#define NUM_BUFFERS 9
-#define NUM_SOURCES 9
-
-#define MUSIC	0
-#define BIRDS	1
-#define ENGINE	2
-#define START	3
-#define CRASH	4
-#define PANIC	5
-#define DIE		6
-#define HEART	7
-#define ROAR	8
+#include <vector>
+#include <map>
 
 class Sound
 {
 	public:
 
-	float heartPitch;
-	float enginePitch;
-	float panicPitch;
-
 	Sound();
 	~Sound();
-
-	void KillALData();
-	ALboolean LoadALData();
-	void increasePitch(float pitchFactor);
-	void decreasePitch(float pitchFactor);
 	
-	void pauseTrack(ALuint track);
-	void stopTrack(ALuint track);
-	void playTrack(ALuint track);
+    
+    static Sound * ptr;
+    static Sound * const GetInstance();
+    void setListener(btVector3 const & pos, btVector3 const & vel, float * orientation);
+    unsigned int addSource(char *);   //used to register new source from jeeps and such
+    void playAllSources();
+    void setSource(unsigned int, btVector3 const & pos, btVector3 const & vel, btVector3 const & dir);
+    void changePitch(unsigned int, float);
+    
+protected:
+    ALCcontext * context;
+    ALCdevice * device;
+    
+    typedef std::vector<char *> Data;
+    typedef std::vector<unsigned int> Buffers;
+    typedef std::vector<unsigned int> Sources;
+    typedef std::map<char *, unsigned int> DataKey;
+    typedef std::pair<char *, unsigned int> DataKeyPair;
+    typedef std::vector<int> Loops;
+    Data data;
+    Buffers buffers;
+    Sources sources;
+    DataKey keys;
+    Loops loops;
+    
+    void loadAudio(char *);
 
-	void SetListenerValues(btScalar const *, btScalar const *, float const *);
-
-	void beginLevel();
-	void playHeart();
-	void playRoar();
-	void playJump();
-	void playLand();
-	void playHit();
-	void playMusic();
-	void playPanic();
-	void increasePanic(float pitchFactor);
-	void decreasePanic(float pitchFactor);
-	void playAmbient();
-	void playEngine();
-	void playIgnition();
-	void playDie();
-	void playDiePanic();
-	void playRespawn();
+    
 
 };
 #endif

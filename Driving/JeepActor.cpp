@@ -84,6 +84,11 @@ frozen(false)
 	delta = 0;
 	die_time = 0;
 	long_speed = 0;
+	
+	//setup all the sounds
+    Sound * ptr = Sound::GetInstance();
+    engineSource = ptr->addSource("engine");
+	
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
@@ -218,9 +223,11 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 void JeepActor::tick(seconds timeStep)
 {
-	
+    Sound * ptr = Sound::GetInstance();
+    ptr->setSource(engineSource, pos, velocity, u);
 	/*get steering info*/
-	MainController::Audio()->decreasePitch(0.05);
+	Sound::GetInstance()->changePitch(engineSource, -0.05);
+    
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
 	bool dying = true;
 	for(int i=0; i<4; i++)
@@ -246,8 +253,8 @@ void JeepActor::tick(seconds timeStep)
 		die_time += timeStep;
 	}else
 	{
-		if(die_time > 0.7)
-			MainController::Audio()->playJump();
+        // if(die_time > 0.7)
+            // MainController::Audio()->playJump();
 		die_time = 0;
 	}
 	
@@ -276,7 +283,7 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.accelerate(input->YAxis);
 		central_forces += update_tires();
-		//MainController::Audio()->increasePitch(0.1);
+        Sound::GetInstance()->changePitch(engineSource, 0.1);
 		
 		
 	}
@@ -285,7 +292,8 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.decelerate(fabs(input->YAxis));
 		central_forces += update_tires();
-		//MainController::Audio()->decreasePitch(0.3);
+		Sound::GetInstance()->changePitch(engineSource, -0.3);
+        
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");
@@ -364,7 +372,7 @@ JeepActor::~JeepActor()
 
 void JeepActor::registerAudio(Sound * audio)
 {
-	audio->SetListenerValues(&pos.x(), &velocity.y(), audio_frame);
+    // audio->SetListenerValues(&pos.x(), &velocity.y(), audio_frame);
 }
 
 void JeepActor::setOrientation(btQuaternion const & rot)
@@ -402,4 +410,5 @@ void JeepActor::setPosition(btVector3 const & pos)
 		to[i] = quatRotate(orientation, origin_to[i]);
 		from[i] += pos;
 		to[i] += pos;
-	}}
+	}	
+}

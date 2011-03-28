@@ -18,7 +18,7 @@
 MainController * MainController::ptr = NULL;
 
 void cleanup(){
-	MainController::Audio()->KillALData();
+    // MainController::Audio()->KillALData();
 }
 
 MainController::MainController(Window & window) : 
@@ -48,18 +48,11 @@ menuCount(0)
 	jeepManager->initialize(physics, window.aInput);
     renderer->jeepManager = jeepManager; //update the pointer
     
-	/*audio code*/
-	alutInit(NULL, 0);
-	alGetError();
-    // if(audio->LoadALData() == AL_FALSE)
-        // std::cout << "could not load audio" << std::endl;
-
-	atexit(cleanup);
-
     // JeepActor * human = jeepManager->getHuman();
     // human->registerAudio(audio);
     // audio->beginLevel();
     // audio->playMusic();
+    Sound::GetInstance()->playAllSources();
 
 }
 
@@ -189,6 +182,12 @@ void MainController::tick(unsigned long interval)
 	pos += (look+ 25*behind - pos ) / 10.0;
 	
 	renderer->setCamera(pos,look);
+	
+	Sound * ptr = Sound::GetInstance();
+    float t[] = {-behind[0], -behind[1], -behind[2], 0, 1, 0};
+    ptr->setListener(pos, player->velocity, t);
+    
+	
 	
 	//check for menu input
 	if(window.aInput->Escape)    //hack for start menu or something
