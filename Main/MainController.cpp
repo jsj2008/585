@@ -23,7 +23,6 @@ void cleanup(){
 
 MainController::MainController(Window & window) : 
 physics(PhysicsFactory::newPhysics(actorList, debugger) ),
-audio(new Sound() ),
 window(window),
 counting(true),
 inMenu(true),
@@ -40,6 +39,12 @@ menuCount(0)
     window.loadScreen();
 
     renderer->initialize();
+    
+    audio = new Sound();
+    gameMusic = audio->addSource("data/audio/TribalGroove.wav", true);  //music
+    menuMusic = audio->addSource("data/audio/WildDiscovery.wav", true);  //music
+    audio->playSource(menuMusic);
+    
 	models = new Models();
     obstacles = new Obstacles();
 	obstacles->initialize(obstacleList);
@@ -48,17 +53,14 @@ menuCount(0)
 	jeepManager->initialize(physics, window.aInput);
     renderer->jeepManager = jeepManager; //update the pointer
     
-    // JeepActor * human = jeepManager->getHuman();
-    // human->registerAudio(audio);
-    // audio->beginLevel();
-    // audio->playMusic();
-    Sound::GetInstance()->playAllSources();
-
+    
 }
 
 void MainController::tickMenu(unsigned long interval)
 {
-    
+    audio->pauseAllDynamicSources();
+    audio->pauseSource(gameMusic);
+    audio->playSource(menuMusic);
     if(!startMenu)
     {
         static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png"};
@@ -128,14 +130,22 @@ void MainController::tickMenu(unsigned long interval)
 	{
 	    if(menuCount == 0)
 	    {
+	            
             renderer->setMessage("");
             inMenu = false;
+            audio->playAllDynamicSources();
+            audio->pauseSource(menuMusic);
+            audio->playSource(gameMusic);
         }
         if(menuCount == 1)
         {
             restart();
             renderer->setMessage("");
             inMenu = false;
+            audio->restartAllDynamicSources();
+            audio->pauseSource(menuMusic);
+            audio->restartSource(gameMusic);
+            
         }
         
         if(menuCount == 2)

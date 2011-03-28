@@ -18,10 +18,19 @@ class Sound
     static Sound * ptr;
     static Sound * const GetInstance();
     void setListener(btVector3 const & pos, btVector3 const & vel, float * orientation);
-    unsigned int addSource(char *);   //used to register new source from jeeps and such
+    unsigned int addSource(char *, bool relative = false);   //used to register new source from jeeps and such
     void playAllSources();
+    void pauseAllSources();
+    void restartAllSources();
+    void playAllDynamicSources();
+    void pauseAllDynamicSources();
+    void restartAllDynamicSources();
     void setSource(unsigned int, btVector3 const & pos, btVector3 const & vel, btVector3 const & dir);
-    void changePitch(unsigned int, float);
+    void changeGain(unsigned int, float);
+    void setPitch(unsigned int, float);
+    void playSource(unsigned int);
+    void pauseSource(unsigned int);
+    void restartSource(unsigned int);
     
 protected:
     ALCcontext * context;
@@ -36,6 +45,7 @@ protected:
     Data data;
     Buffers buffers;
     Sources sources;
+    Sources dSources;
     DataKey keys;
     Loops loops;
     

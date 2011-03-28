@@ -12,7 +12,6 @@ int main(int , char **) {
 	HeightMapManager hm;
 	
 	Window window;	//launch SDL window
-	Models models;	//load models and textures
 	MainController m(window);
 	window.stopLoading();
 	window.run(&m);

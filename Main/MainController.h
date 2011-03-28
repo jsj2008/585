@@ -34,7 +34,7 @@ protected:
 	Obstacles * obstacles;
 	
 	Models * models;
-	Sound * const audio;
+	Sound * audio;
 	
 	Window & window;
 	
@@ -45,6 +45,10 @@ protected:
     int menuCount;
     
     btVector3 pos;
+    
+    //audio files
+    unsigned int gameMusic;
+    unsigned int menuMusic;
 	
 };
 #endif

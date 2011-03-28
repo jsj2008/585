@@ -87,8 +87,9 @@ frozen(false)
 	
 	//setup all the sounds
     Sound * ptr = Sound::GetInstance();
-    engineSource = ptr->addSource("engine");
-	
+    // engineSource = ptr->addSource("data/audio/accel_2.wav");
+    idleSource = ptr->addSource("data/audio/engine.wav");
+    	
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
@@ -116,6 +117,11 @@ void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
 
 void JeepActor::render()
 {
+    Sound * ptr = Sound::GetInstance();
+    ptr->setSource(idleSource, pos, velocity, -u);
+    engine.sound(idleSource);
+    engine.step(0, 0);
+    
 	for(int i=0; i<4; i++)
 		springs[i]->render();
 }
@@ -223,10 +229,7 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 void JeepActor::tick(seconds timeStep)
 {
-    Sound * ptr = Sound::GetInstance();
-    ptr->setSource(engineSource, pos, velocity, u);
 	/*get steering info*/
-	Sound::GetInstance()->changePitch(engineSource, -0.05);
     
 	delta += (-input->XAxis * max_rotate - delta) / turn_time;
 	bool dying = true;
@@ -283,7 +286,6 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.accelerate(input->YAxis);
 		central_forces += update_tires();
-        Sound::GetInstance()->changePitch(engineSource, 0.1);
 		
 		
 	}
@@ -292,7 +294,6 @@ void JeepActor::tick(seconds timeStep)
 	{
 		engine.decelerate(fabs(input->YAxis));
 		central_forces += update_tires();
-		Sound::GetInstance()->changePitch(engineSource, -0.3);
         
 	}
 	

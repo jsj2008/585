@@ -82,6 +82,7 @@ private:
     
     //audio sources
     unsigned int engineSource;
+    unsigned int idleSource;
 };
 
 #endif
