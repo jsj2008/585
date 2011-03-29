@@ -61,8 +61,10 @@ Sound::Sound()
     loadAudio("data/audio/engine.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
-    loadAudio("data/audio/hollowImpact.wav", false);
-    
+    loadAudio("data/audio/scratch.wav", false);
+    loadAudio("data/audio/crash.wav", false);
+    loadAudio("data/audio/crash2.wav", false);
+        
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -71,7 +73,7 @@ Sound::Sound()
     
    //setup the doppler effects
    alDopplerFactor(1.0);
-   //alSpeedOfSound(1193.0);
+   alSpeedOfSound(1000);
     
 }
 
@@ -112,7 +114,7 @@ void Sound::setListener(btVector3 const & pos, btVector3 const & vel, float * or
 void Sound::setSource(unsigned int alSource, btVector3 const & pos, btVector3 const & vel, btVector3 const & dir)
 {
     alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z());
-    alSource3f(alSource, AL_VELOCITY, vel.x()/20.0, vel.y()/20.0, vel.z()/20.0);
+    alSource3f(alSource, AL_VELOCITY, vel.x(), vel.y(), vel.z());
     alSource3f(alSource, AL_DIRECTION, dir.x(), dir.y(), dir.z());
     LOG("source: " << pos << "," << vel, "audio");
 }

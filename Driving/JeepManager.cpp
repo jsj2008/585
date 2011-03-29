@@ -103,12 +103,14 @@ void JeepManager::hitDetection(btDynamicsWorld * world)
     				const btVector3& ptB = pt.getPositionWorldOnB();
     				const btVector3& normalOnB = pt.m_normalWorldOnB;
     				
+                    btScalar impulse = pt.getAppliedImpulse();
+                        				
     				if(a != NULL)
-                        static_cast<JeepActor*>(a)->hitObject( distance, ptA );
+                        static_cast<JeepActor*>(a)->hitObject( impulse, ptA );
                     
                     if(b != NULL)
-                        static_cast<JeepActor*>(b)->hitObject( distance, ptB );
-                    
+                        static_cast<JeepActor*>(b)->hitObject( impulse, ptB );
+                    LOG("impulse " << pt.getAppliedImpulse(), "hit");
     				
     			}
     		}

@@ -89,8 +89,9 @@ isDead(false)
     Sound * ptr = Sound::GetInstance();
     // engineSource = ptr->addSource("data/audio/accel_2.wav");
     idleSource = ptr->addSource("data/audio/engine.wav");
-    hitSource = ptr->addSource("data/audio/hollowImpact.wav");
-    	
+    hitSource = ptr->addSource("data/audio/crash.wav");
+    crashSource = ptr->addSource("data/audio/crash2.wav");    	
+    scratchSource = ptr->addSource("data/audio/scratch.wav");    	
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
@@ -226,15 +227,23 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 }*/
 
-void JeepActor::hitObject(float deepness, btVector3 const & position)
+void JeepActor::hitObject(float impulse, btVector3 const & position)
 {
     if(isDead)  //don't bother making noises if dead
         return;
-    LOG("HIT " << isHuman, "hit");
-    LOG("HIT " << deepness, "hit");
+    LOG("HIT is human " << isHuman, "hit");
     
-    //lazy for now so just add bump sound effect
-    Sound::GetInstance()->setAndPlaySource(hitSource, pos);
+    if(impulse > 600)
+    {
+        Sound::GetInstance()->setAndPlaySource(crashSource, pos);
+    }else if(impulse > 200 && impulse <= 600)
+    {
+        Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+    }else if(impulse > 50 && impulse < 200)
+    {
+        Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
+    }
+    
     
 }
 

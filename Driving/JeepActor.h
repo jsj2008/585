@@ -86,6 +86,8 @@ private:
     unsigned int engineSource;
     unsigned int idleSource;
     unsigned int hitSource;
+    unsigned int crashSource;
+    unsigned int scratchSource;
 };
 
 #endif
