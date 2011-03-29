@@ -32,7 +32,8 @@ max_rotate( LoadFloat("config/jeep_springs.xml", "max_rotate") ),
 turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
 audio_frame(new float [6]),
 isHuman(false),
-frozen(false)
+frozen(false),
+isDead(false)
 {
 	orientation = rot;
 	
@@ -71,9 +72,8 @@ frozen(false)
 	to[3] = origin_to[3];
 	
 	chasis = physics->newActor(this);
-	// physics->dynamicsWorld.setInternalTickCallback(myTickCallback, static_cast<void *>(this), true );	//setup spring callback
+    chasis->setUserPointer(this);   //hit detections will know about me!
 	chasis->setGravity(btVector3(0,0,0));	//we do it manually
-	// chasis->applyImpulse(btVector3(150, 30.5, 0), btVector3(0.1,0,0));
 
 	for(int i=0; i<4; i++)
 		springs.push_back(new Spring(chasis, from[i], to[i], physics) );	
@@ -89,7 +89,11 @@ frozen(false)
     Sound * ptr = Sound::GetInstance();
     // engineSource = ptr->addSource("data/audio/accel_2.wav");
     idleSource = ptr->addSource("data/audio/engine.wav");
-    	
+    hitSource = ptr->addSource("data/audio/crash.wav");
+    crashSource = ptr->addSource("data/audio/crash2.wav");    	
+    crash2Source = ptr->addSource("data/audio/crash3.wav");    	
+    scratchSource = ptr->addSource("data/audio/scratch.wav");    	
+    // hornSource = ptr->addSource("data/audio/horn.wav");
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
@@ -118,9 +122,11 @@ void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
 void JeepActor::render()
 {
     Sound * ptr = Sound::GetInstance();
-    ptr->setSource(idleSource, pos, velocity, -u);
+    ptr->setSource(idleSource, pos, velocity, u);
     engine.sound(idleSource);
-    engine.step(0, 0);
+    
+    // if(input ->EBrakePressed)
+        // ptr->setAndPlaySource(hornSource, pos);        
     
 	for(int i=0; i<4; i++)
 		springs[i]->render();
@@ -226,6 +232,30 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 }*/
 
+void JeepActor::hitObject(float impulse, btVector3 const & position)
+{
+    if(isDead)  //don't bother making noises if dead
+        return;
+    LOG("HIT is human " << isHuman, "hit");
+    
+    if(impulse > 500)
+    {
+        // Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+    }
+    else if(impulse > 400)
+    {
+        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+    }else if(impulse > 200 && impulse <= 400)
+    {
+        // Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+    }else if(impulse > 50 && impulse < 200)
+    {
+        Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
+    }
+    
+    
+}
+
 
 void JeepActor::tick(seconds timeStep)
 {
@@ -249,7 +279,7 @@ void JeepActor::tick(seconds timeStep)
 	{
         return;
 	}
-	
+		
 	/*check if still able to drive*/
 	if(dying)
 	{
@@ -268,6 +298,12 @@ void JeepActor::tick(seconds timeStep)
 		MainController::restart();
 	}
 	
+	if(die_time > 3  && !isHuman)
+	{
+        isDead = true;
+	}
+	
+	
 		
 	/*various velocities*/
 	this->velocity = chasis->getLinearVelocity();
@@ -282,19 +318,24 @@ void JeepActor::tick(seconds timeStep)
 	btVector3 central_forces = btVector3(0,0,0);
 
 	
+
 	if(input->AcceleratePressed)
 	{
-		engine.accelerate(input->YAxis);
+		engine.accelerate(input->YAxis, !onGround);
 		central_forces += update_tires();
 		
 		
-	}
+	}else
+	
 
 	if(input->BrakePressed)
 	{
-		engine.decelerate(fabs(input->YAxis));
+		engine.decelerate(fabs(input->YAxis), !onGround);
 		central_forces += update_tires();
         
+	}else
+	{
+		engine.step(!onGround);
 	}
 	
 	//LOG("inputs gas break steer" << input->AcceleratePressed <<" "<< input->BrakePressed <<" "<< input->XAxis, "temp");

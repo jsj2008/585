@@ -5,9 +5,9 @@ class JeepEngine
 {
 public:
 	JeepEngine();
-	void step(float const, float const acclerate );
-	void accelerate(float);
-	void decelerate(float);
+	void step(bool);
+	void accelerate(float, bool);
+	void decelerate(float, bool);
     void sound(unsigned int);
 	float torque;
 

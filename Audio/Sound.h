@@ -29,6 +29,7 @@ class Sound
     void changeGain(unsigned int, float);
     void setPitch(unsigned int, float);
     void playSource(unsigned int);
+    void setAndPlaySource(unsigned int, btVector3 const &);
     void pauseSource(unsigned int);
     void restartSource(unsigned int);
     

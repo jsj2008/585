@@ -25,6 +25,7 @@ public:
 	void registerAudio(Sound *);
     void freezeAt(btVector3 const &);
     void release();
+    void hitObject(float, btVector3 const &);
 	
 	/*useful vectors*/
 	btVector3 u;	//jeep is facing this way
@@ -40,6 +41,7 @@ public:
 
 	bool onGround;
     bool frozen;
+    bool isDead;
 	
 		
 private:
@@ -83,6 +85,11 @@ private:
     //audio sources
     unsigned int engineSource;
     unsigned int idleSource;
+    unsigned int hitSource;
+    unsigned int crashSource;
+    unsigned int crash2Source;
+    unsigned int scratchSource;
+    unsigned int hornSource;
 };
 
 #endif

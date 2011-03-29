@@ -27,12 +27,16 @@ public:
     void release();
 
 private:
+    
+    void hitDetection(btDynamicsWorld *);
+    
 	Jeeps aiJeeps;
 	AIs aiInputs;
 	LevelAI * levelAI;
 	JeepActor * human;
 	const libChasis mChasis;
     int num_players;
+    Physics * physics;
 	
 	RenderObject const * jeepModel;
 };

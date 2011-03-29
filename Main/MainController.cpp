@@ -152,7 +152,7 @@ void MainController::tickMenu(unsigned long interval)
 	
 	//draw world and such so it's nice
     renderer->step();   //ensures a nice background
-    jeepManager->renderTick();  //keep this in case it's paused	
+    jeepManager->renderTick();  //keep this in case it's paused  
     
     
 }

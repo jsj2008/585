@@ -61,7 +61,12 @@ Sound::Sound()
     loadAudio("data/audio/engine.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
-    
+    loadAudio("data/audio/scratch.wav", false);
+    loadAudio("data/audio/crash.wav", false);
+    loadAudio("data/audio/crash2.wav", false);
+    loadAudio("data/audio/crash3.wav", false);
+    loadAudio("data/audio/horn.wav", false);
+                
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -70,7 +75,7 @@ Sound::Sound()
     
    //setup the doppler effects
    alDopplerFactor(1.0);
-   alSpeedOfSound(1193.0);
+   alSpeedOfSound(1000);
     
 }
 
@@ -101,7 +106,7 @@ Sound * const Sound::GetInstance()
 void Sound::setListener(btVector3 const & pos, btVector3 const & vel, float * orientation)
 {
     alListener3f(AL_POSITION, pos.x(), pos.y(), pos.z() );
-    alListener3f(AL_VELOCITY, vel.x(), vel.y(), vel.z() );
+    alListener3f(AL_VELOCITY, vel.x()/100.0, vel.y()/100.0, vel.z()/100.0 );
     alListenerfv(AL_ORIENTATION, orientation);
     
     LOG("listener: " << pos, "audio");
@@ -111,9 +116,21 @@ void Sound::setListener(btVector3 const & pos, btVector3 const & vel, float * or
 void Sound::setSource(unsigned int alSource, btVector3 const & pos, btVector3 const & vel, btVector3 const & dir)
 {
     alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z());
-    alSource3f(alSource, AL_VELOCITY, vel.x()/20.0, vel.y()/20.0, vel.z()/20.0);
+    alSource3f(alSource, AL_VELOCITY, vel.x()/100.0, vel.y()/100.0, vel.z()/100.0);
     alSource3f(alSource, AL_DIRECTION, dir.x(), dir.y(), dir.z());
     LOG("source: " << pos << "," << vel, "audio");
+}
+
+void Sound::setAndPlaySource(unsigned int alSource, btVector3 const & pos)
+{
+    //only do this if sound is not already playing
+    ALint t;
+    alGetSourcei(alSource, AL_SOURCE_STATE, &t);
+    if(t != AL_PLAYING)
+    {
+        alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z() );
+        alSourcePlay(alSource);
+    }
 }
 
 void Sound::playSource(unsigned int alSource)
@@ -249,12 +266,13 @@ unsigned int Sound::addSource(char * file, bool relative)
     alSourcei(alSource, AL_SOURCE_RELATIVE, relative);
     
     //how far it can go
-    alSourcef(alSource, AL_REFERENCE_DISTANCE, 50);
+    alSourcef(alSource, AL_REFERENCE_DISTANCE, 100);
     
     //how loud/quiet it can get
     alSourcef(alSource, AL_MAX_GAIN, 5);
     alSourcef(alSource, AL_MIN_GAIN, 0.1);
     
+	//alSourcef(alSource, AL_ROLLOFF_FACTOR, 0.1);
     
     //add to sources
     sources.push_back(alSource);

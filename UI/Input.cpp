@@ -29,9 +29,16 @@ Input::Input(){
 	BRAKEKEY='s';
 	EBRAKEKEY='d';
 	MASTERQUITKEY='q';
+	#ifdef __APPLE__
+    ACCELBUTTON = 21;
+    BRAKEBUTTON = 22;
+    STARTBUTTON = 14;
+    #else
 	ACCELBUTTON=0;
 	BRAKEBUTTON=1;
 	EBRAKEBUTTON=2;
+	STARTBUTTON = 7;
+	#endif
     Escape = false;
     Enter = false;
 }
@@ -178,20 +185,37 @@ bool Input::UpdateInput(SDL_Event& event){
 			}
 	}//end else if type
 	else if(event.type ==SDL_JOYBUTTONDOWN){
+        Uint8 code;
+	    #ifdef __APPLE__    //giant hack for 360 controller
+        code = event.user.code;
+        #else
+        code = event.jbutton.button;
+        #endif
 		//TODO:Figure out which xbox button is which 
-		if(event.jbutton.button==ACCELBUTTON) AcceleratePressed=true;
-        if(event.jbutton.button==BRAKEBUTTON) BrakePressed=true;
-		if(event.jbutton.button==EBRAKEBUTTON) EBrakePressed=true;
+		if(code==ACCELBUTTON)
+		{
+			AcceleratePressed=true; Enter = true;
+		}
+		if(code == STARTBUTTON) Escape = true;
+        if(code==BRAKEBUTTON) BrakePressed=true;
+		if(code==EBRAKEBUTTON) EBrakePressed=true;
 	}//end else if type button
 	else if(event.type ==SDL_JOYBUTTONUP){
 		//TODO:Figure out which xbox button is which 
-		if(event.jbutton.button==ACCELBUTTON) AcceleratePressed=false;
-        if(event.jbutton.button==BRAKEBUTTON) BrakePressed=false;
-		if(event.jbutton.button==EBRAKEBUTTON) EBrakePressed=false;
+        Uint8 code;
+        #ifdef __APPLE__    //giant hack for 360 controller
+        code = event.user.code;
+        #else
+        code = event.jbutton.button;
+        #endif
+		if(code==ACCELBUTTON)
+		{
+			AcceleratePressed=false; Enter = false;
+		}
+		if(code == STARTBUTTON) Escape = false;
+        if(code==BRAKEBUTTON) BrakePressed=false;
+		if(code==EBRAKEBUTTON) EBrakePressed=false;
 	}//end else if type button
-
-	LOG("\t" << XAxis, "input");
-
 	YAxis = 1.0;
 
 	return false;//tell quit to quit

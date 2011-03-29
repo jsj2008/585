@@ -38,6 +38,8 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
     freezeAt(btVector3(jeepX, jeepY, jeepZ));
+    
+    physics = physics;
 	
 }
 
@@ -80,10 +82,48 @@ void JeepManager::freezeAt(btVector3 const & pos)
 	}
 }
 
+void JeepManager::hitDetection(btDynamicsWorld * world)
+{
+    	int numManifolds = world->getDispatcher()->getNumManifolds();
+    	for (int i=0;i<numManifolds;i++)
+    	{
+    		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
+    		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
+    		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
+
+    		int numContacts = contactManifold->getNumContacts();
+    		for (int j=0;j<numContacts;j++)
+    		{
+    			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+                btScalar distance = pt.getDistance();
+    			if (distance<0.f)
+    			{
+                    void * a = obA->getUserPointer();
+                    void * b = obB->getUserPointer();
+                                            
+                    const btVector3& ptA = pt.getPositionWorldOnA();
+    				const btVector3& ptB = pt.getPositionWorldOnB();
+    				const btVector3& normalOnB = pt.m_normalWorldOnB;
+    				
+                    btScalar impulse = pt.getAppliedImpulse();
+                        				
+    				if(a != NULL)
+                        static_cast<JeepActor*>(a)->hitObject( impulse, ptA );
+                    
+                    if(b != NULL)
+                        static_cast<JeepActor*>(b)->hitObject( impulse, ptB );
+                    LOG("impulse " << pt.getAppliedImpulse(), "hit");
+    				
+    			}
+    		}
+    	}
+}
+
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
 	JeepManager * m = static_cast<JeepManager *>(world->getWorldUserInfo());
-	
+    m->hitDetection(world);
+    
 	m->human->tick(timeStep);
 	for(Jeeps::iterator itr = m->aiJeeps.begin(); itr != m->aiJeeps.end(); ++itr)
 		(*itr)->tick(timeStep);
@@ -104,6 +144,8 @@ void JeepManager::renderTick() {
 		allJeeps.push_back(human);
 		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2);
 	}
+	
+    
 }
 
 JeepActor* JeepManager::getHuman() {
