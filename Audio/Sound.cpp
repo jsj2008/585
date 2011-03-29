@@ -64,7 +64,8 @@ Sound::Sound()
     loadAudio("data/audio/scratch.wav", false);
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
-        
+    loadAudio("data/audio/crash3.wav", false);
+            
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");

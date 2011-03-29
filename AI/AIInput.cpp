@@ -5,7 +5,7 @@
 #include <iostream>
 AIInput::AIInput() {
 	XAxis = 0;  
-	YAxis = 0.5;
+	YAxis = 1.5;
 	AcceleratePressed = false;  
 	BrakePressed = false;  
 	EBrakePressed = false;

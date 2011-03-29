@@ -91,6 +91,7 @@ isDead(false)
     idleSource = ptr->addSource("data/audio/engine.wav");
     hitSource = ptr->addSource("data/audio/crash.wav");
     crashSource = ptr->addSource("data/audio/crash2.wav");    	
+    crash2Source = ptr->addSource("data/audio/crash3.wav");    	
     scratchSource = ptr->addSource("data/audio/scratch.wav");    	
 }
 
@@ -233,7 +234,11 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
         return;
     LOG("HIT is human " << isHuman, "hit");
     
-    if(impulse > 400)
+    if(impulse > 500)
+    {
+        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+    }
+    else if(impulse > 400)
     {
         Sound::GetInstance()->setAndPlaySource(crashSource, pos);
     }else if(impulse > 200 && impulse <= 400)

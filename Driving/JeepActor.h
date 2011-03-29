@@ -87,6 +87,7 @@ private:
     unsigned int idleSource;
     unsigned int hitSource;
     unsigned int crashSource;
+    unsigned int crash2Source;
     unsigned int scratchSource;
 };
 
