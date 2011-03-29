@@ -95,7 +95,7 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_DOWN: YAxis=-1.0;  break;
             case SDLK_UP: YAxis=1.0; break;
             case SDLK_ESCAPE: Escape = true; break;
-            case SDLK_RETURN: Enter = true; break;
+            case SDLK_z: Enter = true; break;
         }//end switch
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=true;
 		if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=true;
@@ -112,7 +112,7 @@ bool Input::UpdateInput(SDL_Event& event){
             case SDLK_DOWN: YAxis=0;  break;
             case SDLK_UP: YAxis=0; break;
             case SDLK_ESCAPE: Escape = false; break;
-            case SDLK_RETURN: Enter = false; break;
+            case SDLK_z: Enter = false; break;
         }
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=false;
         if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=false;
