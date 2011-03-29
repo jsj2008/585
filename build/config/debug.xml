@@ -8,6 +8,7 @@
 <param type="1" name="input" value="0" />
 <param type="1" name="ai" value="0" />
 <param type="1" name="audio" value="0" />
+<param type="1" name="hit" value="1" />
 <param type="1" name="console" value="1" />
 <param type="1" name="slip" value="0" />
 <param type="1" name="file" value="0" />

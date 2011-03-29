@@ -61,6 +61,7 @@ Sound::Sound()
     loadAudio("data/audio/engine.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
+    loadAudio("data/audio/hollowImpact.wav", false);
     
     if(alGetError() != AL_NO_ERROR)
     {
@@ -114,6 +115,18 @@ void Sound::setSource(unsigned int alSource, btVector3 const & pos, btVector3 co
     alSource3f(alSource, AL_VELOCITY, vel.x()/20.0, vel.y()/20.0, vel.z()/20.0);
     alSource3f(alSource, AL_DIRECTION, dir.x(), dir.y(), dir.z());
     LOG("source: " << pos << "," << vel, "audio");
+}
+
+void Sound::setAndPlaySource(unsigned int alSource, btVector3 const & pos)
+{
+    //only do this if sound is not already playing
+    ALint t;
+    alGetSourcei(alSource, AL_SOURCE_STATE, &t);
+    if(t != AL_PLAYING)
+    {
+        alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z() );
+        alSourcePlay(alSource);
+    }
 }
 
 void Sound::playSource(unsigned int alSource)

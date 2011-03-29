@@ -73,7 +73,8 @@ void Physics::newActors(ActorList const & newActors)
 		dynamicsWorld.addRigidBody(body);
 		
 		body->setLinearVelocity(btVector3(vel.getX(),vel.getY(), vel.getZ()));
-		rigidBodies.push_back(body);
+		body->setUserPointer(NULL);
+    	rigidBodies.push_back(body);
 		
 	}
 }
@@ -119,6 +120,7 @@ btRigidBody * const Physics::newActor(Actor * const actor)
 		dynamicsWorld.addRigidBody(body);
 		
 		body->setLinearVelocity(btVector3(vel.x(),vel.y(), vel.z() ));
+		body->setUserPointer(NULL);
 		rigidBodies.push_back(body);
 		
 		return body;

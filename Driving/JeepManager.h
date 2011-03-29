@@ -27,6 +27,9 @@ public:
     void release();
 
 private:
+    
+    void hitDetection(btDynamicsWorld *);
+    
 	Jeeps aiJeeps;
 	AIs aiInputs;
 	LevelAI * levelAI;
