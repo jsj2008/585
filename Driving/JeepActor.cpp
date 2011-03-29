@@ -233,10 +233,10 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
         return;
     LOG("HIT is human " << isHuman, "hit");
     
-    if(impulse > 600)
+    if(impulse > 400)
     {
         Sound::GetInstance()->setAndPlaySource(crashSource, pos);
-    }else if(impulse > 200 && impulse <= 600)
+    }else if(impulse > 200 && impulse <= 400)
     {
         Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
