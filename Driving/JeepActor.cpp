@@ -240,14 +240,14 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
     
     if(impulse > 500)
     {
-        // Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
     }
     else if(impulse > 400)
     {
-        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+        Sound::GetInstance()->setAndPlaySource(crashSource, pos);
     }else if(impulse > 200 && impulse <= 400)
     {
-        // Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+        Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
     {
         Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
