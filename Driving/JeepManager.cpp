@@ -148,6 +148,15 @@ void JeepManager::renderTick() {
     
 }
 
+void JeepManager::startEngines()
+{
+	human->startEngine();
+	for (Jeeps::iterator itr = aiJeeps.begin(); itr != aiJeeps.end(); ++itr) {
+		(*itr)->startEngine();
+	}
+}
+
+
 JeepActor* JeepManager::getHuman() {
 	return human;
 }

@@ -59,7 +59,6 @@ Sound::Sound()
     
     alGetError();
     loadAudio("data/audio/engine.wav");
-    loadAudio("data/audio/dirt.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
     loadAudio("data/audio/scratch.wav", false);
@@ -172,7 +171,13 @@ void Sound::playAllDynamicSources()
 {
     for(Sources::iterator itr = dSources.begin(); itr != dSources.end(); ++itr)
     {
-        alSourcePlay(*itr);
+		 ALint t;
+		alGetSourcei(*itr, AL_SOURCE_STATE, &t);
+		if(t == AL_PAUSED)
+		{
+			alSourcePlay(*itr);
+		}
+        
     }
 }
 
@@ -189,7 +194,7 @@ void Sound::pauseAllDynamicSources()
 {
     for(Sources::iterator itr = dSources.begin(); itr != dSources.end(); ++itr)
     {
-        alSourcePause(*itr);
+		alSourcePause(*itr);
     }
 }
 

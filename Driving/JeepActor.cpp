@@ -90,8 +90,8 @@ isSlipping(false)
     Sound * ptr = Sound::GetInstance();
     idleSource = ptr->addSource("data/audio/engine.wav");
     hitSource = ptr->addSource("data/audio/crash.wav");
-    crashSource = ptr->addSource("data/audio/crash2.wav");    	
-    crash2Source = ptr->addSource("data/audio/crash3.wav");    	
+    //crashSource = ptr->addSource("data/audio/crash2.wav");    	
+    //crash2Source = ptr->addSource("data/audio/crash3.wav");    	
     scratchSource = ptr->addSource("data/audio/scratch.wav");    	
     // hornSource = ptr->addSource("data/audio/horn.wav");
 }
@@ -232,6 +232,11 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 }*/
 
+void JeepActor::startEngine()
+{
+	Sound::GetInstance()->playSource(idleSource);
+}
+
 void JeepActor::hitObject(float impulse, btVector3 const & position)
 {
     if(isDead)  //don't bother making noises if dead
@@ -240,14 +245,14 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
     
     if(impulse > 500)
     {
-        // Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+         //Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
     }
-    else if(impulse > 400)
+    else if(impulse > 200)
     {
-        // Sound::GetInstance()->setAndPlaySource(crashSource, pos);
+         Sound::GetInstance()->setAndPlaySource(hitSource, pos);
     }else if(impulse > 200 && impulse <= 400)
     {
-        Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+        //Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
     {
         Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        

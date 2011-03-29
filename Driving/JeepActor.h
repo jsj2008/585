@@ -25,6 +25,7 @@ public:
 	void registerAudio(Sound *);
     void freezeAt(btVector3 const &);
     void release();
+	void startEngine();
     void hitObject(float, btVector3 const &);
 	
 	/*useful vectors*/

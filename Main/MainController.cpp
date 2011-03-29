@@ -25,7 +25,8 @@ inMenu(true),
 startMenu(true),
 menuSwitch(true),
 menuCount(0),
-pos(btVector3(0,0,0))
+pos(btVector3(0,0,0)),
+finished(false)
 {
 
 	if(ptr == NULL)
@@ -53,6 +54,14 @@ pos(btVector3(0,0,0))
     
 }
 
+void MainController::finishGame()
+{
+	ptr->inMenu = true;
+	ptr->finished = true;
+	ptr->menuSwitch = true;
+	ptr->startMenu = false;
+}
+
 void MainController::tickMenu(unsigned long interval)
 {
     audio->pauseAllDynamicSources();
@@ -60,15 +69,21 @@ void MainController::tickMenu(unsigned long interval)
     audio->playSource(menuMusic);
     if(!startMenu)
     {
-        static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png"};
+		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/winner.png"};	        
         
-        if(menuCount < 0)   //all the way up
-        {
-            menuCount = 2;
-        }else if(menuCount > 2)   //all the way down
-        {
-            menuCount = 0;  //for now only 0 menus
-        }
+		if(!finished)
+		{
+			if(menuCount < 0)   //all the way up
+			{
+				menuCount = 2;
+			}else if(menuCount > 2)   //all the way down
+			{
+				menuCount = 0;  //for now only 0 menus
+			}
+		}else
+		{
+			menuCount = 3;
+		}
         
         if(menuSwitch)
         {
@@ -107,6 +122,7 @@ void MainController::tickMenu(unsigned long interval)
     if(keyCount < 50)
         return;    
 	
+	
 	if(window.aInput->XAxis == -1)  //go left
 	{
         keyCount = 0;
@@ -125,6 +141,10 @@ void MainController::tickMenu(unsigned long interval)
 	{
 	    if(menuCount == 0)
 	    {
+			if(startMenu)
+			{
+				jeepManager->startEngines();
+			}
 	            
             renderer->setMessage("");
             inMenu = false;
@@ -133,15 +153,15 @@ void MainController::tickMenu(unsigned long interval)
             
             audio->playSource(gameMusic);
         }
-        if(menuCount == 1)
+        if(menuCount == 1 || menuCount == 3)
         {
             restart();
             renderer->setMessage("");
             inMenu = false;
-            audio->restartAllDynamicSources();
+            audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
             audio->restartSource(gameMusic);
-            
+            finished = false;
         }
         
         if(menuCount == 2)
@@ -159,6 +179,7 @@ void MainController::tickMenu(unsigned long interval)
 
 void MainController::tick(unsigned long interval)
 {
+	static bool wasOut = true;
     if(interval > 100)  //huge hack but seems to work
     {
         std::cout << "LAG" << std::endl;
@@ -186,17 +207,58 @@ void MainController::tick(unsigned long interval)
 	
 	/*giant hack for camera*/
 
+	static btVector3 pos2 = btVector3(0,0,0);
 	JeepActor* player = jeepManager->getHuman();
 	btVector3 look = player->pos;
 	btVector3 behind = quatRotate(player->orientation, btVector3(-0.8,0.4, 0) );
+	btVector3 behind2 = quatRotate(player->orientation, btVector3(0.8,0.4, 0) );
+	btVector3 front = quatRotate(player->orientation, btVector3(1.0,-0.3, 0) );
+	btVector3 up = quatRotate(player->orientation, btVector3(0.0,1.0, 0) );
+	static btVector3 lookUp = btVector3(0,1,0);
 	pos += (look+ 25*behind - pos ) / 10.0;
-	
-	renderer->setCamera(pos,look);
+	pos2 = look + 25*behind2;
+	//lookUp += (up - lookUp) / 10.0;
+	lookUp = up;
 	
 	Sound * ptr = Sound::GetInstance();
-    float t[] = {-behind[0], -behind[1], -behind[2], 0, 1, 0};
-    ptr->setListener(pos, player->velocity, t);
     
+
+	if(window.aInput->LButton)
+	{
+		float t[] = {-behind2[0], -behind2[1], -behind2[2], 0, 1, 0};
+		ptr->setListener(pos2, player->velocity, t);
+    
+		renderer->setCamera(pos2,look);
+		
+		if(!wasOut)
+			renderer->setMessage("");
+		wasOut = true;
+	}
+	else if(window.aInput->BButton)
+	{
+		btVector3 pos3 = look + 3.4*up + 1.4*front;
+		float t[] = {player->u[0], player->u[1], player->u[2], lookUp[0], lookUp[1], lookUp[2]};
+		ptr->setListener(pos3, player->velocity, t);
+
+		renderer->setCamera(pos3, look + 25*front, lookUp);
+
+		if(wasOut)
+			renderer->setMessage("data/windshield.png");
+
+		wasOut = false;
+	}else
+	{
+		float t[] = {-behind[0], -behind[1], -behind[2], 0, 1, 0};
+		ptr->setListener(pos, player->velocity, t);
+
+		renderer->setCamera(pos,look);
+		
+		if(!wasOut)
+			renderer->setMessage("");
+		wasOut = true;
+	}
+	
+	
 	
 	
 	//check for menu input
