@@ -89,6 +89,7 @@ private:
     unsigned int crashSource;
     unsigned int crash2Source;
     unsigned int scratchSource;
+    unsigned int hornSource;
 };
 
 #endif

@@ -65,7 +65,8 @@ Sound::Sound()
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
     loadAudio("data/audio/crash3.wav", false);
-            
+    loadAudio("data/audio/horn.wav", false);
+                
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -105,7 +106,7 @@ Sound * const Sound::GetInstance()
 void Sound::setListener(btVector3 const & pos, btVector3 const & vel, float * orientation)
 {
     alListener3f(AL_POSITION, pos.x(), pos.y(), pos.z() );
-    alListener3f(AL_VELOCITY, vel.x(), vel.y(), vel.z() );
+    alListener3f(AL_VELOCITY, vel.x()/100.0, vel.y()/100.0, vel.z()/100.0 );
     alListenerfv(AL_ORIENTATION, orientation);
     
     LOG("listener: " << pos, "audio");
@@ -115,7 +116,7 @@ void Sound::setListener(btVector3 const & pos, btVector3 const & vel, float * or
 void Sound::setSource(unsigned int alSource, btVector3 const & pos, btVector3 const & vel, btVector3 const & dir)
 {
     alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z());
-    alSource3f(alSource, AL_VELOCITY, vel.x(), vel.y(), vel.z());
+    alSource3f(alSource, AL_VELOCITY, vel.x()/100.0, vel.y()/100.0, vel.z()/100.0);
     alSource3f(alSource, AL_DIRECTION, dir.x(), dir.y(), dir.z());
     LOG("source: " << pos << "," << vel, "audio");
 }

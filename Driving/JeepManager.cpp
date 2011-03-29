@@ -38,6 +38,8 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 
 	physics->dynamicsWorld.setInternalTickCallback(tickCallback, static_cast<void *>(this), true );
     freezeAt(btVector3(jeepX, jeepY, jeepZ));
+    
+    physics = physics;
 	
 }
 
@@ -120,9 +122,8 @@ void JeepManager::hitDetection(btDynamicsWorld * world)
 void JeepManager::tickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
 	JeepManager * m = static_cast<JeepManager *>(world->getWorldUserInfo());
-	
     m->hitDetection(world);
-	
+    
 	m->human->tick(timeStep);
 	for(Jeeps::iterator itr = m->aiJeeps.begin(); itr != m->aiJeeps.end(); ++itr)
 		(*itr)->tick(timeStep);
@@ -143,6 +144,8 @@ void JeepManager::renderTick() {
 		allJeeps.push_back(human);
 		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2);
 	}
+	
+    
 }
 
 JeepActor* JeepManager::getHuman() {

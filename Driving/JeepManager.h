@@ -36,6 +36,7 @@ private:
 	JeepActor * human;
 	const libChasis mChasis;
     int num_players;
+    Physics * physics;
 	
 	RenderObject const * jeepModel;
 };

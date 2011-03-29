@@ -93,6 +93,7 @@ isDead(false)
     crashSource = ptr->addSource("data/audio/crash2.wav");    	
     crash2Source = ptr->addSource("data/audio/crash3.wav");    	
     scratchSource = ptr->addSource("data/audio/scratch.wav");    	
+    // hornSource = ptr->addSource("data/audio/horn.wav");
 }
 
 void JeepActor::reset(btQuaternion const & rot, btVector3  const &  pos)
@@ -123,6 +124,9 @@ void JeepActor::render()
     Sound * ptr = Sound::GetInstance();
     ptr->setSource(idleSource, pos, velocity, u);
     engine.sound(idleSource);
+    
+    // if(input ->EBrakePressed)
+        // ptr->setAndPlaySource(hornSource, pos);        
     
 	for(int i=0; i<4; i++)
 		springs[i]->render();
@@ -236,14 +240,14 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
     
     if(impulse > 500)
     {
-        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+        // Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
     }
     else if(impulse > 400)
     {
-        Sound::GetInstance()->setAndPlaySource(crashSource, pos);
+        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
     }else if(impulse > 200 && impulse <= 400)
     {
-        Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+        // Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
     {
         Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
