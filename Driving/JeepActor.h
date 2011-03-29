@@ -75,7 +75,7 @@ private:
 	static float gravity;
 	float const & max_rotate;
 	float const & turn_time;
-	
+    bool isSlipping;
 	
 	//other states
 	
@@ -90,6 +90,8 @@ private:
     unsigned int crash2Source;
     unsigned int scratchSource;
     unsigned int hornSource;
+    unsigned int slipSource;
+    unsigned int dirtSource;
 };
 
 #endif

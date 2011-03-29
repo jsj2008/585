@@ -32,6 +32,7 @@ class Sound
     void setAndPlaySource(unsigned int, btVector3 const &);
     void pauseSource(unsigned int);
     void restartSource(unsigned int);
+    void rewindSource(unsigned int);
     
 protected:
     ALCcontext * context;

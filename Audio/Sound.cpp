@@ -59,14 +59,15 @@ Sound::Sound()
     
     alGetError();
     loadAudio("data/audio/engine.wav");
+    loadAudio("data/audio/dirt.wav");
     loadAudio("data/audio/TribalGroove.wav");
     loadAudio("data/audio/WildDiscovery.wav");
     loadAudio("data/audio/scratch.wav", false);
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
     loadAudio("data/audio/crash3.wav", false);
-    loadAudio("data/audio/horn.wav", false);
-                
+    // loadAudio("data/audio/horn.wav", false);
+                    
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -146,6 +147,11 @@ void Sound::playSource(unsigned int alSource)
 void Sound::pauseSource(unsigned int alSource)
 {
     alSourcePause(alSource);
+}
+
+void Sound::rewindSource(unsigned int alSource)
+{
+    alSourceRewind(alSource);
 }
 
 void Sound::restartSource(unsigned int alSource)
