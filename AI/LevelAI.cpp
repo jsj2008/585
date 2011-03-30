@@ -32,6 +32,9 @@ LevelAI::~LevelAI() { }
 
 void LevelAI::restart()
 {
+	finalPositions.clear();
+	for (int i = 0; i < finished.size(); i++)
+		finished[i] = false;
 	for(jeepSegments::iterator itr = segments.begin(); itr != segments.end(); ++itr)
 	{
 		(*itr) = 0;
