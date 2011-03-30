@@ -22,6 +22,7 @@ actorList(actorList), jeepManager(jeepManager) {
 	camUp = btVector3(0,1,0);
 	showMessage = false;
 	setMessage("");
+	gameStarted = false;
 
 	lightPos = btVector3(500,15000,240);
     initializeGL();
@@ -64,6 +65,10 @@ void Renderer::initialize() {
     paintGL();
 }
 
+void Renderer::startGame() {
+	gameStarted = true;
+}
+
 void Renderer::setCamera(btVector3 const & pos, btVector3 const & look, btVector3 const & up) {
 	camPos = pos;
 	camLook = look;
@@ -90,7 +95,7 @@ void Renderer::paintGL() {
     	renderJeeps();
     }
 
-	if (jeepManager != NULL) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
+	if (gameStarted) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
 	if (showMessage) drawMessage();
 	
 	// TODO: Better checking

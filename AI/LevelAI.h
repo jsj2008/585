@@ -26,6 +26,7 @@ private:
 	jeepSegments segments;
 	jeepPositions pathPositions;
 	std::vector<int> finalPositions;
+	std::vector<bool> finished;
 	Paths paths;
 
 	Point closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end);

@@ -31,6 +31,7 @@ public:
 	void setCamera(btVector3 const &, btVector3 const &, btVector3 const & = btVector3(0,1,0) );	//giant hack
 	void setMessage(string const & texName);
     void initialize();
+	void startGame();
     void loadingMessage(string const & texName);
     JeepManager * jeepManager;
     
@@ -82,6 +83,7 @@ private:
 	int height;						// Height of the window
 
 	bool showMessage;
+	bool gameStarted;
 
 	ActorList const & actorList;
 	Shader* groundShader;

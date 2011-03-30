@@ -5,6 +5,7 @@
 
 LevelAI::LevelAI(Jeeps jeeps, JeepActor* human) :
 segments(LoadInt("config/ai.xml","num_players")+1, 0),
+finished(LoadInt("config/ai.xml","num_players")+1, false),
 pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)),
 num_players(LoadInt("config/ai.xml", "num_players") )
 {
@@ -16,6 +17,8 @@ num_players(LoadInt("config/ai.xml", "num_players") )
 	paths.push_back(Path("path2x.pth"));
 	//paths.push_back(Path("rediculous.pth"));
 	//path = Path("crashCourse.pth");
+
+	finalPositions = std::vector<int>();
 
 	// redundant!!! Improve?
 	xscale = LoadFloat("config/world.xml","height_map_scale_x");		// Load the scaling information
@@ -76,11 +79,14 @@ void LevelAI::step() {
 				//else std::cout << "Whoa!" << std::endl;
 				pathPositions[c] = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);
 			} else if (result > 0) {
-				if (currentPlayerSeg < path.length() - 2) currentPlayerSeg++;
-				else {
-					currentPlayerSeg = 0;
-					if(c == num_players)	//main player
-					{
+				if (currentPlayerSeg < path.length() - 2 && !finished[c]) currentPlayerSeg++;
+				else if (!finished[c]) {
+					finished[c] = true;
+					finalPositions.push_back(c);
+					for (int i = 0; i < finalPositions.size(); i++)
+						std::cout << finalPositions[i] << " ";
+					std::cout << endl;
+					if(c == num_players) { // Main player finished
 						MainController::finishGame();
 					}
 					LOG("Player " << c << " has finished the race", "ai");
