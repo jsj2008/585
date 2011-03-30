@@ -153,6 +153,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->pauseSource(menuMusic);
             
             audio->playSource(gameMusic);
+			wasOut = true;
         }
         if(menuCount == 1 || menuCount == 3)
         {
@@ -162,7 +163,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
             audio->restartSource(gameMusic);
-            finished = false;
+            wasOut = true;
         }
         
         if(menuCount == 2)
@@ -180,7 +181,6 @@ void MainController::tickMenu(unsigned long interval)
 
 void MainController::tick(unsigned long interval)
 {
-	static bool wasOut = true;
     if(interval > 100)  //huge hack but seems to work
     {
         //std::cout << "LAG" << std::endl;

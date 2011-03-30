@@ -47,6 +47,7 @@ protected:
     int menuCount;
 	bool finished;
 	bool inCar;
+	bool wasOut;
     
     btVector3 pos;
     
