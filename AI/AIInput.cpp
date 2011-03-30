@@ -136,5 +136,4 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	}
 	//LOG(jeep->speed, "ai");
 	//LOG(parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << " " << jeepAvoidance << "\t" << AcceleratePressed, "ai");
-	LOG(" " << YAxis, "ai");
 }
