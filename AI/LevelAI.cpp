@@ -78,10 +78,15 @@ void LevelAI::step() {
 			}
 		}
 
-		path.debugDraw(pathPositions[c], Point(&playerPos));
-		LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
+		//path.debugDraw(pathPositions[c], Point(&playerPos));
+		//LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
 		//LOG("Player progress: " << playerProgress(LoadInt("config/ai.xml","num_players")), "ai");
 	}
+}
+
+btVector3 LevelAI::getPlayerPosition(int c) {
+	Point pos = pathPositions[c];
+	return btVector3(pos.x, pos.y, pos.z);
 }
 
 Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end) {

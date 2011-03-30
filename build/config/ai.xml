@@ -12,3 +12,6 @@
 <param type="0" name="stuck_threshold" value="5" />
 <param type="0" name="recovery_time" value="100" />
 <param type="0" name="recovery_cooldown" value="100" />
+<param type="0" name="jeep_avoid_min" value="0.2" />
+<param type="0" name="jeep_avoid_max" value="0.7" />
+<param type="0" name="jeep_speed_diff_threshold" value="0.1" />

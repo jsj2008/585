@@ -28,15 +28,29 @@ actorList(actorList), jeepManager(jeepManager) {
     paintGL();
 }
 
-void Renderer::initialize()
-{
-    
+void Renderer::initialize() {
     shaderTexturesG.resize(MAX_TEXTURES);
 	shaderTexturesO.resize(MAX_TEXTURES);
 	for (int i = 0; i < MAX_TEXTURES; i++)
 		shaderTexturesG[i] = new GLuint;
 	for (int i = 0; i < MAX_TEXTURES; i++)
 		shaderTexturesO[i] = new GLuint;
+
+	//placeNumbers.resize(LoadInt("config/ai.xml","num_players")+1);
+	placeNumbers.resize(11);
+	for (int i = 0; i < 11; i++)
+		placeNumbers[i] = new GLuint;
+	loadTexture("data\\UI\\p1.png", placeNumbers[0]);
+	loadTexture("data\\UI\\p2.png", placeNumbers[1]);
+	loadTexture("data\\UI\\p3.png", placeNumbers[2]);
+	loadTexture("data\\UI\\p4.png", placeNumbers[3]);
+	loadTexture("data\\UI\\p5.png", placeNumbers[4]);
+	loadTexture("data\\UI\\p6.png", placeNumbers[5]);
+	loadTexture("data\\UI\\p7.png", placeNumbers[6]);
+	loadTexture("data\\UI\\p8.png", placeNumbers[7]);
+	loadTexture("data\\UI\\p9.png", placeNumbers[8]);
+	loadTexture("data\\UI\\p10.png", placeNumbers[9]);
+	loadTexture("data\\UI\\p11.png", placeNumbers[10]);
 
 	attrDataG = new AttributeData(); // Ground shader data
 	texDataG = new TextureData(3);
@@ -77,6 +91,8 @@ void Renderer::paintGL() {
     }
 	
 	if (showMessage) drawMessage();
+	if (jeepManager != NULL) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
+	// TODO: Better checking
 }
 
 void Renderer::step() {
@@ -236,18 +252,14 @@ void Renderer::setMessage(string const & texName) {
 
 void Renderer::loadingMessage(string const & textName) {
 	setMessage(textName);
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width, 0, height, 1, -1);
-	glMatrixMode(GL_MODELVIEW);
+	setUIProjection();
 
 	glColor4f(1,1,1,1);
-    skyShader->on();
+    basicShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 	
 	glBindTexture(GL_TEXTURE_2D, messageTex);
-	glUniform1i(skyDomeLocS, 4);
+	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
 		glLoadIdentity();
 
@@ -263,23 +275,19 @@ void Renderer::loadingMessage(string const & textName) {
 
 		glEnd();
 	glPopMatrix();
-    skyShader->off();
+    basicShader->off();
 
 	setProjection();
 }
 
 void Renderer::drawMessage() {
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width, 0, height, 1, -1);
-	glMatrixMode(GL_MODELVIEW);
+	setUIProjection();
 
 	glColor4f(1,1,1,1);
-    skyShader->on();
+    basicShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 	glBindTexture(GL_TEXTURE_2D, messageTex);
-	glUniform1i(skyDomeLocS, 4);
+	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
 		glLoadIdentity();
 
@@ -295,7 +303,35 @@ void Renderer::drawMessage() {
 
 		glEnd();
 	glPopMatrix();
-    skyShader->off();
+    basicShader->off();
+
+	setProjection();
+}
+
+void Renderer::drawPlayerPlace(int place) {
+	setUIProjection();
+
+	glColor4f(1,1,1,1);
+    basicShader->on();
+	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(place-1, 10)]);
+	glUniform1i(basicShaderTexLocS, 4);
+	glPushMatrix();
+		glLoadIdentity();
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f((double)width/10.0, (double)height/8.0, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f(0, (double)height/8.0, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f(0, 0, 0);
+		glTexCoord2f(1, 0);
+		glVertex3f((double)width/10.0, 0, 0);
+
+		glEnd();
+	glPopMatrix();
+    basicShader->off();
 
 	setProjection();
 }
@@ -491,11 +527,11 @@ void Renderer::initializeGL() {
     
 	GLenum err3 = glewInit();
 	if (GLEW_OK == err3) {
-		skyShader = new Shader(LoadString2("config/renderer.xml","sky_shader_f").c_str(),
-			LoadString2("config/renderer.xml","sky_shader_v").c_str());
-		skyDomeLocS = skyShader->getUniLoc("skyDome");
+		basicShader = new Shader(LoadString2("config/renderer.xml","basic_shader_f").c_str(),
+			LoadString2("config/renderer.xml","basic_shader_v").c_str());
+		basicShaderTexLocS = basicShader->getUniLoc("texMap");
 	}
-	skyShader->off();
+	basicShader->off();
 }
 
 void Renderer::initializeGL2()  //more advanced stuff
@@ -609,6 +645,14 @@ void Renderer::resizeGL(int w, int h) {
 	setProjection();
 }
 
+void Renderer::setUIProjection() {
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, 0, height, 1, -1);
+	glMatrixMode(GL_MODELVIEW);
+}
+
 void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
@@ -701,17 +745,17 @@ void Renderer::drawSky() {
 	gluPerspective(90.0f, ratio, 60.0f, 6000.0f);
 	glMatrixMode(GL_MODELVIEW);
 
-	skyShader->on();
+	basicShader->on();
 		glColor3f(1,1,1);
 		glActiveTexture(GL_TEXTURE4); // Apply the sky texture
 		glBindTexture(GL_TEXTURE_2D, sky.texture);
-		glUniform1i(skyDomeLocS, 4);
+		glUniform1i(basicShaderTexLocS, 4);
 		glPushMatrix();
 			//glTranslated(434, 290, -1736);
 			sky.draw();
 			//sky.drawNormals();
 		glPopMatrix();
-	skyShader->off();
+	basicShader->off();
 
 	setProjection();
 }

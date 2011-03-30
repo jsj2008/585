@@ -156,7 +156,7 @@ void JeepManager::renderTick() {
 		btVector3 segmentVec2 = levelAI->getVectorToSeg(2, c);
 		Jeeps allJeeps = aiJeeps;
 		allJeeps.push_back(human);
-		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2);
+		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c));
 	}
 	
     
@@ -182,4 +182,8 @@ JeepManager::Jeeps JeepManager::getAIs() {
 btVector3 JeepManager::getPlayerPos(int p) const {
 	if (p < aiJeeps.size()) return aiJeeps[p]->pos;
 	else return human->pos;
+}
+
+int JeepManager::getPlayerPlace(int p) {
+	return levelAI->getPlayerPlace(p);
 }

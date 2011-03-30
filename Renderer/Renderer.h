@@ -60,7 +60,7 @@ private:
 	void drawAxes();
 	void updateCamera();
 	void setProjection();
-	static void SetProjection();
+	void setUIProjection();
 
 	void loadGround3DTexture(string filename);
 	void loadObject3DTexture(string filename);
@@ -68,6 +68,7 @@ private:
 	void loadObjectTextures();
 	bool loadTexture(string name, GLuint *texID);
 	void drawMessage();
+	void drawPlayerPlace(int place);
 	void groundTexCoord(int x, int z, bool xend, bool zend);
 
 	btVector3 camPos;				// Position of the camera
@@ -85,10 +86,11 @@ private:
 	ActorList const & actorList;
 	Shader* groundShader;
 	Shader* objectShader;
-	Shader* skyShader;
-	int skyDomeLocS;				// Uniform location for sky dome texure
+	Shader* basicShader;
+	int basicShaderTexLocS;				// Uniform location for basic shader texure
 	vector<GLuint*> shaderTexturesG;
 	vector<GLuint*> shaderTexturesO;
+	vector<GLuint*> placeNumbers;
 
 	AttributeData* attrDataG;		// Contains attribute information about the shader
 	OptionsData* optDataG;			// Contains optional details about the shader
