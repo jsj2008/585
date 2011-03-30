@@ -160,3 +160,7 @@ btVector3 JeepManager::getPlayerPos(int p) const {
 	if (p < aiJeeps.size()) return aiJeeps[p]->pos;
 	else return human->pos;
 }
+
+int JeepManager::getPlayerPlace(int p) {
+	return levelAI->getPlayerPlace(p);
+}

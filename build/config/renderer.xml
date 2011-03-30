@@ -13,6 +13,6 @@
 <param type="3" name="object_shader_texture" value="data/shader/metalDepth.tx3" />
 <param type="3" name="object_shader_f" value="object.frag" />
 <param type="3" name="object_shader_v" value="model.vert" />
-<param type="3" name="sky_shader_f" value="sky.frag" />
-<param type="3" name="sky_shader_v" value="sky.vert" />
+<param type="3" name="basic_shader_f" value="sky.frag" />
+<param type="3" name="basic_shader_v" value="sky.vert" />
 <param type="3" name="sky_texture" value="data/textures/skyDome_fog.png" />

@@ -45,6 +45,7 @@ public:
 	btVector3 getPathDirection(int lookAhead, int c);
 	btVector3 getVectorToTrack(int c);
 	btVector3 getVectorToSeg(int lookAhead, int c);
+	btVector3 getPlayerPosition(int c);
 
 	int getPlayerPlace(int p);
 

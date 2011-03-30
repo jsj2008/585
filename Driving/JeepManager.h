@@ -25,6 +25,7 @@ public:
 	btVector3 getPlayerPos(int p) const;
     void freezeAt(btVector3 const &);
     void release();
+	int getPlayerPlace(int p);
 
 private:
     
