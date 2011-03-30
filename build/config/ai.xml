@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<param type="1" name="num_players" value="10" />
+<param type="1" name="num_players" value="1" />
 <param type="0" name="parallelization_threshold" value="0.02" />
 <param type="0" name="hard_parallelization_threshold" value="0.2" />
 <param type="0" name="distance_threshold" value="40" />
@@ -12,3 +12,6 @@
 <param type="0" name="stuck_threshold" value="5" />
 <param type="0" name="recovery_time" value="100" />
 <param type="0" name="recovery_cooldown" value="100" />
+<param type="0" name="jeep_avoid_min" value="0.2" />
+<param type="0" name="jeep_avoid_max" value="0.7" />
+<param type="0" name="jeep_speed_diff_threshold" value="0.1" />

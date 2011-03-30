@@ -16,10 +16,11 @@ void AIInput::restart() {
 	recovering = LoadFloat("config/ai.xml","recovery_cooldown");
 }
 
-void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2) {
+void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2, int place) {
 	btVector3 trackDirection = pathDir1;
-	btVector3 actorHeading = quatRotate(jeep->orientation, btVector3(1,0,0)).normalize();
+	btVector3 actorHeading = quatRotate(jeep->orientation, btVector3(1,0,0)).normalized();
 
+	YAxis = 1.0 + 0.1*place; // AI goes faster if it is farther behind (cheating)
 	AcceleratePressed = true;
 	BrakePressed = false;
 
@@ -86,22 +87,30 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	}
 
 	int jeepAvoidance = 0; // turn away from other jeeps if too close
-	btVector3 jeepVec;
-	float distFromJeep;
+	btVector3 jeepVec, dirToJeep, otherJeepHeading;
+	float distFromJeep, angleBetweenJeeps;
 	for (Jeeps::iterator itr = allJeeps.begin(); itr != allJeeps.end(); ++itr) {
 		if ((*itr) == jeep) continue; // Don't avoid yourself!
 		jeepVec = (*itr)->pos - jeep->pos;
 		distFromJeep = jeepVec.length();
-		//LOG((*itr)->speed << "\t\t" << distFromJeep, "ai");
+		//dirToJeep = jeepVec.normalized();
+		otherJeepHeading = quatRotate((*itr)->orientation, btVector3(1,0,0)).normalized();
+
+		angleBetweenJeeps = otherJeepHeading.dot(actorHeading);
 
 		turnDir = trackDirection.cross(jeepVec).getY();
 		if (turnDir > 0) turnDir = 1;
 		else if (turnDir < 0) turnDir = -1;
 		else turnDir = 0;
 
-		float jeepDistanceThreshold = LoadFloat("config/ai.xml","jeep_distance_threshold"); // Turn of closer than this to other jeeps
-		if (distFromJeep < jeepDistanceThreshold && turnDir > 0) jeepAvoidance += 2;
-		else if (distFromJeep < jeepDistanceThreshold && turnDir < 0) jeepAvoidance -= 2;
+		float jeepDistanceThreshold = LoadFloat("config/ai.xml","jeep_distance_threshold");		// Turn if closer than this to other jeeps
+		float jeepAvoidMin = LoadFloat("config/ai.xml","jeep_avoid_min");						// Turn if angle to other jeeps is between these values
+		float jeepAvoidMax = LoadFloat("config/ai.xml","jeep_avoid_max");
+		float jeepSpeedDiffThreshold = LoadFloat("config/ai.xml","jeep_speed_diff_threshold");	// If one jeep is going significantly slower, be prepared to avoid it
+		if (distFromJeep < jeepDistanceThreshold && ((angleBetweenJeeps > jeepAvoidMin && angleBetweenJeeps < jeepAvoidMax) || abs(1-(jeep->speed / (*itr)->speed)) > jeepSpeedDiffThreshold)) {
+			if (turnDir > 0) jeepAvoidance += 2;
+			else jeepAvoidance -= 2;
+		}
 	}
 
 	float easeThreshold = LoadFloat("config/ai.xml","ease_threshold"); // Ease off the gas if going faster than this (on a sharp turn)
@@ -127,4 +136,5 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 	}
 	//LOG(jeep->speed, "ai");
 	//LOG(parallelize << " " << onTrack << " " << turnAnticipation1 << " " << turnAnticipation2 << " " << jeepAvoidance << "\t" << AcceleratePressed, "ai");
+	LOG(" " << YAxis, "ai");
 }

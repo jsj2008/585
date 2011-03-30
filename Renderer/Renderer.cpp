@@ -36,8 +36,9 @@ void Renderer::initialize() {
 	for (int i = 0; i < MAX_TEXTURES; i++)
 		shaderTexturesO[i] = new GLuint;
 
-	placeNumbers.resize(LoadInt("config/ai.xml","num_players")+1);
-	for (int i = 0; i < LoadInt("config/ai.xml","num_players")+1; i++)
+	//placeNumbers.resize(LoadInt("config/ai.xml","num_players")+1);
+	placeNumbers.resize(11);
+	for (int i = 0; i < 11; i++)
 		placeNumbers[i] = new GLuint;
 	loadTexture("data\\UI\\p1.png", placeNumbers[0]);
 	loadTexture("data\\UI\\p2.png", placeNumbers[1]);
@@ -313,7 +314,7 @@ void Renderer::drawPlayerPlace(int place) {
 	glColor4f(1,1,1,1);
     basicShader->on();
 	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
-	glBindTexture(GL_TEXTURE_2D, *placeNumbers[place-1]);
+	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(place-1, 10)]);
 	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
 		glLoadIdentity();

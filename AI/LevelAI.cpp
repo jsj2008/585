@@ -72,8 +72,8 @@ void LevelAI::step() {
 			}
 		}
 
-		path.debugDraw(pathPositions[c], Point(&playerPos));
-		LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
+		//path.debugDraw(pathPositions[c], Point(&playerPos));
+		//LOG("Player place: " << getPlayerPlace(LoadInt("config/ai.xml","num_players")), "ai");
 		//LOG("Player progress: " << playerProgress(LoadInt("config/ai.xml","num_players")), "ai");
 	}
 }
