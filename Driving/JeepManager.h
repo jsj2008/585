@@ -42,7 +42,17 @@ private:
     int num_players;
     Physics * physics;
 	
-	RenderObject const * jeepModel;
+	RenderObject const * jeepModel1;
+	RenderObject const * jeepModel2;
+	RenderObject const * jeepModel3;
+	RenderObject const * jeepModel4;
+	RenderObject const * jeepModel5;
+	RenderObject const * jeepModel6;
+	RenderObject const * jeepModel7;
+	RenderObject const * jeepModel8;
+	RenderObject const * jeepModel9;
+	RenderObject const * jeepModel10;
+	RenderObject const * jeepModel11;
 };
 
 #endif

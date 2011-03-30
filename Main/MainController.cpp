@@ -86,7 +86,7 @@ void MainController::tickMenu(unsigned long interval)
 	audio->pauseSource(readySource);
     if(!startMenu)
     {
-		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/game_end_win.png", "data/UI/game_end_lose2.png"};	        
+		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/game_end_win.png", "data/UI/game_end_lose.png"};	        
         
 		if(!finished)
 		{
@@ -101,7 +101,7 @@ void MainController::tickMenu(unsigned long interval)
 		{
 			if(place == 1)
 				menuCount = 3;
-			else
+			else	
 				menuCount = 4;
 		}
         
@@ -178,15 +178,14 @@ void MainController::tickMenu(unsigned long interval)
         if(menuCount == 1 || menuCount == 3 || menuCount==4)
         {
             restart();
-            renderer->setMessage("");
             inMenu = false;
             audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
             audio->restartSource(gameMusic);
             wasOut = true;
 			finished = false;
-			if(menuCount == 4)
-				renderer->showPlace(place);
+			//if(menuCount == 4)
+			//	renderer->showPlace(place);
         }
         
         if(menuCount == 2)

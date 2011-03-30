@@ -9,7 +9,17 @@
 #include "Renderer/Models.h"
 
 JeepManager::JeepManager() :
-jeepModel( Models::GetModel("jeep") )
+jeepModel1( Models::GetModel("jeep1") ),
+jeepModel2( Models::GetModel("jeep2") ),
+jeepModel3( Models::GetModel("jeep3") ),
+jeepModel4( Models::GetModel("jeep4") ),
+jeepModel5( Models::GetModel("jeep5") ),
+jeepModel6( Models::GetModel("jeep6") ),
+jeepModel7( Models::GetModel("jeep7") ),
+jeepModel8( Models::GetModel("jeep8") ),
+jeepModel9( Models::GetModel("jeep9") ),
+jeepModel10( Models::GetModel("jeep10") ),
+jeepModel11( Models::GetModel("jeep11") )
 {}
 
 void JeepManager::initialize(Physics * physics, Input * playerInput)
@@ -21,20 +31,57 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 
 	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
-	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
+	human = new JeepActor(mChasis, jeepModel1, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
 	human->isHuman = true;
 	human->ID = 10;
 	//MainController::addActor(human);
 	num_players = LoadInt("config/ai.xml","num_players");
+	
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
-		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX + (10*i + 10), jeepY, jeepZ), rotation );
-		jeep->setOrientation( rotation );
-		jeep->ID = i;
-		
-		aiJeeps.push_back(jeep);
-		//MainController::addActor(jeep);
 	}
+	// We WILL fix this garbage
+		JeepActor* jeep1 = new JeepActor(mChasis, jeepModel2, physics, aiInputs[0], btVector3(jeepX + (10*0 + 10), jeepY, jeepZ), rotation );
+		jeep1->setOrientation( rotation );
+		jeep1->ID = 0;
+		aiJeeps.push_back(jeep1);
+		JeepActor* jeep2 = new JeepActor(mChasis, jeepModel3, physics, aiInputs[1], btVector3(jeepX + (10*1 + 10), jeepY, jeepZ), rotation );
+		jeep2->setOrientation( rotation );
+		jeep2->ID = 1;
+		aiJeeps.push_back(jeep2);
+		JeepActor* jeep3 = new JeepActor(mChasis, jeepModel4, physics, aiInputs[2], btVector3(jeepX + (10*2 + 10), jeepY, jeepZ), rotation );
+		jeep3->setOrientation( rotation );
+		jeep3->ID = 2;
+		aiJeeps.push_back(jeep3);
+		JeepActor* jeep4 = new JeepActor(mChasis, jeepModel5, physics, aiInputs[3], btVector3(jeepX + (10*3 + 10), jeepY, jeepZ), rotation );
+		jeep4->setOrientation( rotation );
+		jeep4->ID = 3;
+		aiJeeps.push_back(jeep4);
+		JeepActor* jeep5 = new JeepActor(mChasis, jeepModel6, physics, aiInputs[4], btVector3(jeepX + (10*4 + 10), jeepY, jeepZ), rotation );
+		jeep5->setOrientation( rotation );
+		jeep5->ID = 4;
+		aiJeeps.push_back(jeep5);
+		JeepActor* jeep6 = new JeepActor(mChasis, jeepModel7, physics, aiInputs[5], btVector3(jeepX + (10*5 + 10), jeepY, jeepZ), rotation );
+		jeep6->setOrientation( rotation );
+		jeep6->ID = 5;
+		aiJeeps.push_back(jeep6);
+		JeepActor* jeep7 = new JeepActor(mChasis, jeepModel8, physics, aiInputs[6], btVector3(jeepX + (10*6 + 10), jeepY, jeepZ), rotation );
+		jeep7->setOrientation( rotation );
+		jeep7->ID = 6;
+		aiJeeps.push_back(jeep7);
+		JeepActor* jeep8 = new JeepActor(mChasis, jeepModel9, physics, aiInputs[7], btVector3(jeepX + (10*7 + 10), jeepY, jeepZ), rotation );
+		jeep8->setOrientation( rotation );
+		jeep8->ID = 7;
+		aiJeeps.push_back(jeep8);
+		JeepActor* jeep9 = new JeepActor(mChasis, jeepModel10, physics, aiInputs[8], btVector3(jeepX + (10*8 + 10), jeepY, jeepZ), rotation );
+		jeep9->setOrientation( rotation );
+		jeep9->ID = 8;
+		aiJeeps.push_back(jeep9);
+		JeepActor* jeep10 = new JeepActor(mChasis, jeepModel11, physics, aiInputs[9], btVector3(jeepX + (10*9 + 10), jeepY, jeepZ), rotation );
+		jeep10->setOrientation( rotation );
+		jeep10->ID = 9;
+		aiJeeps.push_back(jeep10);
+
 
 	levelAI = new LevelAI(aiJeeps, human);
 
