@@ -23,6 +23,8 @@ Input::Input(){
 	AcceleratePressed=false;  
 	BrakePressed=false;  
 	EBrakePressed=false;
+	LButton = false;
+	BButton = false;
 	
 	//user can change these key/button mappings via change button/key functions
 	ACCELKEY='w';
@@ -30,14 +32,16 @@ Input::Input(){
 	EBRAKEKEY='d';
 	MASTERQUITKEY='q';
 	#ifdef __APPLE__
-    ACCELBUTTON = 21;
+    YESBUTTON = 21;
     BRAKEBUTTON = 22;
     STARTBUTTON = 14;
     #else
-	ACCELBUTTON=0;
+	YESBUTTON=0;
 	BRAKEBUTTON=1;
 	EBRAKEBUTTON=2;
 	STARTBUTTON = 7;
+	LBUTTON = 4;
+	BBUTTON = 2;
 	#endif
     Escape = false;
     Enter = false;
@@ -106,7 +110,7 @@ bool Input::UpdateInput(SDL_Event& event){
         }//end switch
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=true;
 		if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=true;
-		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=true;
+		if(event.key.keysym.sym==EBRAKEKEY) BrakePressed=true;
 		if(event.key.keysym.sym==MASTERQUITKEY) {SDL_JoystickClose(0);return true;}
 
 	}//end if type
@@ -123,10 +127,34 @@ bool Input::UpdateInput(SDL_Event& event){
         }
 		if(event.key.keysym.sym==SDLK_UP) AcceleratePressed=false;
         if(event.key.keysym.sym==SDLK_DOWN) BrakePressed=false;
-		if(event.key.keysym.sym==EBRAKEKEY) EBrakePressed=false;
+		if(event.key.keysym.sym==EBRAKEKEY) BrakePressed=false;
 
 	}//end if type key released
 	else if(event.type ==SDL_JOYAXISMOTION){
+
+
+		//RL triggers
+		if( event.jaxis.axis == 2)
+		{
+			LOG("trigger " << event.jaxis.value, "temp");
+			if(event.jaxis.value<-30)
+			{
+				AcceleratePressed = true;
+				BrakePressed = false;
+			}
+			else if(event.jaxis.value>30)
+			{
+				AcceleratePressed = false;
+				BrakePressed = true;
+			}else
+			{
+				AcceleratePressed = false;
+				BrakePressed = false;
+			}
+
+		}
+			
+				
 
 			if ( ( event.jaxis.value < -200 ) || (event.jaxis.value > 200 ) ) //if analog is moved far enough
 			{
@@ -167,20 +195,12 @@ bool Input::UpdateInput(SDL_Event& event){
 					}
 				}//end left/right joystick control
 
-				if( event.jaxis.axis == 1) //sitting here if needed
-				{
-					if(event.jaxis.value<0)
-					{
-						YAxis=-1.0;  //DOWN
-					}
-					else if(event.jaxis.value>0)
-					{
-						YAxis=1.0;  //UP
-					}
-				}//end updown movement joystick control
+				
+				//end updown movement joystick control
 			}//end joystick axis control
 			else{
 			XAxis=0;
+
 
 			}
 	}//end else if type
@@ -192,13 +212,19 @@ bool Input::UpdateInput(SDL_Event& event){
         code = event.jbutton.button;
         #endif
 		//TODO:Figure out which xbox button is which 
-		if(code==ACCELBUTTON)
+		if(code==YESBUTTON)
 		{
-			AcceleratePressed=true; Enter = true;
+			Enter = true;
+		}else if(code == LBUTTON)
+		{
+			LButton = true;
+		}else if(code == STARTBUTTON)
+		{
+			Escape = true;
+		}else if(code == BBUTTON)
+		{
+			BButton = true;
 		}
-		if(code == STARTBUTTON) Escape = true;
-        if(code==BRAKEBUTTON) BrakePressed=true;
-		if(code==EBRAKEBUTTON) EBrakePressed=true;
 	}//end else if type button
 	else if(event.type ==SDL_JOYBUTTONUP){
 		//TODO:Figure out which xbox button is which 
@@ -208,13 +234,19 @@ bool Input::UpdateInput(SDL_Event& event){
         #else
         code = event.jbutton.button;
         #endif
-		if(code==ACCELBUTTON)
+		if(code==YESBUTTON)
 		{
-			AcceleratePressed=false; Enter = false;
+			Enter = false;
+		}else if(code == LBUTTON)
+		{
+			LButton = false;
+		}else if(code == STARTBUTTON)
+		{
+			Escape = false;
+		}else if(code == BBUTTON)
+		{
+			BButton = false;
 		}
-		if(code == STARTBUTTON) Escape = false;
-        if(code==BRAKEBUTTON) BrakePressed=false;
-		if(code==EBRAKEBUTTON) EBrakePressed=false;
 	}//end else if type button
 	YAxis = 1.0;
 
@@ -225,30 +257,30 @@ bool Input::UpdateInput(SDL_Event& event){
 //Change keys/buttons functions
 void Input::changeAccelKey(char aKey)
 {
-	ACCELKEY=aKey;
+	//ACCELKEY=aKey;
 }
 void Input::changeBrakeKey(char aKey)
 {
-	BRAKEKEY=aKey;
+	//BRAKEKEY=aKey;
 }
 void Input::changeEBrakeKey(char aKey)
 {
-	EBRAKEKEY=aKey;
+	//EBRAKEKEY=aKey;
 }
 void Input::changeMasterQuitKey(char aKey)
 {
-	MASTERQUITKEY=aKey;
+	//MASTERQUITKEY=aKey;
 }
 void Input::changeAccelButton(Uint8 aButton)
 {
-	ACCELBUTTON=aButton;
+//	ACCELBUTTON=aButton;
 }
 void Input::changeBrakeButton(Uint8 aButton)
 {
-	BRAKEBUTTON=aButton;
+	//BRAKEBUTTON=aButton;
 }
 void Input::changeEBrakeButton(Uint8 aButton)
 {
-	EBRAKEBUTTON=aButton;
+	//EBRAKEBUTTON=aButton;
 }
 

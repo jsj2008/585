@@ -18,6 +18,7 @@ public:
 	void tick(unsigned long);
 	static void restart();
 	static void addActor(Actor *);
+	static void finishGame();
 	
 protected:
     bool countDown(unsigned long, bool restart=false);
@@ -42,6 +43,7 @@ protected:
     bool startMenu;
     bool menuSwitch;
     int menuCount;
+	bool finished;
     
     btVector3 pos;
     

@@ -63,9 +63,10 @@ void Renderer::initialize() {
     paintGL();
 }
 
-void Renderer::setCamera(btVector3 const & pos, btVector3 const & look) {
+void Renderer::setCamera(btVector3 const & pos, btVector3 const & look, btVector3 const & up) {
 	camPos = pos;
 	camLook = look;
+	camUp = up;
 }
 
 Renderer::~Renderer() { }

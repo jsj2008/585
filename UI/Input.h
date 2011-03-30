@@ -19,13 +19,17 @@ public:
 	char EBRAKEKEY;
 	char MASTERQUITKEY;
 	Uint8 STARTBUTTON;
-	Uint8 ACCELBUTTON;
+	Uint8 BBUTTON;
+	Uint8 YESBUTTON;
 	Uint8 BRAKEBUTTON;
 	Uint8 EBRAKEBUTTON;
+	Uint8 LBUTTON;
 	SDL_Joystick *joystick;
 	
     bool Escape;
     bool Enter;
+	bool LButton;
+	bool BButton;
 
 	Input();
 	~Input();

@@ -27,6 +27,8 @@ public:
     void release();
 	int getPlayerPlace(int p);
 
+	void startEngines();
+
 private:
     
     void hitDetection(btDynamicsWorld *);

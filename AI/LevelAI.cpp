@@ -1,6 +1,7 @@
 #include "LevelAI.h"
 #include "Driving/JeepActor.h"
 #include "Common/Debug.h"
+#include "Main/MainController.h"
 
 LevelAI::LevelAI(Jeeps jeeps, JeepActor* human) :
 segments(LoadInt("config/ai.xml","num_players")+1, 0),
@@ -61,6 +62,10 @@ void LevelAI::step() {
 				if (currentPlayerSeg < path.length() - 2) currentPlayerSeg++;
 				else {
 					currentPlayerSeg = 0;
+					if(c == 0)	//main player
+					{
+						MainController::finishGame();
+					}
 					LOG("Player " << c << " has finished the race", "ai");
 				}
 				pathPositions[c] = closestPointOnPath(path.at(currentPlayerSeg), path.at(currentPlayerSeg+1), playerWorldPos, &result);

@@ -28,7 +28,7 @@ public:
 	void step();
 	void reset();
 	void resetView();
-	void setCamera(btVector3 const &, btVector3 const &);	//giant hack
+	void setCamera(btVector3 const &, btVector3 const &, btVector3 const & = btVector3(0,1,0) );	//giant hack
 	void setMessage(string const & texName);
     void initialize();
     void loadingMessage(string const & texName);

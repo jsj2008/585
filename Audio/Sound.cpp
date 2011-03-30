@@ -65,8 +65,8 @@ Sound::Sound()
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
     loadAudio("data/audio/crash3.wav", false);
-    loadAudio("data/audio/horn.wav", false);
-                
+    // loadAudio("data/audio/horn.wav", false);
+                    
     if(alGetError() != AL_NO_ERROR)
     {
         LOG("Could not load audio", "audio");
@@ -148,6 +148,11 @@ void Sound::pauseSource(unsigned int alSource)
     alSourcePause(alSource);
 }
 
+void Sound::rewindSource(unsigned int alSource)
+{
+    alSourceRewind(alSource);
+}
+
 void Sound::restartSource(unsigned int alSource)
 {
     alSourceRewind(alSource);
@@ -166,7 +171,13 @@ void Sound::playAllDynamicSources()
 {
     for(Sources::iterator itr = dSources.begin(); itr != dSources.end(); ++itr)
     {
-        alSourcePlay(*itr);
+		 ALint t;
+		alGetSourcei(*itr, AL_SOURCE_STATE, &t);
+		if(t == AL_PAUSED)
+		{
+			alSourcePlay(*itr);
+		}
+        
     }
 }
 
@@ -183,7 +194,7 @@ void Sound::pauseAllDynamicSources()
 {
     for(Sources::iterator itr = dSources.begin(); itr != dSources.end(); ++itr)
     {
-        alSourcePause(*itr);
+		alSourcePause(*itr);
     }
 }
 

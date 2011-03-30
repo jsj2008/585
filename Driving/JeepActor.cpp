@@ -33,7 +33,8 @@ turn_time( LoadFloat("config/jeep_springs.xml", "turn_time") ),
 audio_frame(new float [6]),
 isHuman(false),
 frozen(false),
-isDead(false)
+isDead(false),
+isSlipping(false)
 {
 	orientation = rot;
 	
@@ -87,11 +88,10 @@ isDead(false)
 	
 	//setup all the sounds
     Sound * ptr = Sound::GetInstance();
-    // engineSource = ptr->addSource("data/audio/accel_2.wav");
     idleSource = ptr->addSource("data/audio/engine.wav");
     hitSource = ptr->addSource("data/audio/crash.wav");
-    crashSource = ptr->addSource("data/audio/crash2.wav");    	
-    crash2Source = ptr->addSource("data/audio/crash3.wav");    	
+    //crashSource = ptr->addSource("data/audio/crash2.wav");    	
+    //crash2Source = ptr->addSource("data/audio/crash3.wav");    	
     scratchSource = ptr->addSource("data/audio/scratch.wav");    	
     // hornSource = ptr->addSource("data/audio/horn.wav");
 }
@@ -232,6 +232,11 @@ chasis->applyForce(btVector3(0,-1.0,0) * weight_rear, rear_tire);
 
 }*/
 
+void JeepActor::startEngine()
+{
+	Sound::GetInstance()->playSource(idleSource);
+}
+
 void JeepActor::hitObject(float impulse, btVector3 const & position)
 {
     if(isDead)  //don't bother making noises if dead
@@ -240,14 +245,14 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
     
     if(impulse > 500)
     {
-        // Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+         //Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
     }
-    else if(impulse > 400)
+    else if(impulse > 200)
     {
-        Sound::GetInstance()->setAndPlaySource(crash2Source, pos);
+         Sound::GetInstance()->setAndPlaySource(hitSource, pos);
     }else if(impulse > 200 && impulse <= 400)
     {
-        // Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
+        //Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
     {
         Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
@@ -397,10 +402,20 @@ void JeepActor::tick(seconds timeStep)
 		btScalar turn_factor = this->long_speed * long_sign*fabs(LoadFloat("config/jeep_springs.xml", "turn_boost")/(0.1+angular_vel*2.5 ) );
 		
 		
-		chasis->applyTorque( LoadFloat("config/jeep_springs.xml", "turn_k") * delta * long_sign * plane_up * turn_factor);
 		
+        btScalar lateral_speed = fabs(velocity.dot(lateral));
+        btScalar skid = 1.0;
+        
+		
+        btScalar centri = LoadFloat("config/jeep_springs.xml", "centrifugal");
+        
+
+        chasis->applyTorque( skid*LoadFloat("config/jeep_springs.xml", "turn_k") * delta * long_sign * plane_up * turn_factor);
+        
+        
+
 		chasis->applyCentralForce( lateral*delta_sign * long_sign*
-			chasis->getAngularVelocity().length() * LoadFloat("config/jeep_springs.xml", "centrifugal"));
+			chasis->getAngularVelocity().length() * centri);
 	}
 }
 
