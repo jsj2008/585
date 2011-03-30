@@ -5,7 +5,9 @@
 
 LevelAI::LevelAI(Jeeps jeeps, JeepActor* human) :
 segments(LoadInt("config/ai.xml","num_players")+1, 0),
-pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
+pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)),
+num_players(LoadInt("config/ai.xml", "num_players") )
+{
 	this->jeeps = jeeps;
 	this->human = human;
 	this->jeeps.push_back(human);
@@ -31,6 +33,15 @@ void LevelAI::restart()
 	{
 		(*itr) = 0;
 	}
+}
+
+float LevelAI::getPlayerRotation(int c) {
+	
+	Path path = getPlayerPath(c);
+	Point seg1 = path.at(segments[c]);
+	Point seg2 = path.at(segments[c]+1);
+	btVector3 direction = btVector3(seg2.x - seg1.x, 0, seg2.z - seg1.z);
+	return -atan2(direction.z(), direction.x());
 }
 
 btVector3 LevelAI::getPlayerPosition(int c) {
@@ -68,7 +79,7 @@ void LevelAI::step() {
 				if (currentPlayerSeg < path.length() - 2) currentPlayerSeg++;
 				else {
 					currentPlayerSeg = 0;
-					if(c == 0)	//main player
+					if(c == num_players)	//main player
 					{
 						MainController::finishGame();
 					}
@@ -84,10 +95,6 @@ void LevelAI::step() {
 	}
 }
 
-btVector3 LevelAI::getPlayerPosition(int c) {
-	Point pos = pathPositions[c];
-	return btVector3(pos.x, pos.y, pos.z);
-}
 
 Point LevelAI::closestPointOnPath(Point pathSegStart, Point pathSegEnd, Point actorPos, int* end) {
 	*end = 0; // Indicates result somewhere in the middle
@@ -160,7 +167,7 @@ btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 
 int LevelAI::getPlayerPlace(int p) {
 	int place = 1;
-	for (int i = 0; i < LoadInt("config/ai.xml","num_players")+1; i++) {
+	for (int i = 0; i < num_players+1; i++) {
 		if (i == p) continue; // Don't compare to self
 		if (playerProgress(i) > playerProgress(p)) place++;
 	}

@@ -70,10 +70,10 @@ void JeepManager::restart()
 void JeepManager::restartJeep(JeepActor * jeep)
 {
 	btVector3 pos = levelAI->getPlayerPosition(jeep->ID);
-	float jeepRotation	= LoadFloat("config/start.xml", "jeepRotation");
-
-	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
+	float jeepRotation = levelAI->getPlayerRotation(jeep->ID);
+	
+	btQuaternion rotation(btVector3(0,1,0), jeepRotation);
 	jeep->reset( rotation, pos);	
 	jeep->release();
 }

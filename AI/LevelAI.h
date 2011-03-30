@@ -34,6 +34,7 @@ private:
 	double playerProgress(int p);
 
 public:	
+	
 	LevelAI();
 	LevelAI(Jeeps jeeps, JeepActor* human);
 	virtual ~LevelAI();
@@ -42,14 +43,15 @@ public:
 	Jeeps jeeps;
 	JeepActor* human;
 
+	int num_players;
+
 	void step();
 	btVector3 getPathDirection(int lookAhead, int c);
 	btVector3 getVectorToTrack(int c);
 	btVector3 getVectorToSeg(int lookAhead, int c);
 	btVector3 getPlayerPosition(int c);
-
+	float getPlayerRotation(int);
 	int getPlayerPlace(int p);
-	btVector3 getPlayerPosition(int c);
 
 };
 #endif

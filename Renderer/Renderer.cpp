@@ -89,9 +89,10 @@ void Renderer::paintGL() {
     	renderObjects();
     	renderJeeps();
     }
-	
-	if (showMessage) drawMessage();
+
 	if (jeepManager != NULL) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
+	if (showMessage) drawMessage();
+	
 	// TODO: Better checking
 }
 
@@ -309,6 +310,7 @@ void Renderer::drawMessage() {
 }
 
 void Renderer::drawPlayerPlace(int place) {
+
 	setUIProjection();
 
 	glColor4f(1,1,1,1);
