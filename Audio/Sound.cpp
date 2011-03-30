@@ -65,7 +65,7 @@ Sound::Sound()
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
     loadAudio("data/audio/crash3.wav", false);
-	loadAudio("data/audio/ready.wav");
+	loadAudio("data/audio/ready.wav", false);
     // loadAudio("data/audio/horn.wav", false);
                     
     if(alGetError() != AL_NO_ERROR)
@@ -130,6 +130,16 @@ void Sound::setAndPlaySource(unsigned int alSource, btVector3 const & pos)
     if(t != AL_PLAYING)
     {
         alSource3f(alSource, AL_POSITION, pos.x(), pos.y(), pos.z() );
+        alSourcePlay(alSource);
+    }
+}
+
+void Sound::resumeSource(unsigned int alSource)
+{
+	ALint t;
+    alGetSourcei(alSource, AL_SOURCE_STATE, &t);
+    if(t == AL_PAUSED)
+    {
         alSourcePlay(alSource);
     }
 }

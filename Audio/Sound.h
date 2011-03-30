@@ -33,6 +33,7 @@ class Sound
     void pauseSource(unsigned int);
     void restartSource(unsigned int);
     void rewindSource(unsigned int);
+	void resumeSource(unsigned int);
     
 protected:
     ALCcontext * context;

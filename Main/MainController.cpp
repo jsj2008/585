@@ -42,7 +42,7 @@ inCar(false)
     audio = new Sound();
     gameMusic = audio->addSource("data/audio/TribalGroove.wav", true);  //music
     menuMusic = audio->addSource("data/audio/WildDiscovery.wav", true);  //music
-	readySource = audio->addSource("data/audio/ready.wav");
+	readySource = audio->addSource("data/audio/ready.wav", true);
     audio->playSource(menuMusic);
     
     models = new Models();
@@ -69,6 +69,7 @@ void MainController::tickMenu(unsigned long interval)
     audio->pauseAllDynamicSources();
     audio->pauseSource(gameMusic);
     audio->playSource(menuMusic);
+	audio->pauseSource(readySource);
     if(!startMenu)
     {
 		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/winner.png"};	        
@@ -146,14 +147,13 @@ void MainController::tickMenu(unsigned long interval)
 			if(startMenu)
 			{
 				jeepManager->startEngines();
-				audio->playSource(readySource);
 			}
 	            
             renderer->setMessage("");
             inMenu = false;
             audio->playAllDynamicSources();
             audio->pauseSource(menuMusic);
-            
+            audio->resumeSource(readySource);
             audio->playSource(gameMusic);
 			wasOut = true;
         }
@@ -166,7 +166,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->pauseSource(menuMusic);
             audio->restartSource(gameMusic);
             wasOut = true;
-			audio->playSource(readySource);
+			finished = false;
         }
         
         if(menuCount == 2)
@@ -190,6 +190,8 @@ void MainController::tick(unsigned long interval)
         return;
     }
     
+	
+
     if(inMenu)
     {
         tickMenu(interval); //if we're in menu mode then don't do these other steps
@@ -290,7 +292,7 @@ bool MainController::countDown(unsigned long interval, bool restart)
     static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png"};
     static int timer = 0;
     static int count = 3;
-    
+
     if(restart)
     {
         timer = 0;
@@ -299,7 +301,9 @@ bool MainController::countDown(unsigned long interval, bool restart)
     
     timer += interval;
     if(timer > 1000)
-    {
+    {	
+		if(count == 3)	//start
+			audio->playSource(readySource);
         //std::cout << "count" << std::endl;
 		if(!inCar)	//don't show if inside the car
 			renderer->setMessage(imgs[count]);
