@@ -43,6 +43,7 @@ public:
 	bool onGround;
     bool frozen;
     bool isDead;
+	int ID;
 	
 		
 private:

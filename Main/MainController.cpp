@@ -26,7 +26,8 @@ startMenu(true),
 menuSwitch(true),
 menuCount(0),
 pos(btVector3(0,0,0)),
-finished(false)
+finished(false),
+inCar(false)
 {
 
 	if(ptr == NULL)
@@ -123,14 +124,14 @@ void MainController::tickMenu(unsigned long interval)
         return;    
 	
 	
-	if(window.aInput->XAxis == -1)  //go left
+	if(window.aInput->XAxis == -1 && !finished)  //go left
 	{
         keyCount = 0;
         menuCount --;
         menuSwitch = true;
 	}
 	
-	if(window.aInput->XAxis == 1)  //go right
+	if(window.aInput->XAxis == 1 && !finished)  //go right
 	{
         keyCount = 0;
         menuCount ++;
@@ -182,7 +183,7 @@ void MainController::tick(unsigned long interval)
 	static bool wasOut = true;
     if(interval > 100)  //huge hack but seems to work
     {
-        std::cout << "LAG" << std::endl;
+        //std::cout << "LAG" << std::endl;
         return;
     }
     
@@ -222,6 +223,14 @@ void MainController::tick(unsigned long interval)
 	
 	Sound * ptr = Sound::GetInstance();
     
+	//switch cameras
+	static int keyCool = 0;
+	keyCool += 1;
+	if(keyCool > 50 && window.aInput->BButton)
+	{
+		inCar = !inCar;
+		keyCool = 0;
+	}
 
 	if(window.aInput->LButton)
 	{
@@ -234,9 +243,9 @@ void MainController::tick(unsigned long interval)
 			renderer->setMessage("");
 		wasOut = true;
 	}
-	else if(window.aInput->BButton)
+	else if(inCar)
 	{
-		btVector3 pos3 = look + 3.4*up + 1.4*front;
+		btVector3 pos3 = look + 3.5*up + 1.4*front;
 		float t[] = {player->u[0], player->u[1], player->u[2], lookUp[0], lookUp[1], lookUp[2]};
 		ptr->setListener(pos3, player->velocity, t);
 
@@ -275,21 +284,22 @@ void MainController::tick(unsigned long interval)
 
 bool MainController::countDown(unsigned long interval, bool restart)
 {
-    static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png", "data/UI/3.png"};
+    static std::string imgs[] = {"", "data/UI/0.png", "data/UI/1.png", "data/UI/2.png"};
     static int timer = 0;
-    static int count = 4;
+    static int count = 3;
     
     if(restart)
     {
         timer = 0;
-        count = 4;
+        count = 3;
     }
     
     timer += interval;
     if(timer > 1000)
     {
-        std::cout << "count" << std::endl;
-        renderer->setMessage(imgs[count]);
+        //std::cout << "count" << std::endl;
+		if(!inCar)	//don't show if inside the car
+			renderer->setMessage(imgs[count]);
         count -= 1;
         timer = 0;
     }
@@ -312,8 +322,14 @@ void MainController::addActor(Actor * actor)
 	ptr->actorList.push_back(actor);
 }
 
+void MainController::restartJeep(JeepActor * jeep)
+{
+	ptr->jeepManager->restartJeep(jeep);
+}
+
 void MainController::restart()
 {
+	ptr->inCar = false;
     ptr->physics->restart();
     ptr->counting = true;
     ptr->countDown(0, true);    //restart countdown

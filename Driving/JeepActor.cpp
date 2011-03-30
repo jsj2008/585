@@ -249,13 +249,13 @@ void JeepActor::hitObject(float impulse, btVector3 const & position)
     }
     else if(impulse > 200)
     {
-         Sound::GetInstance()->setAndPlaySource(hitSource, pos);
+         Sound::GetInstance()->setAndPlaySource(hitSource, position);
     }else if(impulse > 200 && impulse <= 400)
     {
         //Sound::GetInstance()->setAndPlaySource(hitSource, pos);        
     }else if(impulse > 50 && impulse < 200)
     {
-        Sound::GetInstance()->setAndPlaySource(scratchSource, pos);        
+        Sound::GetInstance()->setAndPlaySource(scratchSource, position);        
     }
     
     
@@ -296,16 +296,11 @@ void JeepActor::tick(seconds timeStep)
 		die_time = 0;
 	}
 	
-	if(die_time > 3 && isHuman)	//not driving for few seconds
+	if(die_time > 3)	//not driving for few seconds
 	{
 		die_time = 0;
 		input->restart();
-		MainController::restart();
-	}
-	
-	if(die_time > 3  && !isHuman)
-	{
-        isDead = true;
+		MainController::restartJeep(this);
 	}
 	
 	

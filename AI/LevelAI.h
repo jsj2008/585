@@ -47,6 +47,7 @@ public:
 	btVector3 getVectorToSeg(int lookAhead, int c);
 
 	int getPlayerPlace(int p);
+	btVector3 getPlayerPosition(int c);
 
 };
 #endif

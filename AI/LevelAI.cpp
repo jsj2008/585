@@ -33,6 +33,11 @@ void LevelAI::restart()
 	}
 }
 
+btVector3 LevelAI::getPlayerPosition(int c) {
+	Point pos = pathPositions[c];
+	return btVector3(pos.x, pos.y, pos.z);
+}
+
 void LevelAI::step() {
 	int c = 0;
 	Path path;

@@ -10,12 +10,14 @@ class Models;
 class Window;
 class Obstacles;
 class JeepManager;
+class JeepActor;
 
 class MainController{
 public:
 	MainController(Window &);
 	virtual ~MainController();
 	void tick(unsigned long);
+	static void restartJeep(JeepActor *);
 	static void restart();
 	static void addActor(Actor *);
 	static void finishGame();
@@ -44,6 +46,7 @@ protected:
     bool menuSwitch;
     int menuCount;
 	bool finished;
+	bool inCar;
     
     btVector3 pos;
     
