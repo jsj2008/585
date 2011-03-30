@@ -56,12 +56,26 @@ inCar(false)
     
 }
 
-void MainController::finishGame()
+void MainController::finishGame( std::vector<int> & places)
 {
 	ptr->inMenu = true;
 	ptr->finished = true;
 	ptr->menuSwitch = true;
 	ptr->startMenu = false;
+
+	ptr->place = 1;
+	for(std::vector<int>::iterator itr = places.begin(); itr != places.end(); ++itr, ptr->place++)
+	{
+		if(*itr == LoadInt("config/ai.xml", "num_players"))	//the player
+		{
+			break;
+		}
+	}
+
+
+
+	
+
 }
 
 void MainController::tickMenu(unsigned long interval)
@@ -72,7 +86,7 @@ void MainController::tickMenu(unsigned long interval)
 	audio->pauseSource(readySource);
     if(!startMenu)
     {
-		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/winner.png"};	        
+		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/game_end_win.png", "data/UI/game_end_lose2.png"};	        
         
 		if(!finished)
 		{
@@ -85,7 +99,10 @@ void MainController::tickMenu(unsigned long interval)
 			}
 		}else
 		{
-			menuCount = 3;
+			if(place == 1)
+				menuCount = 3;
+			else
+				menuCount = 4;
 		}
         
         if(menuSwitch)
@@ -147,6 +164,7 @@ void MainController::tickMenu(unsigned long interval)
 			if(startMenu)
 			{
 				jeepManager->startEngines();
+				renderer->startGame();
 			}
 	            
             renderer->setMessage("");
@@ -157,7 +175,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->playSource(gameMusic);
 			wasOut = true;
         }
-        if(menuCount == 1 || menuCount == 3)
+        if(menuCount == 1 || menuCount == 3 || menuCount==4)
         {
             restart();
             renderer->setMessage("");
@@ -167,6 +185,8 @@ void MainController::tickMenu(unsigned long interval)
             audio->restartSource(gameMusic);
             wasOut = true;
 			finished = false;
+			if(menuCount == 4)
+				renderer->showPlace(place);
         }
         
         if(menuCount == 2)

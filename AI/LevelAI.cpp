@@ -87,7 +87,7 @@ void LevelAI::step() {
 						std::cout << finalPositions[i] << " ";
 					std::cout << endl;
 					if(c == num_players) { // Main player finished
-						MainController::finishGame();
+						MainController::finishGame( finalPositions );
 					}
 					LOG("Player " << c << " has finished the race", "ai");
 				}

@@ -69,6 +69,36 @@ void Renderer::startGame() {
 	gameStarted = true;
 }
 
+void Renderer::showPlace(int p)
+{
+	setUIProjection();
+
+	glColor4f(1,1,1,1);
+    basicShader->on();
+	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(p, 10)]);
+	glUniform1i(basicShaderTexLocS, 4);
+	glPushMatrix();
+		glLoadIdentity();
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(1, 1);
+		glVertex3f((double)4*width/7.0, (double)height/8.0, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f((double)3*width/7.0, (double)height/8.0, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f((double)3*width/7.0, 0, 0);
+		glTexCoord2f(1, 0);
+		glVertex3f((double)4*width/7.0, 0, 0);
+
+		glEnd();
+	glPopMatrix();
+    basicShader->off();
+
+	setProjection();
+	
+}
+
 void Renderer::setCamera(btVector3 const & pos, btVector3 const & look, btVector3 const & up) {
 	camPos = pos;
 	camLook = look;

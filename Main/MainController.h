@@ -20,7 +20,7 @@ public:
 	static void restartJeep(JeepActor *);
 	static void restart();
 	static void addActor(Actor *);
-	static void finishGame();
+	static void finishGame( std::vector<int> &);
 	
 protected:
     bool countDown(unsigned long, bool restart=false);
@@ -48,6 +48,7 @@ protected:
 	bool finished;
 	bool inCar;
 	bool wasOut;
+	int place;
     
     btVector3 pos;
     

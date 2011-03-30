@@ -32,6 +32,7 @@ public:
 	void setMessage(string const & texName);
     void initialize();
 	void startGame();
+	void showPlace(int);
     void loadingMessage(string const & texName);
     JeepManager * jeepManager;
     
