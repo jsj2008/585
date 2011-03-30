@@ -42,6 +42,7 @@ inCar(false)
     audio = new Sound();
     gameMusic = audio->addSource("data/audio/TribalGroove.wav", true);  //music
     menuMusic = audio->addSource("data/audio/WildDiscovery.wav", true);  //music
+	readySource = audio->addSource("data/audio/ready.wav");
     audio->playSource(menuMusic);
     
     models = new Models();
@@ -145,6 +146,7 @@ void MainController::tickMenu(unsigned long interval)
 			if(startMenu)
 			{
 				jeepManager->startEngines();
+				audio->playSource(readySource);
 			}
 	            
             renderer->setMessage("");
@@ -164,6 +166,7 @@ void MainController::tickMenu(unsigned long interval)
             audio->pauseSource(menuMusic);
             audio->restartSource(gameMusic);
             wasOut = true;
+			audio->playSource(readySource);
         }
         
         if(menuCount == 2)

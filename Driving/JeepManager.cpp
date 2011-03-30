@@ -23,14 +23,14 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	
 	human = new JeepActor(mChasis, jeepModel, physics, playerInput, btVector3(jeepX, jeepY, jeepZ), rotation );
 	human->isHuman = true;
-	human->ID = 0;
+	human->ID = 10;
 	//MainController::addActor(human);
 	num_players = LoadInt("config/ai.xml","num_players");
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
 		JeepActor* jeep = new JeepActor(mChasis, jeepModel, physics, aiInputs[i], btVector3(jeepX + (10*i + 10), jeepY, jeepZ), rotation );
 		jeep->setOrientation( rotation );
-		jeep->ID = i+1;
+		jeep->ID = i;
 		
 		aiJeeps.push_back(jeep);
 		//MainController::addActor(jeep);

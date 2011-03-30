@@ -65,6 +65,7 @@ Sound::Sound()
     loadAudio("data/audio/crash.wav", false);
     loadAudio("data/audio/crash2.wav", false);
     loadAudio("data/audio/crash3.wav", false);
+	loadAudio("data/audio/ready.wav");
     // loadAudio("data/audio/horn.wav", false);
                     
     if(alGetError() != AL_NO_ERROR)

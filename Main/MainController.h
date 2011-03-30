@@ -54,6 +54,7 @@ protected:
     //audio files
     unsigned int gameMusic;
     unsigned int menuMusic;
+	unsigned int readySource;
 	
 };
 #endif

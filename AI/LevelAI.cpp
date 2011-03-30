@@ -11,7 +11,7 @@ pathPositions(LoadInt("config/ai.xml","num_players")+1, Point(0,0,0)) {
 	this->jeeps.push_back(human);
 	paths = Paths();
 	paths.push_back(Path("mainPath+.pth"));
-	paths.push_back(Path("path2+.pth"));
+	paths.push_back(Path("path2x.pth"));
 	//paths.push_back(Path("rediculous.pth"));
 	//path = Path("crashCourse.pth");
 
@@ -35,6 +35,7 @@ void LevelAI::restart()
 
 btVector3 LevelAI::getPlayerPosition(int c) {
 	Point pos = pathPositions[c];
+	pos = Point(pos.x - (width/2.0) * xscale, pos.y, pos.z - (height/2.0) * zscale);
 	return btVector3(pos.x, pos.y, pos.z);
 }
 
