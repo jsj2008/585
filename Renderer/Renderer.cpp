@@ -41,17 +41,17 @@ void Renderer::initialize() {
 	placeNumbers.resize(11);
 	for (int i = 0; i < 11; i++)
 		placeNumbers[i] = new GLuint;
-	loadTexture("data\\UI\\p1.png", placeNumbers[0]);
-	loadTexture("data\\UI\\p2.png", placeNumbers[1]);
-	loadTexture("data\\UI\\p3.png", placeNumbers[2]);
-	loadTexture("data\\UI\\p4.png", placeNumbers[3]);
-	loadTexture("data\\UI\\p5.png", placeNumbers[4]);
-	loadTexture("data\\UI\\p6.png", placeNumbers[5]);
-	loadTexture("data\\UI\\p7.png", placeNumbers[6]);
-	loadTexture("data\\UI\\p8.png", placeNumbers[7]);
-	loadTexture("data\\UI\\p9.png", placeNumbers[8]);
-	loadTexture("data\\UI\\p10.png", placeNumbers[9]);
-	loadTexture("data\\UI\\p11.png", placeNumbers[10]);
+	loadTexture("data/UI/p1.png", placeNumbers[0]);
+	loadTexture("data/UI/p2.png", placeNumbers[1]);
+	loadTexture("data/UI/p3.png", placeNumbers[2]);
+	loadTexture("data/UI/p4.png", placeNumbers[3]);
+	loadTexture("data/UI/p5.png", placeNumbers[4]);
+	loadTexture("data/UI/p6.png", placeNumbers[5]);
+	loadTexture("data/UI/p7.png", placeNumbers[6]);
+	loadTexture("data/UI/p8.png", placeNumbers[7]);
+	loadTexture("data/UI/p9.png", placeNumbers[8]);
+	loadTexture("data/UI/p10.png", placeNumbers[9]);
+	loadTexture("data/UI/p11.png", placeNumbers[10]);
 
 	attrDataG = new AttributeData(); // Ground shader data
 	texDataG = new TextureData(3);

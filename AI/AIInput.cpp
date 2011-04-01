@@ -107,7 +107,7 @@ void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, 
 		float jeepAvoidMin = LoadFloat("config/ai.xml","jeep_avoid_min");						// Turn if angle to other jeeps is between these values
 		float jeepAvoidMax = LoadFloat("config/ai.xml","jeep_avoid_max");
 		float jeepSpeedDiffThreshold = LoadFloat("config/ai.xml","jeep_speed_diff_threshold");	// If one jeep is going significantly slower, be prepared to avoid it
-		if (distFromJeep < jeepDistanceThreshold && ((angleBetweenJeeps > jeepAvoidMin && angleBetweenJeeps < jeepAvoidMax) || abs(1-(jeep->speed / (*itr)->speed)) > jeepSpeedDiffThreshold)) {
+		if (distFromJeep < jeepDistanceThreshold && ((angleBetweenJeeps > jeepAvoidMin && angleBetweenJeeps < jeepAvoidMax) || fabs(1-(jeep->speed / (*itr)->speed)) > jeepSpeedDiffThreshold)) {
 			if (turnDir > 0) jeepAvoidance += 2;
 			else jeepAvoidance -= 2;
 		}
