@@ -15,6 +15,9 @@ logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/
 log(logModel.model, 30),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50, false),
+smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 3),
+smallFallingRock(smallerRockModel.model, 3, false, 1.0),
+
 // leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
 // leafy(leafyMod.model, 20),
 smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
@@ -83,6 +86,12 @@ void Obstacles::initialize(ActorList & actors)
 
 	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7) );
 	addObstacle(largeRock, rockModel, btVector3(158,-5,0), actors);
+
+    for(int i=0; i<100; i++)
+    {
+    	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,40+i), actors);
+    }
+
 
 	//addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
 	// addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);

@@ -362,6 +362,11 @@ void MainController::restart()
 	ptr->jeepManager->restart();
 }
 
+ActorList const * MainController::getObstacleList()
+{
+    return &(ptr->obstacleList);
+}
+
 MainController::~MainController()
 {
 	for(ActorList::iterator itr = actorList.begin(); itr != actorList.end(); ++itr)

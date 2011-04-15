@@ -21,7 +21,7 @@ public:
 	static void restart();
 	static void addActor(Actor *);
 	static void finishGame( std::vector<int> &);
-	
+    static ActorList const * getObstacleList();
 protected:
     bool countDown(unsigned long, bool restart=false);
     void tickMenu(unsigned long);

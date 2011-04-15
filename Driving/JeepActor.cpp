@@ -171,7 +171,7 @@ btVector3 JeepActor::update_tires()
 {
 	btVector3 f0 = springs[0]->getForce(this->engine.torque, this->velocity , this->u );
 	btVector3 f1 = springs[1]->getForce(this->engine.torque, this->velocity, this->u );
-		
+
 	return f0 / 2.0 + f1 / 2.0;
 }
 

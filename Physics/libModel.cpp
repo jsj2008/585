@@ -4,8 +4,14 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
-libModel::libModel(Model const & model, btScalar scale, bool concave) : PhysObject(0.0) //5.0 kg
+libModel::libModel(Model const & model, btScalar scale, bool concave, float mass) : PhysObject(mass)
 {
+    if(mass > 0 && concave)
+    {
+        LOG("Model wants to be concave and falling!!! can't do it!!!", "libModel");
+        exit(137);
+    }
+    
     fallInertia = new btVector3(0,0,0);
     
     if(!concave)
