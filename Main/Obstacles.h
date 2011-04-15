@@ -22,6 +22,7 @@ private:
 	const RenderObject logModel;
 	const RenderObject smallRockModel;
 	const RenderObject smallRockModel2;
+    const RenderObject tunnelTreeModel;
 
 	const RenderObject leafyMod;
 
@@ -32,6 +33,7 @@ private:
 	const libModel log;
 	const libModel smallRock;
 	const libModel smallRock2;
+    const libModel tunnelTree;
 
 	// const libModel leafy;
 	

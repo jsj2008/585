@@ -60,7 +60,7 @@ void Physics::newActors(ActorList const & newActors)
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
 		btVector3 vel = (*itr)->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( (*itr)->orientation, (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
