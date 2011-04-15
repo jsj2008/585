@@ -3,26 +3,25 @@
 #include "Common/Actor.h"
 #include "Common/prelude.h"
 #include "Physics/HeightMapManager.h"
-#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 
 Obstacles::Obstacles():
 rockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock1.obj", 40),
-largeRock(rockModel.model, 40),
+largeRock(rockModel.model, 40, true),
 rockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock2.obj", 40),
-largeRock2(rockModel2.model, 40),
+largeRock2(rockModel2.model, 40, true),
 rockModel3("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock3.obj", 40),
-largeRock3(rockModel3.model, 40),
+largeRock3(rockModel3.model, 40, true),
 logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
 log(logModel.model, 30),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
-smallRock(smallRockModel.model, 50),
+smallRock(smallRockModel.model, 50, false),
 // leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
 // leafy(leafyMod.model, 20),
 smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
-smallRock2(smallRockModel2.model, 50),
+smallRock2(smallRockModel2.model, 50, false),
 
 tunnelTreeModel("data/textures/tree.png", "data/textures/blank.bmp", "models/obstacles/tree.obj", 50),
-tunnelTree(tunnelTreeModel.model, 50)
+tunnelTree(tunnelTreeModel.model, 50, false)
 {
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -82,7 +81,8 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(smallRock2, smallRockModel2, btVector3(91,2,82), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(44,2,38), actors);
 
-	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7));
+	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7) );
+	addObstacle(largeRock, rockModel, btVector3(158,-5,0), actors);
 
 	//addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
 	// addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);
