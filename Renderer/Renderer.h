@@ -73,6 +73,14 @@ private:
 	void drawPlayerPlace(int place);
 	void groundTexCoord(int x, int z, bool xend, bool zend);
 
+	void addTree(double x, double y, double z);
+	Point convertToWorldPos(btVector3 const & mapPosition);
+	void initTrees();
+	void drawTrees();
+	list<Point> treePositions;
+	vector<Point> treeProperties;
+	vector<GLuint*> treeTextures;
+
 	btVector3 camPos;				// Position of the camera
 	btVector3 camLook;				// Point that the camera is looking at
 	btVector3 camUp;				// Up vector for the camera TODO: are these in use? Will they be later?

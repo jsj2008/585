@@ -16,11 +16,27 @@ void AIInput::restart() {
 	recovering = LoadFloat("config/ai.xml","recovery_cooldown");
 }
 
-void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2, int place) {
+/* Args:
+jeep		The AI being controlled
+allJeeps	The list of all jeeps in the race
+pathDir1	???
+pathDir2	???
+trackVector	???
+segmentVec1	???
+segmentVec2	???
+placeFactor The AI's place relative to the human, for cheating
+*/
+void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2, int placeFactor) {
 	btVector3 trackDirection = pathDir1;
 	btVector3 actorHeading = quatRotate(jeep->orientation, btVector3(1,0,0)).normalized();
 
-	YAxis = 1.0 + 0.1*place; // AI goes faster if it is farther behind (cheating)
+	if (placeFactor > 0) // AI behind
+		YAxis = 1.1 + 0.1*placeFactor; // AI goes faster if it is farther behind (cheating)
+	else // AI ahead
+		YAxis = 1.2 + 0.05*placeFactor; // AI goes a bit slower if it is ahead (anti-cheating)
+
+	//std::cout << YAxis << std::endl;
+
 	AcceleratePressed = true;
 	BrakePressed = false;
 

@@ -75,7 +75,7 @@ void Renderer::showPlace(int p)
 
 	glColor4f(1,1,1,1);
     basicShader->on();
-	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(p, 10)]);
 	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
@@ -123,6 +123,10 @@ void Renderer::paintGL() {
 	    drawGround();
     	renderObjects();
     	renderJeeps();
+		drawTrees();
+		glAlphaFunc(GL_LESS, 1.0);
+		drawTrees();
+		glAlphaFunc(GL_EQUAL, 1.0);
     }
 
 	if (gameStarted) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
@@ -136,10 +140,46 @@ void Renderer::step() {
 }
 
 void Renderer::renderJeeps() {
+	objectShader->on();
+		applyObjectShader();
 
-	Actor* currentActor = 0;
-	for (int i = 0; i < jeepManager->getAIs().size(); i++) {
-		currentActor = jeepManager->getAIs().at(i);
+		Actor* currentActor = 0;
+		for (int i = 0; i < jeepManager->getAIs().size(); i++) {
+			currentActor = jeepManager->getAIs().at(i);
+			glPushMatrix();
+
+			glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
+
+			btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
+			btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
+			btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+			h.normalize();
+			b.normalize();
+			n.normalize();
+
+			// This matrix is defined columnwise
+			GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
+										n.getX(), n.getY(), n.getZ(), 0, 
+										b.getX(), b.getY(), b.getZ(), 0, 
+										0, 0, 0, 1};
+			glMultMatrixf(frameMatrix);
+
+			glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
+			glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
+			glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
+			glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
+
+
+				glColor3f(1,1,1);
+				currentActor->renderObject->draw();
+				//currentActor->renderObject.drawNormals();
+
+
+			glPopMatrix();
+		}
+
+		// Draw the human controlled jeep separately
+		currentActor = jeepManager->getHuman();
 		glPushMatrix();
 
 		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
@@ -162,48 +202,6 @@ void Renderer::renderJeeps() {
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
 		glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
 		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
-		objectShader->on();
-			applyObjectShader();
-
-			glColor3f(1,1,1);
-			currentActor->renderObject->draw();
-			//currentActor->renderObject.drawNormals();
-
-			// Clear all textures
-			for (int i = MAX_TEXTURES+2; i >= 0; i--) {
-				glActiveTexture(GL_TEXTURE0+i);
-				glDisable(GL_TEXTURE_2D);
-			}
-		objectShader->off();
-
-		glPopMatrix();
-	}
-	// Draw the human controlled jeep separately
-	currentActor = jeepManager->getHuman();
-	glPushMatrix();
-
-	glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
-
-	btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
-	btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
-	btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
-	h.normalize();
-	b.normalize();
-	n.normalize();
-
-	// This matrix is defined columnwise
-	GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
-								n.getX(), n.getY(), n.getZ(), 0, 
-								b.getX(), b.getY(), b.getZ(), 0, 
-								0, 0, 0, 1};
-	glMultMatrixf(frameMatrix);
-
-	glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
-	glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
-	glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
-	glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
-	objectShader->on();
-		applyObjectShader();
 
 		glColor3f(1,1,1);
 		currentActor->renderObject->draw();
@@ -220,62 +218,62 @@ void Renderer::renderJeeps() {
 }
 
 void Renderer::renderObjects() {
+	objectShader->on();
+		applyObjectShader();
+		
+		GLfloat texPos[MAX_TEXTURES];
+		vector<int> index = texDataG->getTextureIndices();
+		for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
+			if (i < index.size()) {
+				texPos[i] = texDataG->getTexturePos(index[i]);
 
-	Actor* currentActor = 0;
-	for (ActorList::const_iterator i = actorList.begin(); i != actorList.end(); i++) {
-		currentActor = *i;
-		glPushMatrix();
-
-		glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
-
-		btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
-		btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
-		btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
-		h.normalize();
-		b.normalize();
-		n.normalize();
-
-		// This matrix is defined columnwise
-		GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
-									n.getX(), n.getY(), n.getZ(), 0, 
-									b.getX(), b.getY(), b.getZ(), 0, 
-									0, 0, 0, 1};
-		glMultMatrixf(frameMatrix);
-
-		glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
-		glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
-		glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
-		objectShader->on();
-			applyObjectShader();
-			
-			GLfloat texPos[MAX_TEXTURES];
-			vector<int> index = texDataG->getTextureIndices();
-			for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
-				if (i < index.size()) {
-					texPos[i] = texDataG->getTexturePos(index[i]);
-
-					glActiveTexture(GL_TEXTURE0+i);
-					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, *shaderTexturesG[index[i]]);
-				}
-				else
-					texPos[i] = 5.0f;
-			}
-
-			glColor3f(1,1,1);
-			currentActor->renderObject->draw();
-			//currentActor->renderObject.drawNormals();
-
-			// Clear all textures
-			for (int i = MAX_TEXTURES+2; i >= 0; i--) {
 				glActiveTexture(GL_TEXTURE0+i);
-				glDisable(GL_TEXTURE_2D);
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, *shaderTexturesG[index[i]]);
 			}
-		objectShader->off();
+			else
+				texPos[i] = 5.0f;
+		}
 
-		glPopMatrix();
-	}
+		Actor* currentActor = 0;
+		for (ActorList::const_iterator i = actorList.begin(); i != actorList.end(); i++) {
+			currentActor = *i;
+			glPushMatrix();
+
+			glTranslated(currentActor->pos.getX(), currentActor->pos.getY(), currentActor->pos.getZ());
+
+			btVector3 h = quatRotate(currentActor->orientation, btVector3(1,0,0));
+			btVector3 b = quatRotate(currentActor->orientation, btVector3(0,0,1));
+			btVector3 n = quatRotate(currentActor->orientation, btVector3(0,1,0));
+			h.normalize();
+			b.normalize();
+			n.normalize();
+
+			// This matrix is defined columnwise
+			GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
+										n.getX(), n.getY(), n.getZ(), 0, 
+										b.getX(), b.getY(), b.getZ(), 0, 
+										0, 0, 0, 1};
+			glMultMatrixf(frameMatrix);
+
+			glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
+			glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->texture);
+			glActiveTexture(GL_TEXTURE6); // Apply the current actor's bump map
+			glBindTexture(GL_TEXTURE_2D, currentActor->renderObject->bumpMap);
+
+				glColor3f(1,1,1);
+				currentActor->renderObject->draw();
+				//currentActor->renderObject.drawNormals();
+
+
+			glPopMatrix();
+		}
+		// Clear all textures
+		for (int i = MAX_TEXTURES+2; i >= 0; i--) {
+			glActiveTexture(GL_TEXTURE0+i);
+			glDisable(GL_TEXTURE_2D);
+		}
+	objectShader->off();
 }
 
 void Renderer::setMessage(string const & texName) {
@@ -350,7 +348,11 @@ void Renderer::drawPlayerPlace(int place) {
 
 	glColor4f(1,1,1,1);
     basicShader->on();
-	glActiveTexture(GL_TEXTURE4); // Apply the sky texture
+	glActiveTexture(GL_TEXTURE4);
+	/*test
+	int num = jeepManager->getHuman()->speed / 10;
+glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(num, 10)]);
+	untest*/
 	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(place-1, 10)]);
 	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
@@ -671,6 +673,7 @@ void Renderer::initializeGL2()  //more advanced stuff
 
 	initSky();
 	initGround();
+	initTrees();
 }
 
 // When the window is resized update the height and width, and recalculate the aspect ratio
@@ -694,7 +697,7 @@ void Renderer::setProjection() {
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0f, ratio, 0.1f, 1500.0f); // 90 degree field of view
+	gluPerspective(90.0f, ratio, 0.1f, 2000.0f); // 90 degree field of view
 	//gluPerspective(90.0f, ratio, 100.0f, 15000.0f); // for overhead view (testing)
 	glMatrixMode(GL_MODELVIEW);
 }
@@ -969,4 +972,122 @@ void Renderer::drawGroundNormals() {
 			}
 		}
 	glPopMatrix();
+}
+
+void Renderer::addTree(double x, double y, double z) {
+	double scale = (((double)rand()/(double)RAND_MAX) * 1.5) + 2.5; // Range from 1.5 to 4
+	treePositions.push_back(convertToWorldPos(btVector3(x,y,z)));
+	treeProperties.push_back(Point(scale, 0, 0));
+}
+
+Point Renderer::convertToWorldPos(btVector3 const & mapPosition) {
+	return Point((mapPosition.getX() * xscale) - ((float)(hm->width*xscale))/2.0,
+					((float)(hm->map[((int)mapPosition.getZ()*hm->width)+(int)mapPosition.getX()]) * yscale) + mapPosition.getY(),
+					(mapPosition.getZ() * zscale) -((float)(hm->height*zscale))/2.0);
+}
+
+void Renderer::initTrees() {
+	treeTextures.resize(6);
+	for (int i = 0; i < treeTextures.size(); i++)
+		treeTextures[i] = new GLuint;
+	treePositions = list<Point>();
+	treeProperties = vector<Point>();
+	loadTexture("data/textures/tree_1.png", treeTextures[0]);
+	loadTexture("data/textures/tree_3.png", treeTextures[1]);
+	loadTexture("data/textures/tree_3.png", treeTextures[2]);
+	loadTexture("data/textures/tree_4.png", treeTextures[3]);
+	loadTexture("data/textures/tree_5.png", treeTextures[4]);
+	loadTexture("data/textures/tree_6.png", treeTextures[5]);
+
+/*	addTree(192, 0, 37);
+	
+	addTree(241, 0, 111);
+	addTree(240, 0, 117);
+	addTree(232, 0, 122);
+	addTree(225, 0, 123);
+	addTree(217, 0, 123);
+	addTree(109, 0, 94);
+	
+	addTree(174, 0, 84);
+	addTree(183, 0, 86);*/
+	treePositions.clear();
+	treeProperties.clear();
+
+	ifstream in;
+	in.open("trees2.pth");
+
+	double x, z;
+	while (in >> x >> z)
+		addTree(x/2.0,-5,z/2.0);
+}
+
+void Renderer::drawTrees() {
+	objectShader->on();
+		applyObjectShader();
+		
+		GLfloat texPos[MAX_TEXTURES];
+		vector<int> index = texDataG->getTextureIndices();
+		for (unsigned int i = 0; i < MAX_TEXTURES; i++) {
+			if (i < index.size()) {
+				texPos[i] = texDataG->getTexturePos(index[i]);
+
+				glActiveTexture(GL_TEXTURE0+i);
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, *shaderTexturesG[index[i]]);
+			}
+			else
+				texPos[i] = 5.0f;
+		}
+
+		Point currentPos;
+		int c = 0;
+		for (list<Point>::const_iterator i = treePositions.begin(); i != treePositions.end(); i++, c++) {
+			currentPos = *i;
+			glPushMatrix();
+
+			double scale = treeProperties[c].x;
+
+			glActiveTexture(GL_TEXTURE4); // Apply the current actor's texture
+			glBindTexture(GL_TEXTURE_2D, *treeTextures[c%treeTextures.size()]);
+			glActiveTexture(GL_TEXTURE6);
+
+			glTranslated(currentPos.x, currentPos.y, currentPos.z);
+
+			btVector3 h = camPos - camLook; // Billboarding - always point at camera
+			btVector3 n = btVector3(0,-1,0);
+			btVector3 b = h.cross(n);
+			//h = n.cross(b);
+			n = h.cross(b);
+
+			h.normalize();
+			n.normalize();
+			b.normalize();
+
+			// This matrix is defined columnwise
+			GLfloat frameMatrix[16] = { h.getX(), h.getY(), h.getZ(), 0, 
+										n.getX(), n.getY(), n.getZ(), 0, 
+										b.getX(), b.getY(), b.getZ(), 0, 
+										0, 0, 0, 1};
+			glMultMatrixf(frameMatrix);
+
+				glColor3f(1,1,1);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0,1);
+					glVertex3f(0, 0, -20*scale);
+					glTexCoord2f(1,1);
+					glVertex3f(0, 0, 20*scale);
+					glTexCoord2f(1,0);
+					glVertex3f(0, 50*scale, 20*scale);
+					glTexCoord2f(0,0);
+					glVertex3f(0, 50*scale, -20*scale);
+				glEnd();
+
+			glPopMatrix();
+		}	
+		// Clear all textures
+		for (int i = MAX_TEXTURES+2; i >= 0; i--) {
+			glActiveTexture(GL_TEXTURE0+i);
+			glDisable(GL_TEXTURE_2D);
+		}
+	objectShader->off();
 }

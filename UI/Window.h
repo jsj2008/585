@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include "SDL_opengl.h"
 
-#define LOW_RES
+//#define LOW_RES
 
 class Input;
 class MainController;
@@ -37,8 +37,8 @@ private:
 	static const int SCREEN_WIDTH = 800;
 	static const int SCREEN_HEIGHT = 600;
 	#else
-	static const int SCREEN_WIDTH = 1280;
-	static const int SCREEN_HEIGHT = 1024;
+	static const int SCREEN_WIDTH = 1440;
+	static const int SCREEN_HEIGHT = 900;
 	#endif
 	static const int SCREEN_DEPTH = 16;
 	static const int TIMER = 1;

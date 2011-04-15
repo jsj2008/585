@@ -40,44 +40,44 @@ void JeepManager::initialize(Physics * physics, Input * playerInput)
 	for (int i = 0; i < num_players; ++i) {
 		aiInputs.push_back(new AIInput());
 	}
-	// We WILL fix this garbage
-		JeepActor* jeep1 = new JeepActor(mChasis, jeepModel2, physics, aiInputs[0], btVector3(jeepX + (10*0 + 10), jeepY, jeepZ), rotation );
+	// We WILL fix this garbage		Okay, maybe we won't, but I don't approve of it!!! >:-(
+		JeepActor* jeep1 = new JeepActor(mChasis, jeepModel2, physics, aiInputs[0], btVector3(jeepX + 20, jeepY, jeepZ+10), rotation );
 		jeep1->setOrientation( rotation );
 		jeep1->ID = 0;
 		aiJeeps.push_back(jeep1);
-		JeepActor* jeep2 = new JeepActor(mChasis, jeepModel3, physics, aiInputs[1], btVector3(jeepX + (10*1 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep2 = new JeepActor(mChasis, jeepModel3, physics, aiInputs[1], btVector3(jeepX + 40, jeepY, jeepZ+20), rotation );
 		jeep2->setOrientation( rotation );
 		jeep2->ID = 1;
 		aiJeeps.push_back(jeep2);
-		JeepActor* jeep3 = new JeepActor(mChasis, jeepModel4, physics, aiInputs[2], btVector3(jeepX + (10*2 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep3 = new JeepActor(mChasis, jeepModel4, physics, aiInputs[2], btVector3(jeepX + 60, jeepY, jeepZ+30), rotation );
 		jeep3->setOrientation( rotation );
 		jeep3->ID = 2;
 		aiJeeps.push_back(jeep3);
-		JeepActor* jeep4 = new JeepActor(mChasis, jeepModel5, physics, aiInputs[3], btVector3(jeepX + (10*3 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep4 = new JeepActor(mChasis, jeepModel5, physics, aiInputs[3], btVector3(jeepX + 80, jeepY, jeepZ+40), rotation );
 		jeep4->setOrientation( rotation );
 		jeep4->ID = 3;
 		aiJeeps.push_back(jeep4);
-		JeepActor* jeep5 = new JeepActor(mChasis, jeepModel6, physics, aiInputs[4], btVector3(jeepX + (10*4 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep5 = new JeepActor(mChasis, jeepModel6, physics, aiInputs[4], btVector3(jeepX, jeepY, jeepZ+50), rotation );
 		jeep5->setOrientation( rotation );
 		jeep5->ID = 4;
 		aiJeeps.push_back(jeep5);
-		JeepActor* jeep6 = new JeepActor(mChasis, jeepModel7, physics, aiInputs[5], btVector3(jeepX + (10*5 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep6 = new JeepActor(mChasis, jeepModel7, physics, aiInputs[5], btVector3(jeepX + 20, jeepY, jeepZ+60), rotation );
 		jeep6->setOrientation( rotation );
 		jeep6->ID = 5;
 		aiJeeps.push_back(jeep6);
-		JeepActor* jeep7 = new JeepActor(mChasis, jeepModel8, physics, aiInputs[6], btVector3(jeepX + (10*6 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep7 = new JeepActor(mChasis, jeepModel8, physics, aiInputs[6], btVector3(jeepX + 40, jeepY, jeepZ+70), rotation );
 		jeep7->setOrientation( rotation );
 		jeep7->ID = 6;
 		aiJeeps.push_back(jeep7);
-		JeepActor* jeep8 = new JeepActor(mChasis, jeepModel9, physics, aiInputs[7], btVector3(jeepX + (10*7 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep8 = new JeepActor(mChasis, jeepModel9, physics, aiInputs[7], btVector3(jeepX + 60, jeepY, jeepZ+80), rotation );
 		jeep8->setOrientation( rotation );
 		jeep8->ID = 7;
 		aiJeeps.push_back(jeep8);
-		JeepActor* jeep9 = new JeepActor(mChasis, jeepModel10, physics, aiInputs[8], btVector3(jeepX + (10*8 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep9 = new JeepActor(mChasis, jeepModel10, physics, aiInputs[8], btVector3(jeepX + 80, jeepY, jeepZ+90), rotation );
 		jeep9->setOrientation( rotation );
 		jeep9->ID = 8;
 		aiJeeps.push_back(jeep9);
-		JeepActor* jeep10 = new JeepActor(mChasis, jeepModel11, physics, aiInputs[9], btVector3(jeepX + (10*9 + 10), jeepY, jeepZ), rotation );
+		JeepActor* jeep10 = new JeepActor(mChasis, jeepModel11, physics, aiInputs[9], btVector3(jeepX, jeepY, jeepZ+100), rotation );
 		jeep10->setOrientation( rotation );
 		jeep10->ID = 9;
 		aiJeeps.push_back(jeep10);
@@ -203,7 +203,7 @@ void JeepManager::renderTick() {
 		btVector3 segmentVec2 = levelAI->getVectorToSeg(2, c);
 		Jeeps allJeeps = aiJeeps;
 		allJeeps.push_back(human);
-		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c));
+		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c)-levelAI->getPlayerPlace(num_players));
 	}
 	
     
