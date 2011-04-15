@@ -87,9 +87,9 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7) );
 	addObstacle(largeRock, rockModel, btVector3(158,-5,0), actors);
 
-    for(int i=0; i<100; i++)
+    for(int i=0; i<10; i++)
     {
-    	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,40+i), actors);
+    	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,45), actors);
     }
 
 
