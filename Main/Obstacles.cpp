@@ -6,19 +6,25 @@
 
 Obstacles::Obstacles():
 rockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock1.obj", 40),
-largeRock(rockModel.model, 40),
+largeRock(rockModel.model, 40, true),
 rockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock2.obj", 40),
-largeRock2(rockModel2.model, 40),
+largeRock2(rockModel2.model, 40, true),
 rockModel3("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock3.obj", 40),
-largeRock3(rockModel3.model, 40),
+largeRock3(rockModel3.model, 40, true),
 logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
 log(logModel.model, 30),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
-smallRock(smallRockModel.model, 50),
+smallRock(smallRockModel.model, 50, false),
+smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 3),
+smallFallingRock(smallerRockModel.model, 3, false, 1.0),
+
 // leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
 // leafy(leafyMod.model, 20),
 smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
-smallRock2(smallRockModel2.model, 50)
+smallRock2(smallRockModel2.model, 50, false),
+
+tunnelTreeModel("data/textures/tree.png", "data/textures/blank.bmp", "models/obstacles/tree.obj", 50),
+tunnelTree(tunnelTreeModel.model, 50, false)
 {
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -29,6 +35,9 @@ smallRock2(smallRockModel2.model, 50)
 
 void Obstacles::initialize(ActorList & actors)
 {
+    //concave tree
+    addObstacle(smallRock2, smallRockModel2, btVector3(138,12,57), actors);
+	
 	addObstacle(smallRock2, smallRockModel2, btVector3(138,12,57), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(141,12,57), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(143,15,57), actors);
@@ -75,6 +84,15 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(smallRock2, smallRockModel2, btVector3(91,2,82), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(44,2,38), actors);
 
+	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7) );
+	addObstacle(largeRock, rockModel, btVector3(158,-5,0), actors);
+
+    for(int i=0; i<10; i++)
+    {
+    	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,45), actors);
+    }
+
+
 	//addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
 	// addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);
 }
@@ -82,7 +100,7 @@ void Obstacles::initialize(ActorList & actors)
 void Obstacles::addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors, btQuaternion const & orientation) {
 	Actor * c = new Actor(phys, &render, convertToWorldPos(mapPosition));
 	actors.push_back(c);
-	c->orientation = orientation;
+    c->setOrientation(orientation);
 	MainController::addActor(c);
 }
 

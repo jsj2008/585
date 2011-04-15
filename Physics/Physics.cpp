@@ -23,7 +23,7 @@ Physics::Physics(ActorList const & actors, btIDebugDraw & debugger) :
 	dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration)
 {	
 		
-	dynamicsWorld.setGravity(btVector3(0,LoadFloat("config/world.xml", "gravity"),0));   
+	dynamicsWorld.setGravity(btVector3(0,LoadFloat("config/world.xml", "gravity") * 10,0));   
 	
 	newActors(actors);
 	
@@ -60,7 +60,7 @@ void Physics::newActors(ActorList const & newActors)
 	for(ActorList::const_iterator itr = newActors.begin(); itr != newActors.end(); ++itr)
 	{
 		btVector3 vel = (*itr)->initialVel;
-		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( btQuaternion(0,0,0,1), (*itr)->pos ), *itr);
+		Physics::MotionState * actorMotion = new Physics::MotionState( btTransform( (*itr)->orientation, (*itr)->pos ), *itr);
 		motionStates.push_back( actorMotion );
 		
 		PhysObject const & physObject = (*itr)->physObject;	//grabs physical info about the actor
