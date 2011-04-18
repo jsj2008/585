@@ -25,6 +25,9 @@ private:
 	const RenderObject smallerRockModel;
 
     const RenderObject tunnelTreeModel;
+    const RenderObject bridgeModel;
+    const RenderObject mansionModel;
+    const RenderObject finishLineModel;
 
 	const RenderObject leafyMod;
 
@@ -37,6 +40,9 @@ private:
 	const libModel smallFallingRock;
 	const libModel smallRock2;
     const libModel tunnelTree;
+    const libModel bridge;
+    const libModel mansion;
+    const libModel finishLine;
 
 	// const libModel leafy;
 	

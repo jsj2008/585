@@ -102,12 +102,12 @@ void JeepManager::restart()
 
 	btQuaternion rotation(btVector3(0,1,0), jeepRotation);	//initial rotation
 	
+	levelAI->restart();
 	human->reset(rotation, btVector3(jeepX, jeepY, jeepZ));
 	for (int i = 0; i < num_players; ++i) {
-		aiJeeps[i]->reset(rotation, btVector3(jeepX + (10*i + 10), jeepY, jeepZ) );
+		aiJeeps[i]->reset(rotation, btVector3(jeepX + (20*((i+1)%5)), jeepY, jeepZ + (10*(i+1))) );
 		this->aiInputs[i]->restart();
 	}
-	levelAI->restart();
 	
     freezeAt(btVector3(jeepX, jeepY, jeepZ));
 	
@@ -194,6 +194,8 @@ void JeepManager::renderTick() {
 	levelAI->step();
 	human->render();
 	int c = 0;
+	Jeeps allJeeps = aiJeeps;
+	allJeeps.push_back(human);
 	for (Jeeps::iterator itr = aiJeeps.begin(); itr != aiJeeps.end(); ++itr, c++) {
 		(*itr)->render();
 		btVector3 pathDir1 = levelAI->getPathDirection(0, c);
@@ -201,12 +203,11 @@ void JeepManager::renderTick() {
 		btVector3 trackVector = levelAI->getVectorToTrack(c);
 		btVector3 segmentVec1 = levelAI->getVectorToSeg(1, c);
 		btVector3 segmentVec2 = levelAI->getVectorToSeg(2, c);
-		Jeeps allJeeps = aiJeeps;
-		allJeeps.push_back(human);
+		//if (trackVector.length() > 500) restartJeep(*itr); // Reset if too far from track (crazy offroading shortcuts only)
 		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c)-levelAI->getPlayerPlace(num_players));
 	}
-	
-    
+	//btVector3 trackVector = levelAI->getVectorToTrack(c); // Human
+	//if (trackVector.length() > 500.0) restartJeep(human); // TODO: Why do they fly into the stratosphere?
 }
 
 void JeepManager::startEngines()
@@ -233,4 +234,8 @@ btVector3 JeepManager::getPlayerPos(int p) const {
 
 int JeepManager::getPlayerPlace(int p) {
 	return levelAI->getPlayerPlace(p);
+}
+
+bool JeepManager::isFinished(int p) {
+	return levelAI->isFinished(p);
 }

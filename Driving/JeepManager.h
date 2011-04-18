@@ -27,6 +27,7 @@ public:
     void freezeAt(btVector3 const &);
     void release();
 	int getPlayerPlace(int p);
+	bool isFinished(int p);
 
 	void startEngines();
 

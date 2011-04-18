@@ -13,10 +13,9 @@ num_players(LoadInt("config/ai.xml", "num_players") )
 	this->human = human;
 	this->jeeps.push_back(human);
 	paths = Paths();
+	//paths.push_back(Path("test.pth"));
 	paths.push_back(Path("mainPath+.pth"));
 	paths.push_back(Path("path2x.pth"));
-	//paths.push_back(Path("rediculous.pth"));
-	//path = Path("crashCourse.pth");
 
 	finalPositions = std::vector<int>();
 
@@ -176,9 +175,26 @@ btVector3 LevelAI::getVectorToSeg(int lookAhead, int c) {
 
 int LevelAI::getPlayerPlace(int p) {
 	int place = 1;
-	for (int i = 0; i < num_players+1; i++) {
-		if (i == p) continue; // Don't compare to self
-		if (playerProgress(i) > playerProgress(p)) place++;
+	if (finished[p]) {
+		for (int i = 0; i < num_players+1; i++) {
+			if (i == p) continue; // Don't compare to self
+			if (finished[i] && finished[p]) {
+				for (int j = 0; j < finalPositions.size(); j++) {
+					if (finalPositions[j] == i) {
+						place++;
+						break;
+					} else if (finalPositions[j] == p) break;
+				}
+			}
+		}
+	} else {
+		for (int i = 0; i < num_players+1; i++) {
+			if (i == p) continue; // Don't compare to self
+			if (finished[i]) place++;
+			else if (playerProgress(i) > playerProgress(p)) place++;
+			// Make sure there are never ties (higher numbered player gets benifit (human is highest number))
+			else if (playerProgress(i) == playerProgress(p) && i > p) place++;
+		}
 	}
 	return place;
 }
@@ -196,4 +212,8 @@ double LevelAI::playerProgress(int p) {
 	double segEndProgress = playerPath.pointProgress.at(segments[p]+1);
 	double segProgress = progressOnSeg(playerPath.points.at(segments[p]), playerPath.points.at(segments[p]+1), playerWorldPos);
 	return segStartProgress * (1-segProgress) + segEndProgress * segProgress;
+}
+
+bool LevelAI::isFinished(int p) {
+	return finished[p];
 }

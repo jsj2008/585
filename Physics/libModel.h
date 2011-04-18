@@ -8,7 +8,7 @@ class Model;
 class libModel : public PhysObject
 {
 public:
-	libModel(Model const &, btScalar scale, bool = false, float mass=0.0);
+	libModel(Model const &, btScalar scale, bool = false, float mass = 0.0, bool isCourse = false);
 };
 
 #endif

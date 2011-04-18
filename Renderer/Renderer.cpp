@@ -23,8 +23,9 @@ actorList(actorList), jeepManager(jeepManager) {
 	showMessage = false;
 	setMessage("");
 	gameStarted = false;
+	gameFinished = false;
 
-	lightPos = btVector3(500,15000,240);
+	lightPos = btVector3(500,2000,240);
     initializeGL();
     paintGL();
 }
@@ -41,17 +42,35 @@ void Renderer::initialize() {
 	placeNumbers.resize(11);
 	for (int i = 0; i < 11; i++)
 		placeNumbers[i] = new GLuint;
-	loadTexture("data/UI/p1.png", placeNumbers[0]);
-	loadTexture("data/UI/p2.png", placeNumbers[1]);
-	loadTexture("data/UI/p3.png", placeNumbers[2]);
-	loadTexture("data/UI/p4.png", placeNumbers[3]);
-	loadTexture("data/UI/p5.png", placeNumbers[4]);
-	loadTexture("data/UI/p6.png", placeNumbers[5]);
-	loadTexture("data/UI/p7.png", placeNumbers[6]);
-	loadTexture("data/UI/p8.png", placeNumbers[7]);
-	loadTexture("data/UI/p9.png", placeNumbers[8]);
-	loadTexture("data/UI/p10.png", placeNumbers[9]);
-	loadTexture("data/UI/p11.png", placeNumbers[10]);
+	loadTexture("data/UI/first.png", placeNumbers[0]);
+	loadTexture("data/UI/second.png", placeNumbers[1]);
+	loadTexture("data/UI/third.png", placeNumbers[2]);
+	loadTexture("data/UI/fourth.png", placeNumbers[3]);
+	loadTexture("data/UI/fifth.png", placeNumbers[4]);
+	loadTexture("data/UI/sixth.png", placeNumbers[5]);
+	loadTexture("data/UI/seventh.png", placeNumbers[6]);
+	loadTexture("data/UI/eighth.png", placeNumbers[7]);
+	loadTexture("data/UI/ninth.png", placeNumbers[8]);
+	loadTexture("data/UI/tenth.png", placeNumbers[9]);
+	loadTexture("data/UI/eleventh.png", placeNumbers[10]);
+
+	playerNames.resize(11);
+	for (int i = 0; i < 11; i++)
+		playerNames[i] = new GLuint;
+	loadTexture("data/UI/michael_dark_blue.png", playerNames[0]);
+	loadTexture("data/UI/jake_purple_2.png", playerNames[1]);
+	loadTexture("data/UI/ezio_dark_red.png", playerNames[2]);
+	loadTexture("data/UI/john_dusty_blue.png", playerNames[3]);
+	loadTexture("data/UI/marco_green.png", playerNames[4]);
+	loadTexture("data/UI/steve_orange.png", playerNames[5]);
+	loadTexture("data/UI/lara_purple.png", playerNames[6]);
+	loadTexture("data/UI/henry_charcoal.png", playerNames[7]);
+	loadTexture("data/UI/indiana_white.png", playerNames[8]);
+	loadTexture("data/UI/nathan_yellow.png", playerNames[9]);
+	loadTexture("data/UI/richard_red.png", playerNames[10]);
+
+	loadTexture("data/UI/speedometer_face.png", &spedometerTex);
+	loadTexture("data/UI/speedometer_needle.png", &spedometerNeedleTex);
 
 	attrDataG = new AttributeData(); // Ground shader data
 	texDataG = new TextureData(3);
@@ -67,36 +86,12 @@ void Renderer::initialize() {
 
 void Renderer::startGame() {
 	gameStarted = true;
+	gameFinished = false;
 }
 
-void Renderer::showPlace(int p)
-{
-	setUIProjection();
-
-	glColor4f(1,1,1,1);
-    basicShader->on();
-	glActiveTexture(GL_TEXTURE4);
-	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(p, 10)]);
-	glUniform1i(basicShaderTexLocS, 4);
-	glPushMatrix();
-		glLoadIdentity();
-
-		glBegin(GL_QUADS);
-		glTexCoord2f(1, 1);
-		glVertex3f((double)4*width/7.0, (double)height/8.0, 0);
-		glTexCoord2f(0, 1);
-		glVertex3f((double)3*width/7.0, (double)height/8.0, 0);
-		glTexCoord2f(0, 0);
-		glVertex3f((double)3*width/7.0, 0, 0);
-		glTexCoord2f(1, 0);
-		glVertex3f((double)4*width/7.0, 0, 0);
-
-		glEnd();
-	glPopMatrix();
-    basicShader->off();
-
-	setProjection();
-	
+void Renderer::finishGame() {
+	gameStarted = false;
+	gameFinished = true;
 }
 
 void Renderer::setCamera(btVector3 const & pos, btVector3 const & look, btVector3 const & up) {
@@ -125,14 +120,16 @@ void Renderer::paintGL() {
     	renderJeeps();
 		drawTrees();
 		glAlphaFunc(GL_LESS, 1.0);
-		drawTrees();
+		drawTrees(); // Two passes to make alpha work
 		glAlphaFunc(GL_EQUAL, 1.0);
     }
 
-	if (gameStarted) drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
 	if (showMessage) drawMessage();
-	
-	// TODO: Better checking
+	if (gameStarted) {
+		drawPlayerPlace(jeepManager->getPlayerPlace(LoadInt("config/ai.xml","num_players")));
+		drawSpedometer();
+		drawPlayerList();
+	}
 }
 
 void Renderer::step() {
@@ -299,13 +296,13 @@ void Renderer::loadingMessage(string const & textName) {
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(1, 1);
-		glVertex3f(width, height, 0);
+		glVertex3f(width, height, -1);
 		glTexCoord2f(0, 1);
-		glVertex3f(0, height, 0);
+		glVertex3f(0, height, -1);
 		glTexCoord2f(0, 0);
-		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, -1);
 		glTexCoord2f(1, 0);
-		glVertex3f(width, 0, 0);
+		glVertex3f(width, 0, -1);
 
 		glEnd();
 	glPopMatrix();
@@ -327,19 +324,21 @@ void Renderer::drawMessage() {
 
 		glBegin(GL_QUADS);
 		glTexCoord2f(1, 1);
-		glVertex3f(width, height, 0);
+		glVertex3f(width, height, -1);
 		glTexCoord2f(0, 1);
-		glVertex3f(0, height, 0);
+		glVertex3f(0, height, -1);
 		glTexCoord2f(0, 0);
-		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, -1);
 		glTexCoord2f(1, 0);
-		glVertex3f(width, 0, 0);
+		glVertex3f(width, 0, -1);
 
 		glEnd();
 	glPopMatrix();
     basicShader->off();
 
 	setProjection();
+
+	if (gameFinished) drawPlayerList();
 }
 
 void Renderer::drawPlayerPlace(int place) {
@@ -349,26 +348,106 @@ void Renderer::drawPlayerPlace(int place) {
 	glColor4f(1,1,1,1);
     basicShader->on();
 	glActiveTexture(GL_TEXTURE4);
-	/*test
-	int num = jeepManager->getHuman()->speed / 10;
-glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(num, 10)]);
-	untest*/
 	glBindTexture(GL_TEXTURE_2D, *placeNumbers[min(place-1, 10)]);
 	glUniform1i(basicShaderTexLocS, 4);
 	glPushMatrix();
 		glLoadIdentity();
+		glTranslated(width/12, height-height/9, 0);
 
 		glBegin(GL_QUADS);
-		glTexCoord2f(1, 1);
-		glVertex3f((double)width/10.0, (double)height/8.0, 0);
-		glTexCoord2f(0, 1);
-		glVertex3f(0, (double)height/8.0, 0);
-		glTexCoord2f(0, 0);
-		glVertex3f(0, 0, 0);
 		glTexCoord2f(1, 0);
-		glVertex3f((double)width/10.0, 0, 0);
+		glVertex3f(width/24, height/18, 0);
+		glTexCoord2f(0, 0);
+		glVertex3f(-width/24, height/18, 0);
+		glTexCoord2f(0, 1);
+		glVertex3f(-width/24, -height/18, 0);
+		glTexCoord2f(1, 1);
+		glVertex3f(width/24, -height/18, 0);
 
 		glEnd();
+	glPopMatrix();
+    basicShader->off();
+
+	setProjection();
+}
+
+void Renderer::drawSpedometer() {
+	double speed = jeepManager->getHuman()->speed;
+
+	setUIProjection();
+
+	glColor4f(1,1,1,1);
+    basicShader->on();
+	glActiveTexture(GL_TEXTURE4);
+
+	glBindTexture(GL_TEXTURE_2D, spedometerTex);
+	glUniform1i(basicShaderTexLocS, 4);
+	glPushMatrix();
+		glLoadIdentity();
+		glTranslated(width-width/8, height/6, 0);
+
+		glBegin(GL_QUADS);
+			glTexCoord2f(1, 0);
+			glVertex3f(width/10, width/10, 0);
+			glTexCoord2f(0, 0);
+			glVertex3f(-width/10, width/10, 0);
+			glTexCoord2f(0, 1);
+			glVertex3f(-width/10, -width/10, 0);
+			glTexCoord2f(1, 1);
+			glVertex3f(width/10, -width/10, 0);
+		glEnd();
+		
+		glBindTexture(GL_TEXTURE_2D, spedometerNeedleTex);
+		glUniform1i(basicShaderTexLocS, 4);
+		glRotated(140 - speed*1.4, 0, 0, 1);
+		glBegin(GL_QUADS);
+			glTexCoord2f(1, 0);
+			glVertex3f(width/10, width/10, -1);
+			glTexCoord2f(0, 0);
+			glVertex3f(-width/10, width/10, -1);
+			glTexCoord2f(0, 1);
+			glVertex3f(-width/10, -width/10, -1);
+			glTexCoord2f(1, 1);
+			glVertex3f(width/10, -width/10, -1);
+		glEnd();
+
+	glPopMatrix();
+    basicShader->off();
+
+	setProjection();
+}
+
+void Renderer::drawPlayerList() {
+	setUIProjection();
+
+	glColor4f(1,1,1,1);
+    basicShader->on();
+	glActiveTexture(GL_TEXTURE4);
+
+	glPushMatrix();
+		glLoadIdentity();
+		if (gameFinished) glTranslated(width/2, height/2, 0);
+		else glTranslated(width - width/30, height, 0);
+
+		for (int i = 0; i < 11; i++) {
+			glPushMatrix();
+				glBindTexture(GL_TEXTURE_2D, *playerNames[i]);
+				glUniform1i(basicShaderTexLocS, 4);
+				glTranslated(0, -height/30*jeepManager->getPlayerPlace(i), 0);
+				if (jeepManager->isFinished(i)) glTranslated(width/50, 0, 0);
+				glBegin(GL_QUADS);
+					glTexCoord2f(1, 0);
+					glVertex3f(0, 0, 0);
+					glTexCoord2f(0, 0);
+					glVertex3f(-width/4, 0, 0);
+					glTexCoord2f(0, 1);
+					glVertex3f(-width/4, -height/30, 0);
+					glTexCoord2f(1, 1);
+					glVertex3f(0, -height/30, 0);
+				glEnd();
+			glPopMatrix();
+		}
+
 	glPopMatrix();
     basicShader->off();
 
@@ -525,7 +604,7 @@ void Renderer::applyObjectShader() {
 
 void Renderer::initializeGL() {
 	//glClearColor(0.94, 0.97, 0.97, 0);
-	glClearColor(1, 0, 0.5, 0);
+	glClearColor(1, 1, 1, 0);
 
 	GLfloat whiteDir[4] = {1.0, 1.0, 1.0, 1.0};
 	GLfloat blackDir[4] = {0.0, 0.0, 0.0, 1.0};
@@ -708,6 +787,7 @@ void Renderer::updateCamera() {
 				  camUp.getX(), camUp.getY(), camUp.getZ());
 	
 	//gluLookAt(0, 3000, 0, 0, 0, 0, 0, 0, -1); // Overhead camera for testing
+	//gluLookAt(-272, 100, 1842, -322, 0, 1792, camUp.getX(), camUp.getY(), camUp.getZ()); // Overhead camera for testing
 
 	GLfloat position[] = { lightPos.getX(), lightPos.getY(), lightPos.getZ(), 1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, position);

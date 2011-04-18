@@ -11,20 +11,30 @@ rockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacle
 largeRock2(rockModel2.model, 40, true),
 rockModel3("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/groundRock3.obj", 40),
 largeRock3(rockModel3.model, 40, true),
-logModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
-log(logModel.model, 30),
+logModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
+log(logModel.model, 30, false),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50, false),
-smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 3),
-smallFallingRock(smallerRockModel.model, 3, false, 1.0),
+smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 6),
+smallFallingRock(smallerRockModel.model, 6, false, 5.0),
 
 // leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
 // leafy(leafyMod.model, 20),
 smallRockModel2("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock2.obj", 50),
 smallRock2(smallRockModel2.model, 50, false),
 
-tunnelTreeModel("data/textures/tree.png", "data/textures/blank.bmp", "models/obstacles/tree.obj", 50),
-tunnelTree(tunnelTreeModel.model, 50, false)
+tunnelTreeModel("data/textures/tree.png", "data/textures/blank.bmp", "models/course/tree_tris.obj", 255),
+tunnelTree(tunnelTreeModel.model, 255, true, 0, true),
+
+bridgeModel("data/textures/bridge_uv_small.png", "data/textures/blank.bmp", "models/course/bridge_extension.obj", 12),
+bridge(bridgeModel.model, 12, false, 0, true),
+
+mansionModel("data/textures/BuildingsMedieval0004_2_L.png", "data/textures/blank.bmp", "models/course/mansion.obj", 10),
+mansion(mansionModel.model, 10, false, 0, true),
+
+finishLineModel("data/textures/finish.png", "data/textures/blank.bmp", "models/course/finish_line.obj", 10),
+finishLine(finishLineModel.model, 0, false, 0, true)
+
 {
 	hm = HeightMapManager::GetHeightMap();
 	
@@ -84,11 +94,16 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(smallRock2, smallRockModel2, btVector3(91,2,82), actors);
 	addObstacle(smallRock, smallRockModel, btVector3(44,2,38), actors);
 
-	addObstacle(tunnelTree, tunnelTreeModel, btVector3(158,-5,22), actors, btQuaternion(btVector3(0,1,0), 0.7) );
+	addObstacle(tunnelTree, tunnelTreeModel, btVector3(23,-130,155), actors, btQuaternion(btVector3(0,1,0), 1.57) );
 	addObstacle(largeRock, rockModel, btVector3(158,-5,0), actors);
 
-    for(int i=0; i<10; i++)
-    {
+	addObstacle(bridge, bridgeModel, btVector3(84, 21, 202), actors, btQuaternion(btVector3(0,1,0), 0.785398175));
+	addObstacle(bridge, bridgeModel, btVector3(80, 1, 206), actors, btQuaternion(btVector3(0,1,0), 0.785398175));
+	
+	addObstacle(mansion, mansionModel, btVector3(104, -10, 255), actors, btQuaternion(btVector3(0,1,0), -1.57) );
+	addObstacle(finishLine, finishLineModel, btVector3(108, 10, 247), actors);
+
+    for(int i=0; i<10; i++) {
     	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,45), actors);
     }
 
@@ -100,7 +115,7 @@ void Obstacles::initialize(ActorList & actors)
 void Obstacles::addObstacle(PhysObject const & phys, RenderObject const & render, btVector3 const & mapPosition, ActorList & actors, btQuaternion const & orientation) {
 	Actor * c = new Actor(phys, &render, convertToWorldPos(mapPosition));
 	actors.push_back(c);
-    c->setOrientation(orientation);
+	c->setOrientation(orientation);
 	MainController::addActor(c);
 }
 

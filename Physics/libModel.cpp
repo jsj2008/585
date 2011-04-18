@@ -4,7 +4,7 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
-libModel::libModel(Model const & model, btScalar scale, bool concave, float mass) : PhysObject(mass)
+libModel::libModel(Model const & model, btScalar scale, bool concave, float mass, bool isCourse) : PhysObject(mass, isCourse)
 {
     if(mass > 0 && concave)
     {

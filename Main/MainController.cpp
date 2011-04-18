@@ -62,6 +62,8 @@ void MainController::finishGame( std::vector<int> & places)
 	ptr->finished = true;
 	ptr->menuSwitch = true;
 	ptr->startMenu = false;
+	ptr->renderer->finishGame();
+	ptr->menuCount = 3;
 
 	ptr->place = 1;
 	for(std::vector<int>::iterator itr = places.begin(); itr != places.end(); ++itr, ptr->place++)
@@ -72,10 +74,6 @@ void MainController::finishGame( std::vector<int> & places)
 		}
 	}
 
-
-
-	
-
 }
 
 void MainController::tickMenu(unsigned long interval)
@@ -84,32 +82,54 @@ void MainController::tickMenu(unsigned long interval)
     audio->pauseSource(gameMusic);
     audio->playSource(menuMusic);
 	audio->pauseSource(readySource);
-    if(!startMenu)
-    {
-		static std::string menus[] = {"data/UI/paused_0.png", "data/UI/paused_1.png", "data/UI/paused_2.png", "data/UI/game_end_win.png", "data/UI/game_end_lose.png"};	        
-        
-		if(!finished)
+
+	if(startMenu)
+	{
+		static std::string menus[] = {"data/UI/start_new.png", "data/UI/story_new.png", "data/UI/credits_new.png", "data/UI/quit_new.png"};
+		if(menuCount < 0)
 		{
-			if(menuCount < 0)   //all the way up
+			menuCount = 3;
+		}else if(menuCount > 3)
+		{
+			menuCount = 0;
+		}
+
+		if(menuSwitch)
+		{
+			renderer->setMessage(menus[menuCount]);
+            menuSwitch = false;
+		}
+
+	}else
+	{
+		static std::string menus[] = {"data/UI/paused_resume.png", "data/UI/paused_restart.png", "data/UI/paused_quit.png", "data/UI/complete_restart.png", "data/UI/complete_quit.png"};
+		if(finished)
+		{
+			if(menuCount < 3)
 			{
-				menuCount = 2;
-			}else if(menuCount > 2)   //all the way down
+				menuCount = 4;
+			}else if(menuCount > 4)
 			{
-				menuCount = 0;  //for now only 0 menus
+				menuCount = 3;
 			}
 		}else
 		{
-			if(place == 1)
-				menuCount = 3;
-			else	
-				menuCount = 4;
+			if(menuCount < 0)
+			{
+				menuCount = 2;
+			}else if(menuCount > 2)
+			{
+				menuCount = 0;
+			}
 		}
-        
-        if(menuSwitch)
-        {
-            renderer->setMessage(menus[menuCount]);
+		
+		if(menuSwitch)
+		{
+			renderer->setMessage(menus[menuCount]);
             menuSwitch = false;
-        }
+		}
+
+		
         
         JeepActor* player = jeepManager->getHuman();
     	btVector3 look = player->pos;
@@ -119,79 +139,94 @@ void MainController::tickMenu(unsigned long interval)
     	pos += (look+ 25*behind - pos ) / 5.0;
 
     	renderer->setCamera(pos,look);
-    	
-    	
-    	    	
-    }else   //proper menu
-    {
-        static std::string menus[] = {"data/UI/start_0.jpg"};
-        
-        menuCount = 0;
-        if(menuSwitch)
-        {
-            renderer->setMessage(menus[0]);
-            renderer->step();
-            menuSwitch = false;
-        }
-        
-    }
+
+	}
     
 	//check user input
-	static int keyCount = 0;    //big hack because our controller input is awesome
-    keyCount += interval;
-    if(keyCount < 50)
-        return;    
-	
-	
-	if(window.aInput->XAxis == -1 && !finished)  //go left
+	static int lastX = 0;
+	if(window.aInput->XAxis == 1 || window.aInput->XAxis == -1)
 	{
-        keyCount = 0;
+		//draw world and such so it's nice
+		 renderer->step();   //ensures a nice background
+		 jeepManager->renderTick();  //keep this in case it's paused  
+		lastX = window.aInput->XAxis;
+		return;
+	}
+
+	if(lastX <0)  //go left
+	{
+        lastX = 0;
         menuCount --;
         menuSwitch = true;
 	}
 	
-	if(window.aInput->XAxis == 1 && !finished)  //go right
+	if(lastX >0)  //go right
 	{
-        keyCount = 0;
+        lastX = 0;
         menuCount ++;
         menuSwitch = true;
 	}
 	
 	if(window.aInput->Enter)
 	{
-	    if(menuCount == 0)
-	    {
-			if(startMenu)
+		if(startMenu)
+		{
+			if(menuCount == 0)
 			{
+				restart();
 				jeepManager->startEngines();
 				renderer->startGame();
+
+				renderer->setMessage("");
+				inMenu = false;
+				audio->playAllDynamicSources();
+				audio->pauseSource(menuMusic);
+				audio->resumeSource(readySource);
+				audio->playSource(gameMusic);
+				wasOut = true;
 			}
-	            
-            renderer->setMessage("");
-            inMenu = false;
-            audio->playAllDynamicSources();
-            audio->pauseSource(menuMusic);
-            audio->resumeSource(readySource);
-            audio->playSource(gameMusic);
-			wasOut = true;
-        }
-        if(menuCount == 1 || menuCount == 3 || menuCount==4)
-        {
-            restart();
-            inMenu = false;
-            audio->playAllDynamicSources();
-            audio->pauseSource(menuMusic);
-            audio->restartSource(gameMusic);
-            wasOut = true;
-			finished = false;
-			//if(menuCount == 4)
-			//	renderer->showPlace(place);
-        }
-        
-        if(menuCount == 2)
-        {
-            window.quit();
-        }
+
+			if(menuCount == 3)
+			{
+				window.quit();
+			}
+
+
+
+
+		}else
+		{
+			if(menuCount == 0)
+			{
+				renderer->setMessage("");
+				inMenu = false;
+				audio->playAllDynamicSources();
+				audio->pauseSource(menuMusic);
+				audio->resumeSource(readySource);
+				audio->playSource(gameMusic);
+				wasOut = true;
+			}
+
+			if(menuCount == 1 || menuCount == 3)
+			{
+				restart();
+				inMenu = false;
+				audio->playAllDynamicSources();
+				audio->pauseSource(menuMusic);
+				audio->restartSource(gameMusic);
+				wasOut = true;
+				finished = false;
+				renderer->startGame();
+			}
+
+			if(menuCount == 2 || menuCount == 4)
+			{
+				startMenu = true;
+				menuSwitch = true;
+				menuCount = 2;
+			}
+
+		} 
 	}
 	
 	//draw world and such so it's nice
@@ -207,9 +242,7 @@ void MainController::tick(unsigned long interval)
     {
         //std::cout << "LAG" << std::endl;
         return;
-    }
-    
-	
+    }	
 
     if(inMenu)
     {

@@ -53,6 +53,7 @@ public:
 	btVector3 getPlayerPosition(int c);
 	float getPlayerRotation(int);
 	int getPlayerPlace(int p);
+	bool isFinished(int p);
 
 };
 #endif

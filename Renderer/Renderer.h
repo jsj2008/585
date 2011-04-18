@@ -32,7 +32,7 @@ public:
 	void setMessage(string const & texName);
     void initialize();
 	void startGame();
-	void showPlace(int);
+	void finishGame();
     void loadingMessage(string const & texName);
     JeepManager * jeepManager;
     
@@ -71,6 +71,8 @@ private:
 	bool loadTexture(string name, GLuint *texID);
 	void drawMessage();
 	void drawPlayerPlace(int place);
+	void drawSpedometer();
+	void drawPlayerList();
 	void groundTexCoord(int x, int z, bool xend, bool zend);
 
 	void addTree(double x, double y, double z);
@@ -93,6 +95,7 @@ private:
 
 	bool showMessage;
 	bool gameStarted;
+	bool gameFinished;
 
 	ActorList const & actorList;
 	Shader* groundShader;
@@ -102,6 +105,7 @@ private:
 	vector<GLuint*> shaderTexturesG;
 	vector<GLuint*> shaderTexturesO;
 	vector<GLuint*> placeNumbers;
+	vector<GLuint*> playerNames;
 
 	AttributeData* attrDataG;		// Contains attribute information about the shader
 	OptionsData* optDataG;			// Contains optional details about the shader
@@ -204,7 +208,9 @@ private:
 	GLuint groundBump;		// The bump map for the ground
 	GLuint cliffBump;		// The bump map for the cliffs
 
-	GLuint messageTex;		// The image for the UI message
+	GLuint messageTex;				// The image for the UI message
+	GLuint spedometerTex;			// The image for the spedometer
+	GLuint spedometerNeedleTex;		// The image for the spedometer needle
 	
 	RenderObject sky;		// The sky dome model
 };

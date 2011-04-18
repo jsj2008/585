@@ -1,6 +1,6 @@
 #include "PhysObject.h"
 
-PhysObject::PhysObject(Real mass) : mass(mass) {}
+PhysObject::PhysObject(Real mass, bool isCourse) : mass(mass), isCourse(isCourse) {}
 
 PhysObject::~PhysObject()
 {
