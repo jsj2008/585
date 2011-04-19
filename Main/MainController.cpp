@@ -147,10 +147,14 @@ void MainController::tickMenu(unsigned long interval)
 	if(window.aInput->XAxis == 1 || window.aInput->XAxis == -1)
 	{
 		//draw world and such so it's nice
-		 renderer->step();   //ensures a nice background
-		 jeepManager->renderTick();  //keep this in case it's paused  
-		lastX = window.aInput->XAxis;
-		return;
+		 	lastX = window.aInput->XAxis;
+		if(lastX != 0)
+		{
+			renderer->step();   //ensures a nice background
+			jeepManager->renderTick();  //keep this in case it's paused  
+	
+			return;
+		}
 	}
 
 	if(lastX <0)  //go left

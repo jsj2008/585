@@ -13,10 +13,12 @@ rockModel3("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacle
 largeRock3(rockModel3.model, 40, true),
 logModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 30),
 log(logModel.model, 30, false),
+logSmallModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/logBranch.obj", 8),
+logSmall(logModel.model, 8, false, 10.0),
 smallRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 50),
 smallRock(smallRockModel.model, 50, false),
-smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 6),
-smallFallingRock(smallerRockModel.model, 6, false, 5.0),
+smallerRockModel("data/textures/map1.png", "data/textures/blank.bmp", "models/obstacles/fallingRock1.obj", 5),
+smallFallingRock(smallerRockModel.model, 7, false, 7.0),
 
 // leafyMod("data/textures/tree.png", "data/textures/blank.bmp", "models/tree.obj", 20),
 // leafy(leafyMod.model, 20),
@@ -33,7 +35,27 @@ mansionModel("data/textures/BuildingsMedieval0004_2_L.png", "data/textures/blank
 mansion(mansionModel.model, 10, false, 0, true),
 
 finishLineModel("data/textures/finish.png", "data/textures/blank.bmp", "models/course/finish_line.obj", 10),
-finishLine(finishLineModel.model, 0, false, 0, true)
+finishLine(finishLineModel.model, 0, false, 0, true),
+
+alertSignModel("data/textures/alert.png", "data/textures/blank.bmp", "models/obstacles/alert_sign.obj", -10),
+alertSign(alertSignModel.model, -10, false, 0, true),
+leftSignModel("data/textures/left_arrow.png", "data/textures/blank.bmp", "models/obstacles/arrow_left.obj", -20),
+leftSign(leftSignModel.model, -20, false, 0, true),
+rightSignModel("data/textures/right_arrow.png", "data/textures/blank.bmp", "models/obstacles/arrow_right.obj", -20),
+rightSign(rightSignModel.model, -20, false, 0, true),
+
+blPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/broad_plant_large.obj", 6),
+blPlant(blPlantModel.model, 0, false, 0, true),
+bmPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/broad_plant_medium.obj", 4),
+bmPlant(bmPlantModel.model, 0, false, 0, true),
+bsPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/broad_plant_small.obj", 3),
+bsPlant(bsPlantModel.model, 0, false, 0, true),
+nlPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/narrow_plant_large.obj", 6),
+nlPlant(nlPlantModel.model, 0, false, 0, true),
+nmPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/narrow_plant_medium.obj", 4),
+nmPlant(nmPlantModel.model, 0, false, 0, true),
+nsPlantModel("data/textures/mapOld.png", "data/textures/blank.bmp", "models/obstacles/narrow_plant_small.obj", 3),
+nsPlant(nsPlantModel.model, 0, false, 0, true)
 
 {
 	hm = HeightMapManager::GetHeightMap();
@@ -103,10 +125,65 @@ void Obstacles::initialize(ActorList & actors)
 	addObstacle(mansion, mansionModel, btVector3(104, -10, 255), actors, btQuaternion(btVector3(0,1,0), -1.57) );
 	addObstacle(finishLine, finishLineModel, btVector3(108, 10, 247), actors);
 
-    for(int i=0; i<10; i++) {
-    	addObstacle(smallFallingRock, smallerRockModel, btVector3(158+i,20,45), actors);
+	
+	addObstacle(alertSign, alertSignModel, btVector3(70, 30, 206), actors, btQuaternion(btVector3(0,1,0), -0.785398175) ); // Bridge sign
+	addObstacle(alertSign, alertSignModel, btVector3(70, 30, 206), actors, btQuaternion(btVector3(0,1,0), 0.785398175) );
+
+	addObstacle(rightSign, rightSignModel, btVector3(144, 40, 52), actors, btQuaternion(btVector3(0,1,0), -1.57) ); // Rock sign
+	addObstacle(rightSign, rightSignModel, btVector3(144, 40, 52), actors, btQuaternion(btVector3(0,1,0), 1.57) );
+	
+	addObstacle(leftSign, leftSignModel, btVector3(229, 40, 40), actors, btQuaternion(btVector3(0,1,0), 0) );
+	addObstacle(leftSign, leftSignModel, btVector3(229, 40, 40), actors, btQuaternion(btVector3(0,1,0), 3.14) );
+
+	addObstacle(leftSign, leftSignModel, btVector3(234, 40, 115), actors, btQuaternion(btVector3(0,1,0), -1.57) );
+	addObstacle(leftSign, leftSignModel, btVector3(234, 40, 115), actors, btQuaternion(btVector3(0,1,0), 1.57) );
+
+	addObstacle(leftSign, leftSignModel, btVector3(97, 40, 83), actors, btQuaternion(btVector3(0,1,0), 0) );
+	addObstacle(leftSign, leftSignModel, btVector3(97, 40, 83), actors, btQuaternion(btVector3(0,1,0), 3.14) );
+	addObstacle(rightSign, rightSignModel, btVector3(97, 40, 85), actors, btQuaternion(btVector3(0,1,0), 0) );
+	addObstacle(rightSign, rightSignModel, btVector3(97, 40, 85), actors, btQuaternion(btVector3(0,1,0), 3.14) );
+
+	addObstacle(leftSign, leftSignModel, btVector3(54, 40, 76), actors, btQuaternion(btVector3(0,1,0), 0) );
+	addObstacle(leftSign, leftSignModel, btVector3(54, 40, 76), actors, btQuaternion(btVector3(0,1,0), 3.14) );
+	
+	addObstacle(rightSign, rightSignModel, btVector3(51, 40, 45), actors, btQuaternion(btVector3(0,1,0), -1.57) );
+	addObstacle(rightSign, rightSignModel, btVector3(51, 40, 45), actors, btQuaternion(btVector3(0,1,0), 1.57) );
+
+	addObstacle(rightSign, rightSignModel, btVector3(44, 40, 238), actors, btQuaternion(btVector3(0,1,0), -1.57) );
+	addObstacle(rightSign, rightSignModel, btVector3(44, 40, 238), actors, btQuaternion(btVector3(0,1,0), 1.57) );
+		
+	addObstacle(leftSign, leftSignModel, btVector3(102, 40, 188), actors, btQuaternion(btVector3(0,1,0), -0.785398175) );
+	addObstacle(leftSign, leftSignModel, btVector3(102, 40, 188), actors, btQuaternion(btVector3(0,1,0), 0.785398175) );
+
+	ifstream in;
+	in.open("plants.pth");
+
+	double x, z;
+	int plantNum;
+	while (in >> x >> z) {
+	plantNum = rand() % 6;
+		if (plantNum == 0) addObstacle(blPlant, blPlantModel, btVector3(x/2, -1.5, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+		if (plantNum == 1) addObstacle(bmPlant, bmPlantModel, btVector3(x/2, -1, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+		if (plantNum == 2) addObstacle(bsPlant, bsPlantModel, btVector3(x/2, -0.5, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+		if (plantNum == 3) addObstacle(nlPlant, nlPlantModel, btVector3(x/2, -1.5, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+		if (plantNum == 4) addObstacle(nmPlant, nmPlantModel, btVector3(x/2, -1, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+		if (plantNum == 5) addObstacle(nsPlant, nsPlantModel, btVector3(x/2, -0.5, z/2), actors, btQuaternion(btVector3(0,1,0), rand()));
+	}
+
+	ifstream in2;
+	in2.open("rocks.pth");
+
+	while (in2 >> x >> z) {
+		for (int i = 0; i < 3; i++)
+    		addObstacle(smallFallingRock, smallerRockModel, btVector3(x/2,i*3,z/2), actors);
     }
 
+	in.close();
+	in2.close();
+
+	addObstacle(logSmall, logSmallModel, btVector3(140,10,75), actors, btQuaternion(btVector3(0,1,0), 1.7));
+	addObstacle(logSmall, logSmallModel, btVector3(22,10,128), actors);
+	addObstacle(logSmall, logSmallModel, btVector3(208,20,116), actors);
 
 	//addObstacle(leafy, leafyMod, btVector3(158,30,22), actors, btQuaternion(btVector3(1,0,0), 1));
 	// addObstacle(leafy, leafyMod, btVector3(158,30,22), actors);

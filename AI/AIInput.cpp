@@ -26,7 +26,12 @@ segmentVec1	???
 segmentVec2	???
 placeFactor The AI's place relative to the human, for cheating
 */
-void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2, int placeFactor) {
+void AIInput::step(JeepActor* jeep, Jeeps allJeeps, btVector3 const & pathDir1, btVector3 const & pathDir2, btVector3 const & trackVector, btVector3 const & segmentVec1, btVector3 const & segmentVec2, int placeFactor, bool finished) {
+	if (finished) {
+		AcceleratePressed = false;
+		return;
+	}
+
 	btVector3 trackDirection = pathDir1;
 	btVector3 actorHeading = quatRotate(jeep->orientation, btVector3(1,0,0)).normalized();
 

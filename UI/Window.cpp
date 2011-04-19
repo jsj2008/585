@@ -8,7 +8,7 @@
 
 void Window::loadScreen()
 {
-    renderer->loadingMessage("data/UI/controller_2.png");
+    renderer->loadingMessage("data/UI/controls-loading.png");
     updateGL();
     LOG("Load Screen", "UI");
 }

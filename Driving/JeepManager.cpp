@@ -204,7 +204,7 @@ void JeepManager::renderTick() {
 		btVector3 segmentVec1 = levelAI->getVectorToSeg(1, c);
 		btVector3 segmentVec2 = levelAI->getVectorToSeg(2, c);
 		//if (trackVector.length() > 500) restartJeep(*itr); // Reset if too far from track (crazy offroading shortcuts only)
-		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c)-levelAI->getPlayerPlace(num_players));
+		aiInputs[c]->step((*itr), allJeeps, pathDir1, pathDir2, trackVector, segmentVec1, segmentVec2, levelAI->getPlayerPlace(c)-levelAI->getPlayerPlace(num_players), levelAI->isFinished(c));
 	}
 	//btVector3 trackVector = levelAI->getVectorToTrack(c); // Human
 	//if (trackVector.length() > 500.0) restartJeep(human); // TODO: Why do they fly into the stratosphere?

@@ -29,7 +29,19 @@ private:
     const RenderObject mansionModel;
     const RenderObject finishLineModel;
 
-	const RenderObject leafyMod;
+	const RenderObject alertSignModel;
+	const RenderObject leftSignModel;
+	const RenderObject rightSignModel;
+
+	const RenderObject blPlantModel;
+	const RenderObject bmPlantModel;
+	const RenderObject bsPlantModel;
+	const RenderObject nlPlantModel;
+	const RenderObject nmPlantModel;
+	const RenderObject nsPlantModel;
+
+	const RenderObject logSmallModel;
+
 
 	/*objShapes*/
 	const libModel largeRock;
@@ -44,8 +56,19 @@ private:
     const libModel mansion;
     const libModel finishLine;
 
-	// const libModel leafy;
+    const libModel alertSign;
+    const libModel leftSign;
+    const libModel rightSign;
 	
+    const libModel blPlant;
+    const libModel bmPlant;
+    const libModel bsPlant;
+    const libModel nlPlant;
+    const libModel nmPlant;
+    const libModel nsPlant;
+	
+	const libModel logSmall;
+
 	HeightMap* hm;
 	float xscale;
 	float yscale;
